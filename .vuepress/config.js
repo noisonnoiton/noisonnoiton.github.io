@@ -2,7 +2,7 @@ module.exports = {
   "title": "noisonnoiton",
   "description": "Kloudbank demo.",
   "dest": "public",
-  "base": "/demo-noisonnoiton/",
+  "base": "/",
   "head": [
     [
       "link",
