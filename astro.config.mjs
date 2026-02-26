@@ -7,7 +7,12 @@ export default defineConfig({
   site: 'https://noisonnoiton.github.io',
   integrations: [
     starlight({
-      title: '🐱 noisonnoiton',
+      title: 'noisonnoiton',
+      logo: {
+        src: './src/assets/choonsik.png',
+        alt: '춘식이',
+      },
+      favicon: '/favicon.png',
       defaultLocale: 'ko',
       customCss: ['./src/styles/choonsik.css'],
       social: [
