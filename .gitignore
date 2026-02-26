@@ -1,19 +1,15 @@
+# build
 node_modules/
-yarn.lock
-yarn.error
+dist/
+.astro/
 
-.DS_Store
-*.pyc
-__pycache__/
-*.ipynb_checkpoints
-.env
-.venv/
-*.swp
-*.swo
+# editor
 .vscode/
-.idea/
-*.bak
-*.tmp
 
-.vuepress/dist/
-.vuepress/cache/
+# env
+.env
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db

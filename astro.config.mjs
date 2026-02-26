@@ -1,0 +1,113 @@
+// @ts-check
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+
+export default defineConfig({
+  site: 'https://noisonnoiton.github.io',
+  integrations: [
+    starlight({
+      title: 'noisonnoiton',
+      defaultLocale: 'ko',
+      social: [
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/noisonnoiton' },
+      ],
+      sidebar: [
+        {
+          label: 'Guide',
+          items: [
+            { label: 'Overview', slug: 'blogs/001_guide' },
+            { label: '개발환경', slug: 'blogs/001_guide/env' },
+            { label: '문서 도구', slug: 'blogs/001_guide/doc' },
+            { label: 'Resource', slug: 'blogs/001_guide/resource' },
+          ],
+        },
+        {
+          label: 'Cloud (AWS)',
+          items: [
+            { label: 'Overview', slug: 'blogs/002_cloud' },
+            { label: 'Getting Started', slug: 'blogs/002_cloud/start' },
+            { label: 'Certification', slug: 'blogs/002_cloud/certi' },
+            { label: 'EKS', slug: 'blogs/002_cloud/eks' },
+            { label: 'ALB', slug: 'blogs/002_cloud/alb' },
+            { label: 'NLB', slug: 'blogs/002_cloud/nlb' },
+            { label: 'EBS', slug: 'blogs/002_cloud/ebs' },
+            { label: 'EFS', slug: 'blogs/002_cloud/efs' },
+          ],
+        },
+        {
+          label: 'Ref. Architecture',
+          items: [
+            { label: 'Overview', slug: 'blogs/003_refarch' },
+            { label: 'Modern API', slug: 'blogs/003_refarch/modernapi' },
+            { label: 'Redis 성능 측정', slug: 'blogs/003_refarch/perftest' },
+            { label: 'Redis 고가용성', slug: 'blogs/003_refarch/hatest' },
+            { label: 'Apache Camel', slug: 'blogs/003_refarch/camel' },
+            { label: 'Legacy Interface', slug: 'blogs/003_refarch/legacy' },
+            { label: 'Keycloak', slug: 'blogs/003_refarch/keycloak' },
+            { label: 'Harbor', slug: 'blogs/003_refarch/harbor' },
+          ],
+        },
+        {
+          label: 'Cloud Native App',
+          items: [
+            { label: 'Overview', slug: 'blogs/004_cna' },
+            { label: 'Container', slug: 'blogs/004_cna/container' },
+            { label: 'Kubernetes', slug: 'blogs/004_cna/k8s' },
+            { label: 'REST API', slug: 'blogs/004_cna/restapi' },
+            { label: 'Tips', slug: 'blogs/004_cna/tip' },
+          ],
+        },
+        {
+          label: 'Cloud Native App - Springboot',
+          collapsed: true,
+          autogenerate: { directory: 'blogs/004_cna/springboot' },
+        },
+        {
+          label: 'ML / Inference',
+          items: [
+            { label: 'Overview', slug: 'blogs/005_ml' },
+            { label: 'Jupyter Intro', slug: 'blogs/005_ml/jupyterintro' },
+            { label: 'Jupyter Server', slug: 'blogs/005_ml/jupyterserver' },
+            { label: 'JupyterHub', slug: 'blogs/005_ml/jupyterhub' },
+            { label: 'Jupyter Proxy', slug: 'blogs/005_ml/jupyterproxy' },
+            { label: 'Inference Intro', slug: 'blogs/005_ml/inferenceintro' },
+            { label: 'Triton', slug: 'blogs/005_ml/inferencetriton' },
+            { label: 'KFServing', slug: 'blogs/005_ml/inferencekfserving' },
+          ],
+        },
+        {
+          label: 'GitOps',
+          items: [
+            { label: 'Overview', slug: 'blogs/006_gitops' },
+            { label: 'GitOps 소개', slug: 'blogs/006_gitops/gitopsintro' },
+            { label: 'FluxCD Intro', slug: 'blogs/006_gitops/fluxintro' },
+            { label: 'FluxCD v2', slug: 'blogs/006_gitops/fluxcdv2' },
+            { label: 'Flagger Intro', slug: 'blogs/006_gitops/flaggerintro' },
+            { label: 'Flagger Deploy', slug: 'blogs/006_gitops/flaggerdeploy' },
+            { label: 'ArgoCD Intro', slug: 'blogs/006_gitops/argocdintro' },
+            { label: 'ArgoCD Deploy', slug: 'blogs/006_gitops/argocddeploy' },
+          ],
+        },
+        {
+          label: 'Multi-Cloud',
+          items: [
+            { label: 'Overview', slug: 'blogs/007_multicloud' },
+            { label: 'Diagram', slug: 'blogs/007_multicloud/diagram' },
+          ],
+        },
+        {
+          label: 'Docs - HCP SRE CQ',
+          collapsed: true,
+          items: [
+            { label: 'Overview', slug: 'docs/001_hcpsrecq' },
+            { label: 'Setup', slug: 'docs/001_hcpsrecq/setup' },
+            { label: 'Platform API', slug: 'docs/001_hcpsrecq/platformapi' },
+            { label: 'Standard', slug: 'docs/001_hcpsrecq/standard' },
+            { label: 'Basics', slug: 'docs/001_hcpsrecq/basics' },
+            { label: 'Resources', slug: 'docs/001_hcpsrecq/resources' },
+          ],
+        },
+      ],
+    }),
+  ],
+});

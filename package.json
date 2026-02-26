@@ -1,20 +1,17 @@
 {
-  "name": "noisonnoiton",
-  "version": "1.0.0",
-  "author": "noisonnoiton",
+  "name": "astro-new",
+  "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "dev": "vuepress dev . --open --host localhost --port 6400",
-    "build": "vuepress build -d .vuepress/dist",
-    "postinstall": "node scripts/fix-reco-ssr.js"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
-  "devDependencies": {
-    "@dovyp/vuepress-plugin-clipboard-copy": "^1.0.0-alpha.7",
-    "markdown-it-plantuml": "^1.4.1",
-    "vuepress": "1.8.2",
-    "vuepress-theme-reco": "1.6.10"
-  },
-  "description": "noisonnoiton's blog",
-  "optionalDependencies": {
-    "fsevents": "^2.3.3"
+  "dependencies": {
+    "@astrojs/starlight": "^0.37.6",
+    "astro": "^5.6.1",
+    "sharp": "^0.34.2"
   }
 }
