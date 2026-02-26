@@ -20,26 +20,19 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: 'Guide',
+          label: 'Cloud Native App',
           items: [
-            { label: 'Overview', slug: 'blogs/001_guide' },
-            { label: '개발환경', slug: 'blogs/001_guide/env' },
-            { label: '문서 도구', slug: 'blogs/001_guide/doc' },
-            { label: 'Resource', slug: 'blogs/001_guide/resource' },
+            { label: 'Overview', slug: 'blogs/004_cna' },
+            { label: 'Container', slug: 'blogs/004_cna/container' },
+            { label: 'Kubernetes', slug: 'blogs/004_cna/k8s' },
+            { label: 'REST API', slug: 'blogs/004_cna/restapi' },
+            { label: 'Tips', slug: 'blogs/004_cna/tip' },
           ],
         },
         {
-          label: 'Cloud (AWS)',
-          items: [
-            { label: 'Overview', slug: 'blogs/002_cloud' },
-            { label: 'Getting Started', slug: 'blogs/002_cloud/start' },
-            { label: 'Certification', slug: 'blogs/002_cloud/certi' },
-            { label: 'EKS', slug: 'blogs/002_cloud/eks' },
-            { label: 'ALB', slug: 'blogs/002_cloud/alb' },
-            { label: 'NLB', slug: 'blogs/002_cloud/nlb' },
-            { label: 'EBS', slug: 'blogs/002_cloud/ebs' },
-            { label: 'EFS', slug: 'blogs/002_cloud/efs' },
-          ],
+          label: 'Spring Boot',
+          collapsed: true,
+          autogenerate: { directory: 'blogs/004_cna/springboot' },
         },
         {
           label: 'Ref. Architecture',
@@ -53,21 +46,6 @@ export default defineConfig({
             { label: 'Keycloak', slug: 'blogs/003_refarch/keycloak' },
             { label: 'Harbor', slug: 'blogs/003_refarch/harbor' },
           ],
-        },
-        {
-          label: 'Cloud Native App',
-          items: [
-            { label: 'Overview', slug: 'blogs/004_cna' },
-            { label: 'Container', slug: 'blogs/004_cna/container' },
-            { label: 'Kubernetes', slug: 'blogs/004_cna/k8s' },
-            { label: 'REST API', slug: 'blogs/004_cna/restapi' },
-            { label: 'Tips', slug: 'blogs/004_cna/tip' },
-          ],
-        },
-        {
-          label: 'Cloud Native App - Springboot',
-          collapsed: true,
-          autogenerate: { directory: 'blogs/004_cna/springboot' },
         },
         {
           label: 'ML / Inference',
@@ -100,6 +78,24 @@ export default defineConfig({
           items: [
             { label: 'Overview', slug: 'blogs/007_multicloud' },
             { label: 'Diagram', slug: 'blogs/007_multicloud/diagram' },
+          ],
+        },
+        {
+          label: 'Docs - Kloudbank',
+          collapsed: true,
+          items: [
+            { label: 'Guide Overview', slug: 'blogs/001_guide' },
+            { label: '개발환경', slug: 'blogs/001_guide/env' },
+            { label: '문서 도구', slug: 'blogs/001_guide/doc' },
+            { label: 'Resource', slug: 'blogs/001_guide/resource' },
+            { label: 'AWS Overview', slug: 'blogs/002_cloud' },
+            { label: 'Getting Started', slug: 'blogs/002_cloud/start' },
+            { label: 'Certification', slug: 'blogs/002_cloud/certi' },
+            { label: 'EKS', slug: 'blogs/002_cloud/eks' },
+            { label: 'ALB', slug: 'blogs/002_cloud/alb' },
+            { label: 'NLB', slug: 'blogs/002_cloud/nlb' },
+            { label: 'EBS', slug: 'blogs/002_cloud/ebs' },
+            { label: 'EFS', slug: 'blogs/002_cloud/efs' },
           ],
         },
         {
