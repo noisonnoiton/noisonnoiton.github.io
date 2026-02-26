@@ -7,8 +7,9 @@ export default defineConfig({
   site: 'https://noisonnoiton.github.io',
   integrations: [
     starlight({
-      title: 'noisonnoiton',
+      title: '🐱 noisonnoiton',
       defaultLocale: 'ko',
+      customCss: ['./src/styles/choonsik.css'],
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/noisonnoiton' },
       ],

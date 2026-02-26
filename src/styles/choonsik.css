@@ -1,0 +1,191 @@
+/* 🐱 춘식이 (Choonsik) 테마 - 카카오프렌즈 */
+
+/* ===== Light Mode ===== */
+:root {
+  /* 춘식이 메인 컬러 - 따뜻한 민트 + 베이지 */
+  --sl-color-accent-low: #e8f5e9;      /* 연한 민트 배경 */
+  --sl-color-accent: #66bb6a;           /* 춘식이 초록 */
+  --sl-color-accent-high: #2e7d32;      /* 진한 초록 */
+
+  --sl-color-white: #faf8f5;            /* 크림 화이트 배경 */
+  --sl-color-gray-1: #f5f0e8;           /* 따뜻한 베이지 */
+  --sl-color-gray-2: #e8dfd3;
+  --sl-color-gray-3: #b8a99a;
+  --sl-color-gray-4: #8b7355;           /* 춘식이 갈색 */
+  --sl-color-gray-5: #6b5740;
+  --sl-color-gray-6: #3e3226;
+  --sl-color-black: #2c1f14;            /* 따뜻한 다크 브라운 */
+
+  --sl-color-bg-nav: #fdf6ee;           /* 네비게이션 베이지 */
+  --sl-color-bg-sidebar: #faf5ed;       /* 사이드바 베이지 */
+  --sl-color-hairline-light: #e8dfd3;
+  --sl-color-hairline-shade: rgba(139, 115, 85, 0.15);
+
+  /* 텍스트 */
+  --sl-color-text: #3e3226;
+  --sl-color-text-accent: #2e7d32;
+
+  /* 폰트 - 둥글둥글 귀여운 느낌 */
+  --sl-font: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --sl-font-system-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ===== Dark Mode ===== */
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #1b3a1e;       /* 어두운 민트 */
+  --sl-color-accent: #81c784;           /* 밝은 춘식이 초록 */
+  --sl-color-accent-high: #a5d6a7;      /* 연한 초록 */
+
+  --sl-color-white: #1a1612;            /* 다크 브라운 배경 */
+  --sl-color-gray-1: #241f1a;
+  --sl-color-gray-2: #332b22;
+  --sl-color-gray-3: #5c4d3e;
+  --sl-color-gray-4: #8b7a68;
+  --sl-color-gray-5: #b8a899;
+  --sl-color-gray-6: #d4c8ba;
+  --sl-color-black: #f5efe8;
+
+  --sl-color-bg-nav: #1e1914;
+  --sl-color-bg-sidebar: #1c1713;
+  --sl-color-hairline-light: #332b22;
+  --sl-color-hairline-shade: rgba(139, 115, 85, 0.25);
+
+  --sl-color-text: #e8ddd0;
+  --sl-color-text-accent: #a5d6a7;
+}
+
+/* ===== 전체 레이아웃 ===== */
+
+/* 사이드바 - 부드러운 느낌 */
+nav.sidebar {
+  border-right: 2px solid var(--sl-color-hairline-light);
+}
+
+/* 사이드바 링크 호버 - 부드러운 초록 하이라이트 */
+nav.sidebar a:hover,
+nav.sidebar a[aria-current="page"] {
+  border-radius: 8px;
+}
+
+/* 헤더 - 따뜻한 그라데이션 */
+header.header {
+  backdrop-filter: blur(12px);
+}
+
+/* 코드블록 - 둥근 모서리 */
+pre {
+  border-radius: 12px !important;
+  border: 1px solid var(--sl-color-hairline-light) !important;
+}
+
+code {
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+}
+
+/* 카드/박스 - 둥글둥글 */
+.card {
+  border-radius: 16px;
+  border: 1px solid var(--sl-color-hairline-light);
+}
+
+/* 링크 스타일 - 춘식이 초록 */
+a {
+  text-decoration-style: wavy;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-color: var(--sl-color-accent);
+}
+
+/* 검색 - 둥근 입력창 */
+site-search button {
+  border-radius: 12px !important;
+}
+
+/* 콘텐츠 영역 */
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3 {
+  color: var(--sl-color-text-accent);
+}
+
+.sl-markdown-content h2 {
+  border-bottom: 2px dashed var(--sl-color-accent-low);
+  padding-bottom: 0.4em;
+}
+
+/* 인용문 - 춘식이 스타일 */
+.sl-markdown-content blockquote {
+  border-left: 4px solid var(--sl-color-accent);
+  background: var(--sl-color-accent-low);
+  border-radius: 0 12px 12px 0;
+  padding: 1em 1.2em;
+}
+
+/* 테이블 */
+.sl-markdown-content table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sl-markdown-content th {
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-accent-high);
+}
+
+/* 이미지 - 둥근 모서리 + 그림자 */
+.sl-markdown-content img {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(139, 115, 85, 0.12);
+}
+
+/* Hero (랜딩 페이지) */
+.hero {
+  padding: 3rem 0;
+}
+
+/* 버튼 스타일 */
+.sl-link-button {
+  border-radius: 24px !important;
+}
+
+/* aside/callout */
+.starlight-aside {
+  border-radius: 12px;
+}
+
+/* 스크롤바 - 춘식이 컬러 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sl-color-gray-1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sl-color-accent);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sl-color-accent-high);
+}
+
+/* 선택 영역 색상 */
+::selection {
+  background: rgba(102, 187, 106, 0.3);
+  color: var(--sl-color-text);
+}
+
+/* 페이지 전환 부드럽게 */
+main {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
