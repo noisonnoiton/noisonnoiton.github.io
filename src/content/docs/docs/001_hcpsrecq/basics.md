@@ -1,10 +1,6 @@
 ---
 title: Basics
 ---
----
-title: Basics
-date: 2021-11-10
----
 
 API Design To-Do Preview
 

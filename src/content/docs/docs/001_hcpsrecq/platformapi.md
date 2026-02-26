@@ -1,10 +1,6 @@
 ---
 title: Platform API
 ---
----
-title: Platform API
-date: 2021-11-07
----
 
 ## Deployment View
 - Platform SRE Application 은 python 으로 개발되고 DWP 에 REST API 를 제공합니다.

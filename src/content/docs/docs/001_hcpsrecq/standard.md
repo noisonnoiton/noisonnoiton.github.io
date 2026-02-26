@@ -1,10 +1,6 @@
 ---
 title: Standard
 ---
----
-title: Standard
-date: 2021-11-08
----
 
 ## cluster name
 - hcpcq
