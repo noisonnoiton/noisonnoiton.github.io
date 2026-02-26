@@ -1,84 +1,71 @@
 /* 🐱 춘식이 (Choonsik) 테마 - 카카오프렌즈 */
-/* 춘식이 실제 컬러: 노란 얼굴 #f5d76e / 복숭아 볼 #f4a87c / 다크 외곽선 #2d2d2d */
+/* 춘식이 컬러: 노랑 #f5d76e / 복숭아 볼 #f4a87c / 외곽선 #2d2d2d */
+/* 핵심: 밝고 따뜻하고 가독성 좋게! */
 
 /* ===== Light Mode ===== */
 :root {
-  /* 춘식이 메인 컬러 - 따뜻한 노랑 + 베이지 */
-  --sl-color-accent-low: #fef6d8;      /* 연한 노란 배경 */
-  --sl-color-accent: #e8b84b;          /* 춘식이 골드 (진한 노랑) */
-  --sl-color-accent-high: #c4882a;     /* 딥 골드 */
+  /* Accent - 춘식이 골드/앰버 */
+  --sl-color-accent-low: #fef9e7;
+  --sl-color-accent: #d4a017;
+  --sl-color-accent-high: #8b6914;
 
-  --sl-color-white: #fffcf5;           /* 크림 화이트 배경 */
-  --sl-color-gray-1: #f9f3e8;          /* 따뜻한 베이지 */
-  --sl-color-gray-2: #efe5d5;
-  --sl-color-gray-3: #c4b29e;
-  --sl-color-gray-4: #8b7355;          /* 춘식이 갈색 */
-  --sl-color-gray-5: #6b5740;
-  --sl-color-gray-6: #3e3226;
-  --sl-color-black: #2d2d2d;           /* 춘식이 외곽선 */
+  /* 밝고 따뜻한 배경 */
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #fdfaf3;
+  --sl-color-gray-2: #f5f0e4;
+  --sl-color-gray-3: #d6cdbf;
+  --sl-color-gray-4: #9e8e7a;
+  --sl-color-gray-5: #5c5040;
+  --sl-color-gray-6: #3b3128;
+  --sl-color-black: #1e1812;
 
-  --sl-color-bg-nav: #fdf8ee;          /* 네비게이션 베이지 */
-  --sl-color-bg-sidebar: #fdf6e8;      /* 사이드바 밝은 노랑 */
-  --sl-color-hairline-light: #efe5d5;
-  --sl-color-hairline-shade: rgba(139, 115, 85, 0.15);
+  /* 네비/사이드바 - 깨끗한 크림 */
+  --sl-color-bg-nav: #fffdf7;
+  --sl-color-bg-sidebar: #fefbf2;
+  --sl-color-hairline-light: #efe8d8;
+  --sl-color-hairline-shade: rgba(160, 140, 110, 0.12);
 
-  /* 텍스트 */
-  --sl-color-text: #3e3226;
-  --sl-color-text-accent: #c4882a;
+  /* 텍스트 - 충분한 대비 */
+  --sl-color-text: #2c2418;
+  --sl-color-text-accent: #8b6914;
 
   /* 폰트 */
   --sl-font: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --sl-font-system-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* 춘식이 커스텀 변수 */
+  /* 춘식이 변수 */
   --choonsik-yellow: #f5d76e;
   --choonsik-peach: #f4a87c;
   --choonsik-outline: #2d2d2d;
-  --choonsik-nose: #ffffff;
 }
 
 /* ===== Dark Mode ===== */
 :root[data-theme='dark'] {
-  --sl-color-accent-low: #302816;      /* 어두운 골드 */
-  --sl-color-accent: #f5d76e;          /* 춘식이 노랑 (다크모드에서 밝게) */
-  --sl-color-accent-high: #fbe8a0;     /* 연한 노랑 */
+  --sl-color-accent-low: #2a2010;
+  --sl-color-accent: #f5d76e;
+  --sl-color-accent-high: #fbe8a0;
 
-  --sl-color-white: #1a1612;           /* 다크 브라운 배경 */
-  --sl-color-gray-1: #241f1a;
-  --sl-color-gray-2: #332b22;
-  --sl-color-gray-3: #5c4d3e;
-  --sl-color-gray-4: #8b7a68;
-  --sl-color-gray-5: #c4b29e;
-  --sl-color-gray-6: #e0d5c5;
-  --sl-color-black: #faf5ed;
+  --sl-color-white: #1c1812;
+  --sl-color-gray-1: #241e16;
+  --sl-color-gray-2: #302820;
+  --sl-color-gray-3: #504436;
+  --sl-color-gray-4: #887560;
+  --sl-color-gray-5: #b8a890;
+  --sl-color-gray-6: #ddd2c2;
+  --sl-color-black: #f8f3eb;
 
-  --sl-color-bg-nav: #1e1914;
-  --sl-color-bg-sidebar: #1c1713;
-  --sl-color-hairline-light: #332b22;
-  --sl-color-hairline-shade: rgba(139, 115, 85, 0.25);
+  --sl-color-bg-nav: #201a14;
+  --sl-color-bg-sidebar: #1e1914;
+  --sl-color-hairline-light: #362e24;
+  --sl-color-hairline-shade: rgba(160, 140, 110, 0.2);
 
-  --sl-color-text: #e8ddd0;
+  --sl-color-text: #e8dfd0;
   --sl-color-text-accent: #f5d76e;
 }
 
-/* ===== 전체 레이아웃 ===== */
+/* ===== Components ===== */
 
-/* 사이드바 */
-nav.sidebar {
-  border-right: 2px solid var(--sl-color-hairline-light);
-}
-
-nav.sidebar a:hover,
-nav.sidebar a[aria-current="page"] {
-  border-radius: 8px;
-}
-
-/* 헤더 */
-header.header {
-  backdrop-filter: blur(12px);
-}
-
-/* 코드블록 - 둥근 모서리 */
+/* 코드블록 */
 pre {
   border-radius: 12px !important;
   border: 1px solid var(--sl-color-hairline-light) !important;
@@ -89,28 +76,12 @@ code {
   padding: 0.15em 0.4em;
 }
 
-/* 카드/박스 */
-.card {
-  border-radius: 16px;
-  border: 1px solid var(--sl-color-hairline-light);
-}
-
-/* 링크 - 춘식이 복숭아색 웨이브 */
-a {
-  text-decoration-style: wavy;
-  text-underline-offset: 3px;
-}
-
+/* 링크 */
 a:hover {
   text-decoration-color: var(--choonsik-peach);
 }
 
-/* 검색 */
-site-search button {
-  border-radius: 12px !important;
-}
-
-/* 콘텐츠 영역 - 헤딩 컬러 */
+/* 헤딩 */
 .sl-markdown-content h1,
 .sl-markdown-content h2,
 .sl-markdown-content h3 {
@@ -122,7 +93,7 @@ site-search button {
   padding-bottom: 0.4em;
 }
 
-/* 인용문 - 춘식이 복숭아 포인트 */
+/* 인용문 */
 .sl-markdown-content blockquote {
   border-left: 4px solid var(--choonsik-peach);
   background: var(--sl-color-accent-low);
@@ -143,8 +114,8 @@ site-search button {
 
 /* 이미지 */
 .sl-markdown-content img {
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(139, 115, 85, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* 버튼 */
@@ -157,7 +128,7 @@ site-search button {
   border-radius: 12px;
 }
 
-/* 스크롤바 - 춘식이 노랑 */
+/* 스크롤바 */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -175,9 +146,9 @@ site-search button {
   background: var(--sl-color-accent);
 }
 
-/* 선택 영역 - 춘식이 노랑 */
+/* 선택 영역 */
 ::selection {
-  background: rgba(245, 215, 110, 0.35);
+  background: rgba(245, 215, 110, 0.3);
   color: var(--sl-color-text);
 }
 
