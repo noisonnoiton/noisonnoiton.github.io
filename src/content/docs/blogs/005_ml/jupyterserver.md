@@ -192,7 +192,32 @@ Multi User 가 Jupyter Server 를 동시에 활용할 수 있게 하여, Resourc
 <u>*기존 Jupyter Notebook 활용 구성은 아래와 같다.*</u>
 - Jupyter Notebook 에 직접 browser 해서 web 접속.
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNqVkU0KwjAQhfc5xZCVLgpmDiBFcWPBTU_Qn6FI00SSFBHp3SVJawsW0V3mvS_z4E1qXWFc30nGj_JKynEoLFThKVY0ZErXBPyU5UGl1sKTARiqXKEaScDP_e3hyMBFOyq1bgOnxkEEGsA6bYqGgFtTBcDQTYtgbVoyiiRuvdzuBC5VMameHf4Ixm_BuBaMq8EYg4eph8PYQxl7eK_Pwi_I4xwY7xH-Agk2sPEGkNT6rpL93ODo4IfjbzO1HL1p21zCUkeWkqr7Tr4AYsijsg==" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+"Client" as client1
+"Client" as client2
+node "EKS" as eks {
+  rectangle "Jupyter Notebook" as notebook1 {
+    storage "src" as repo1
+    (kernel2) as k012
+    (kernel1) as k011
+  }
+  rectangle "Jupyter Notebook" as notebook2 {
+    storage "src" as repo2
+    (kernel2) as k022
+    (kernel1) as k021
+  }
+}
+node "EBS" as ebs {
+  storage "Kernel Storage" as store2
+  storage "Kernel Storage" as store1
+}
+client1 -down-> notebook1
+client2 -down-> notebook2
+notebook1 -down- store1
+notebook2 -down- store2
+@enduml
+```
 
 ![](./images/jupyter-notebook-browser.png)
 
@@ -211,7 +236,39 @@ Python code 의 실행을 Remote Jupyter Server 로 offloading 처리.
   - 단점: Local 환경 구성 역량 필요
   - 장점: Local 에서 개발, GPU 필요시 Jupyter Server 연결
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNp1kMFuwyAMhu88hcWpO0RK_ABT1WqXdbdIvTOwqg0KFSGrpinvPuG6XVMtN_j8m894PRSTy3gMKpMtJh4CgX5L1gQNZoCQbNvBjwLQ2_BBsTC1fOwUwErve9gmR_qJC8lRxUNJ2RwI9JAtd2Q6pU5NyxJckOD_ElySoJpUTI5Av-x6puQHfvtO_Tqevgtl6Cl_UebUp6CaBFh5ypECss-3eA87gfWf059tI7b3i-023CYk66G_XDlSS6QmJVuExqVzbJ5lefLtGUXFNWhkj8zkdqtJvg72SPDa8ZDBWca31x4Z0bc4B2uKbjyGX98NrGk=" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+rectangle "Local" as loc01 {
+  "Client" as client1
+  ("VS Code") as code1
+  storage "src" as repo1
+}
+rectangle "Local" as loc02 {
+  "Client" as client2
+  ("VS Code") as code2
+  storage "src" as repo2
+}
+node "EKS" as eks {
+  rectangle "Jupyter Server" as jupyter {
+    (kernel2) as k02
+    (kernel1) as k01
+  }
+}
+node "EBS" as ebs {
+  storage "Block Storage" as store
+}
+client1 -down-> code1
+client2 -down-> code2
+code1 - repo1
+code2 - repo2
+code1 -down-> k01
+code1 -down-> k02
+code2 -down-> k01
+code2 -down-> k02
+k01 -down- store
+k02 -down- store
+@enduml
+```
 
 - 구현 내역
 ![](./images/jupyter-local-ide.png)
@@ -222,7 +279,35 @@ Python code 의 실행을 Remote Jupyter Server 로 offloading 처리.
   - 단점: coder server 가 local vs code 와 완전히 동일한 환경을 제공해주지는 않음
   - 장점: browser 를 통한 접속 방식은 유지 가능
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNp1kMGKwjAQhu95iiEn91Bo8wCLKF70WNh7bQZZE5MySV2Wpe8uGaeyFb0l33wJ_z_rlDvK48UrvfXfGLKGLkHPx-YFMypEi6B3h5YpugR_CmClv1rYRov6g-VosVEAKUfqTgg6Uc8-4RCb175555cBYZ-7cPIIej8OvxkJWqQrEltnQSUJwMohBfSGf3a1-Q8bgSXDpKa5zUbaHO9tHjE2PvYO2vuVlTJCNSlZEVQ2_oTqUxrLkhbUKJ5BJeWZye0xE78EeyZmfvHkmIXj6vmNRHS1WYI1Bjte_A2eupgi" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+"Client" as client1
+"Client" as client2
+node "EKS" as eks {
+  ("VS Code") as code1
+  storage "src" as repo1
+  ("VS Code") as code2
+  storage "src" as repo2
+  rectangle "Jupyter Server" as jupyter {
+    (kernel2) as k02
+    (kernel1) as k01
+  }
+}
+node "EBS" as ebs {
+  storage "Block Storage" as store
+}
+client1 -down-> code1
+client2 -down-> code2
+code1 - repo1
+code2 - repo2
+code1 -down-> k01
+code1 -down-> k02
+code2 -down-> k01
+code2 -down-> k02
+k01 -down- store
+k02 -down- store
+@enduml
+```
 
 - 구현 내역
 ![](./images/jupyter-codeserver-browser.png)
@@ -233,7 +318,30 @@ jupyterlab frontend module 을 활용하여, standalone frontend app 을 개발�
 > Jupyter standalone app 개발 참조
 <https://jamiehall.eu/posts/standalone-jupyter-application>
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNptj0FOwzAQRfc-xZdX7SJS4gOgUkQXsMwJTDJUYNe2xg4Iody9ijOtSsXGmnkz_vP_LhfLZTp5pZ_8B4WiYTOGWnb_MKNCHAn6-bWvlFzGrwI2-sAxFAojHlPS22X2TjYlBTANxYajJ-iXKf0UYvTEX8RV4VPQogJsHHEgb6qAa80t7AR2FeYS2R4JOvNQhZhSVMCs5ovHvXh8Wz1ef-x9HBz6ta0ry4jUrCQ4mjF-h-ZBIkj0O1pfNOtdaWRh8XhPjHLtRVjuudb8BTsK43TyZ84Rfz4=" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+"Client" as client1
+"Client" as client2
+node "EKS" as eks {
+  ("Frontend App") as feapp
+  rectangle "Jupyter Server" as jupyter {
+    (kernel2) as k02
+    (kernel1) as k01
+    storage "src" as repo
+  }
+}
+node "EBS" as ebs {
+  storage "Block Storage" as store
+}
+client1 -down-> feapp
+client2 -down-> feapp
+feapp - repo
+feapp -down-> k01
+feapp -down-> k02
+k01 -down- store
+k02 -down- store
+@enduml
+```
 
 - 구현 내역
 ![](./images/jupyter-standalone-browser.png)

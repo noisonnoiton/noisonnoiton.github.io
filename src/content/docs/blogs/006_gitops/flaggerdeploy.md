@@ -331,7 +331,94 @@ Spring Boot Application 의 application property 를 configmap volume 으로 mou
 9. Deployment rollout restart 수행.
 10. Alert provider 에 의해 slack message 수신.
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNqVVU1zUzsM3ftXCLMgmblJgGHBsAJS3lsAj04zLFgxqq0knvhrbN-0fQz_nbHvZ0LbNKurHJ1jSZbkvI8JQ6qNhl19TcFSosjY2rlEAT73EFxqtGn2_esXFgVqAoO38Orl6zdwo2TaMhZ3ynoMaMA6SZE8vHo5AgPaXQuyF6Nz2TNJa2VpBF3mZLYp-fhusQh4M9-otK2v60hBOJvIprlwZiEFRkxqMaQ9Kzl-__plYTAmCgupYmLsmbJC15LqoI-ijLQ_l84YZ-e-NvrJCpvoNp0jWSnjtVorko3qMdm31WoxQKu9OBnoUHHp5JmKpTlXEM4NcUFeu7u2eBTJBeAXtJ9zwAi5wx-0wsiS85AcXLuUnAGpAomknGVMYsJrjAR89zbCRiUI5F1R797GjUps8jxqFLtphop1OG-wdMY7SzZFttR1HpOfH11tJYa7iWiACvhY0IB8Cr8YAMB_aCh6FDTo1rq-tbEC_o-ub5cXPRXgoB2T6OogqALeGLM8zsFpTYFXwPn0XtGujslVwMvXqP8fkP1-ODncbCi0-RV7lOBxtJZdAW-tM6Oh9yXSB-_nD4RZ7cUk7kW-Bgp7Jeig-HuYI-pMoMVwd0rhRwoflHlMkqvWDmWimCrg2Zxl-6gpxxLvZAXcO3mK5RvayTya1ZjI8qmAN8bT6L7nnwyzNBNhKuDC2bUy6B8n-o65MehPnx3kpGlQlj3eqcxFTSHfefnOfHB7JY_G7DdjV6Qn_dNQNWteceDT4ml_H60WCCcJokDb0lp_t0zWJTXvTihYuZQrEs4KpRXm54ZPm-BlWMsc9lE7yB9AooI8FmPIF6ilFTAzhBlIxZ1veqDkXIZF_JcSfNqTTa0ge9vOlCsGH5xxJeEK-PLb5Y_unP6Mfqi6oL2nb9dfntFO_OXrGtdn3AVotqLj98PZrsEh3qX1lEq6NJt344bUZptgi1Zq6m5lYAyUfIyyIhDGe3j-gCep5xXiUH8TtK-1Lb78uXT4e7KyNvoPRl4GnA==" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml kubernetes
+
+footer Kubernetes Plant-UML
+scale max 1024 width
+
+skinparam nodesep 10
+skinparam ranksep 10
+
+' Kubernetes
+!define KubernetesPuml https://raw.githubusercontent.com/dcasati/kubernetes-PlantUML/master/dist
+
+!includeurl KubernetesPuml/kubernetes_Common.puml
+!includeurl KubernetesPuml/kubernetes_Context.puml
+!includeurl KubernetesPuml/kubernetes_Simplified.puml
+
+!includeurl KubernetesPuml/OSS/KubernetesSvc.puml
+!includeurl KubernetesPuml/OSS/KubernetesPod.puml
+!includeurl KubernetesPuml/OSS/KubernetesCm.puml
+!includeurl KubernetesPuml/OSS/KubernetesCrd.puml
+!includeurl KubernetesPuml/OSS/KubernetesDeploy.puml
+
+actor "Dev." as userAlias
+top to bottom direction
+
+database "k8s git repo" as k8sgit
+(#slack) as slack
+
+' Kubernetes Components
+Cluster_Boundary(cluster, "Kubernetes Cluster") {
+    Namespace_Boundary(fluxns, "FluxCD") {
+      KubernetesPod(source, "source-controller", "")
+      KubernetesPod(kusto, "kustomize-controller", "")
+    }
+    Namespace_Boundary(flaggerns, "Flagger") {
+        KubernetesPod(flagger, "flagger-controller", "")
+    }
+    Namespace_Boundary(appns, "App.") {
+        KubernetesSvc(svc, "service", "")
+        KubernetesSvc(svcc, "service-canary", "")
+        KubernetesSvc(svcp, "service-primary", "")
+        KubernetesPod(loadtest, "load-tester", "")
+        KubernetesPod(pod, "pod", "")
+        KubernetesPod(podp, "pod-primary", "")
+        KubernetesDeploy(deploy, "deploy", "")
+        KubernetesDeploy(deployp, "deploy-primary", "")
+        KubernetesCm(cm, "confimap", "")
+        KubernetesCm(cmp, "configmap-primary", "")
+        KubernetesCrd(canary, "canary", "")
+        KubernetesCrd(alert, "alert-provider", "")
+    }
+}
+
+Rel(userAlias,k8sgit," ")
+Rel(k8sgit,source, "source code scan")
+Rel(source,kusto, "noti.")
+Rel(kusto,cm, "Reconciliation")
+
+Rel(svc, svcc," ")
+Rel(svc, svcp," ")
+Rel(svcc, pod," ")
+Rel(svcp, podp," ")
+
+Rel(pod,cm," ")
+Rel(podp,cmp," ")
+
+Rel(cm, flagger, "Get Event")
+Rel(cm, cmp, "canary promotion", "COPY")
+
+Rel(flagger, deploy, " ")
+Rel(flagger, canary, " ")
+Rel(flagger, loadtest, " ")
+Rel(flagger, alert, " ")
+
+Rel(deploy, pod, " ")
+Rel(deployp, podp, " ")
+Rel(deploy, deployp, "canary promotion", "COPY")
+
+Rel(canary, svc, "weight handle")
+Rel(canary, svcc, "weight", "increase")
+Rel(canary, svcp, "weight", "decrease")
+
+Rel(loadtest, svc, " ")
+
+Rel(alert, slack, " ")
+
+@enduml
+```
 
 
 ### Test Result

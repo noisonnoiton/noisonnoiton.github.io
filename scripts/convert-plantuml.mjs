@@ -1,24 +1,11 @@
 #!/usr/bin/env node
 /**
- * PlantUML 전처리 스크립트
- * src/content/docs 내 모든 .md 파일에서 @startuml ~ @enduml 블록을
- * PlantUML 서버 이미지로 변환합니다.
+ * @startuml ~ @enduml 블록을 ```plantuml 코드블록으로 변환
+ * astro-plantuml 패키지가 인식할 수 있는 형태로 변환합니다.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
-import { deflateSync } from 'node:zlib';
-import { globSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
-const PLANTUML_SERVER = 'https://www.plantuml.com/plantuml/svg';
-
-function encodePlantUML(text) {
-  const compressed = deflateSync(Buffer.from(text, 'utf-8'), { level: 9 });
-  return '~1' + compressed.toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_');
-}
-
-// find all md files
 const files = execSync('find src/content/docs -name "*.md"', { encoding: 'utf-8' })
   .trim().split('\n').filter(Boolean);
 
@@ -32,9 +19,7 @@ for (const file of files) {
     /@startuml[\s\S]*?@enduml/g,
     (match) => {
       totalReplaced++;
-      const encoded = encodePlantUML(match);
-      const url = `${PLANTUML_SERVER}/${encoded}`;
-      return `<img src="${url}" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />`;
+      return '```plantuml\n' + match + '\n```';
     }
   );
 
@@ -44,4 +29,4 @@ for (const file of files) {
   }
 }
 
-console.log(`\n총 ${totalReplaced}개 PlantUML 다이어그램 변환 완료!`);
+console.log(`\n총 ${totalReplaced}개 PlantUML 블록을 코드블록으로 변환 완료!`);

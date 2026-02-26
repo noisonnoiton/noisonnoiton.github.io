@@ -85,7 +85,20 @@ Kubernetes에서 실행하기 위한 방법 등을 포함하고 있음.
 * 설정을 환경 변수(env) 에 저장한다
 
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNpVjVEKwjAQRP9zivUAvYCg9CqxGdPFzSYk20JvL0HF9HMeb2bmZr7alsRdbEUCNZYd1bUXa_HVJxJW2FFAJcvRgxM8jSxT5bgaBa5YjLM6H6FGSw54-AbXsdcooFJz2D7OHzbzkTUOJGCH5JKg5n4rNE33oU_XHp4suHV41r6Lg9MsnpXhYtACdjdDw5bkDeaFY3g=" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+!theme silver
+skinparam linetype polyline
+left to right direction
+agent codebase
+rectangle production
+rectangle staging
+rectangle development
+codebase --> production : profile=prod
+codebase --> staging : profile=stg
+codebase --> development : profile=dev
+@enduml
+```
 
 application-prod.properties
 ``` properties

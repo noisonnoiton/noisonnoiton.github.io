@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import plantuml from 'astro-plantuml';
 
 export default defineConfig({
   site: 'https://noisonnoiton.github.io',
@@ -108,6 +109,10 @@ export default defineConfig({
           ],
         },
       ],
+    }),
+    plantuml({
+      serverUrl: 'https://www.plantuml.com/plantuml/svg/',
+      format: 'svg',
     }),
   ],
 });

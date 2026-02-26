@@ -20,7 +20,33 @@ SQL Parameter를 Injection해주며, 해당 결과를 지정된 타입으로 반
 Database connection 정보는 application.properties에서 설정하며, SQL과 처리 방식은
 Annotation 또는 Mapper xml 파일을 통해 설정됨
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNptT0sOgjAQ3c8pegEuYIzR6pYVByBjO8GaoSXT4uf2BgUKkd28T968d4wJJfUtAzKHZ926l_MNgHFimFSJXUcChjFGVZE8nKHTGuoRnoNPEphJAIRMQt8MAW-NycW66mTIzcLdXs0CWkwYQy-GYDivGEldxgMgZ6uiOOQiS15cc0tZ1DC5svRbo3Zqr8pgiU-TR6vChqffsGgYmRyyXgRr_O333bbBL0YOlvnpPDQb_jU4krd9yx9wrZbD" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+allow_mixing
+
+circle Mapper
+class ServiceA
+class ServiceB
+class Controller
+
+rectangle MyBatis_Spring
+rectangle jdbc
+rectangle datasource
+database Database
+
+Controller --> ServiceA
+Controller -right-> ServiceB
+ServiceA -right-> Mapper : < ModelA
+ServiceB -down-> Mapper : < ModelB
+Mapper -right-> MyBatis_Spring
+
+MyBatis_Spring --> jdbc
+MyBatis_Spring --> datasource
+jdbc -down-> Database
+datasource -down-> Database
+
+@enduml
+```
 
 ## Mapper 작성
 

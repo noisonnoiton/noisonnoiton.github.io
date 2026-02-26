@@ -63,7 +63,35 @@ Kubernetes 환경에서 제공되는 Redis Standalone 서비스의 고 가용성
   - proxy 요청을 받은 dynomite 또한, 자신의 target redis 에 write 를 수행
   | <u>*dynomite 에서 target redis 에 request 할 때, 각 redis 별로 생성된 k8s service 를 통하여 호출 (아래 그림에서는 각 service 생략)*</u>
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNqNkE9LAzEQxe_5FENO9bCQRPBPEakUiyB4cI_iId1My-ImKUmqiOx3l51s1iIs9DaT93t5yVvFpEM62o7xddeiSxx0hIZG5rxB4I_PNR3iR4QfBvDWeGu9qyKGz7bBdzJ4a4edAWTTK5o2wtMDOc2WjAABm6TdvkPgYQAqIdRICKFGCMDopLc6FooImoRQI7Iw387bNuEFxetQpH4uSE5B8pwgOR8kp6Ce9aWkzVjSLpcUkw96j8BfNjXUeSHA7SLrWS4Yqvu_5soAlfFfblAoa3m4kULNqKqohE5a-cLycHV5fZtV9V9Vp6qEu-lOVuyjg55cTKdnK3TmaLtfoWmsYw==" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+"Client" as client
+node "EKS" as eks {
+  [common-service] as commserv
+  node "Redis HA" as db {
+    rectangle "redis-002" as db002 {
+      database "redis" as redis002
+      (dynomite) as car002
+    }
+    rectangle "redis-001" as db001 {
+      database "redis" as redis001
+      (dynomite) as car001
+    }
+  }
+}
+node "EFS" as efs {
+  storage "NFS Storage" as nfs
+}
+client -> commserv
+commserv -down-> car001:p8102
+commserv -down-> car002:p8102
+car001 -down-> redis001:p6379
+car002 -down-> redis002:p6379
+car001 <-> car002
+redis001 -down- nfs
+redis002 -down- nfs
+@enduml
+```
 
 #### 구성 내역
 
@@ -188,7 +216,36 @@ Kubernetes 환경에서 제공되는 Redis Standalone 서비스의 고 가용성
   - envoy 의 cluster 에 정의된 다른 redis 에 request mirroring 하여 wirte.
   | <u>*envoy 에서 redis 에 write 및 request mirroring 시, 각 redis 별로 생성된 k8s service 를 통하여 호출 (아래 그림에서는 각 service 생략)*</u>
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNqNkE9LxDAQxe_5FENP6yGQRPDfYVlZXATBgz2Kh2wzuxSbRJLsiki_u3Sa1CIUvE3m915e8jYx6ZBOtmPVtmvRpQp0hIZG5rxBqB6ealrie4RvBvDaeGu94xHDuW3wjQze2uHMAEbTC5o2wuM9Oc2ejAABm6TdsUOowiDgQqisEEJlEYDRSe91LCpS0CSEypIVurP_uqBsHcq-X0qRU4r8T4pcSJFTSs_6Us8u13MY64nJB31EqJ53NdTjgQTuEFnPxmqBr387KwNw4z_dQCjr7uPq8kYsUFUoSSdW3j_Q69uRqr9UzakEPiOTY3YXK0O-hz5SDPPdBp052e4HfdiwIw==" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+"Client" as client
+node "EKS" as eks {
+  [common-service] as commserv
+  node "Redis HA" as db {
+    rectangle "redis-002" as db002 {
+      database "redis" as redis002
+      (envoy) as car002
+    }
+    rectangle "redis-001" as db001 {
+      database "redis" as redis001
+      (envoy) as car001
+    }
+  }
+}
+node "EFS" as efs {
+  storage "NFS Storage" as nfs
+}
+client -> commserv
+commserv -down-> car001:p6380
+commserv -down-> car002:p6380
+car001 -down-> redis001:p6379
+car002 -down-> redis002:p6379
+car001 --> redis002
+car002 --> redis001
+redis001 -down- nfs
+redis002 -down- nfs
+@enduml
+```
 
 
 #### 구성 내역
@@ -347,7 +404,33 @@ Envoy Redis Proxy 의 경우, datacenter replication 을 통한 consistency 유�
 
 - prefix 를 통한 data 분산 및 read replicas 제공 방안
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNp9ULtuwzAM3PkVB-0G4o4egvSRKeiSjEUHJmILoZZsSErToPC_F5b8SIK2G3k8Hnm3CpF9PNqa1L22xilwAPcVqcfaiIsJOaSSXKMFar3ZJVA-Ar4JeFm7z-b8mqC-IkBz5D0HgdqKNgHPHKL4tOV7wKaegKyYSVtpa3PgMNByky5cCj5Jyz5acTHMeovF3Q1tbdu6OYtckUoCOupGHw-Dj32-EmLj-V2gdrlIwx6U6d2_KfmD_-YldZRzRLGc_FXwwppS5Ch0c3LFMsdY4eRNFEpNXpmTG8CBP2ZQofXyZr4qPYf0O7WcqDIGRRf6KK6Mj_qDyux4VLsZlLQSp4-2_gH2xMn6" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+"Admin" as admin
+"Client" as client
+node "EKS" as eks {
+  [Envoy] as envoy
+  database "Redis Master" as redismaster
+  node "Redis Replicas" as replicas {
+    database "Departments" as redis002
+    database "Employees" as redis001
+  }
+}
+node "EBS" as ebs {
+  storage "Storage" as storemaster
+  storage "Storage" as store002
+  storage "Storage" as store001
+}
+client -> replicas: read
+admin -down-> envoy: write
+envoy -> redismaster
+envoy -down-> redis002: prefix:departments
+envoy -down-> redis001: prefix:employees
+redismaster - storemaster
+redis002 -down- store002
+redis001 -down- store001
+@enduml
+```
 
 - 구성 내역
 ```yaml

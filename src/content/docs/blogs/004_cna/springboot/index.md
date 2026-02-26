@@ -19,7 +19,49 @@ Web Application을 Embedded하여 처리하여 단일 Process로 관리할 수 �
 
 ## tomcat model
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNpl0DtuwzAMBuCdp-AF5KC2pyIwcosORQZaZhOlekFiHOT2gRR3qLyJ1KcfFE9ZKMndWci_xkdK5NAaz_KMjDHYZykASEtIqK1hL-DDwvjgGb8B8ThPXzxj5rRyOh7mCc4AP8YyZiExuqKrOAuIN1op62SiAKLOGRCNowuXJzVUgtMkf7nvqmYiKqUUIAbPeFvddoopaM4ZzqCDi8GzF6QYP2rCg2eK8VDqFvQN6FswNGBowdiAsYC6HlTJXK6ipnILZU1dbXTbQmpLqWn7LGx_Lp06-icuwZHxnQ7uPfx_0e9E34hhJ4ZGjDsxwon9cnf2Baj_qtQ=" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+skinparam linetype polyline
+
+actor client
+node web [
+  <b>Web server</b>
+]
+
+file static [
+  html
+  javascript
+  css
+  image
+]
+
+node tomcat [
+  <b>tomcat</b>
+  ----
+  one jvm
+  one process
+]
+component app1 [
+  webapp/app1
+]
+component app2 [
+  webapp/app2
+]
+component app3 [
+  webapp/app3
+]
+component app4 [
+  webapp/app4
+]
+client -right-> web
+web .right. static
+web --> tomcat
+tomcat --> app1 : domain.com/app1
+tomcat --> app2 : domain.com/app2
+tomcat --> app3 : domain.com/app3
+tomcat --> app4 : domain.com/app4
+@enduml
+```
 
 기본적으로 tomcat은 하나의 프로세스로 실행되며, tomcat내에서 Web Application에 필요한 자원(Datasource, Resource, http)를 관리하며,
 호스트로 부터 할당 받은 Computing 자원(CPU/Memory)는 배포되어 있는 WAR/EAR들에 의해 공유됨
@@ -43,7 +85,55 @@ Micro Service 적용시 Workload에 따른 Computing 자원을 조율하고 Inst
 
 ## Springboot Model
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNpdkL1uAjEQhPt9iimT4kDhTkqDEFGKCOmKdCkiirXZgBOfbdkLJ94-uhMUuJzZb39mt0U563nwVP5cSJx5gHdB9JoEKfrrJIjYasyw3klQoh_nBUVZncU3AScdPAG_fOFis0tKgC2FADfwUWhPIR4Eo5gZX5vNlxgUyRfJ66XZ0L7eMPM5ntWF473nJucGoGmahoA-8sGw52AlP_Xdsn99JuDtc4cPVhn5SsAuHLOUgvcYNEfvJdOebBxSDBIUnNLLvGMUwyktJ10DqwpYTSc_EG1FtPWIrgK6CZjjomk297B0Dz15oxianrZY3L5ND-X50MpY1UZbGx3RVsLhPPh_FrijJg==" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+skinparam linetype polyline
+
+actor client
+
+file static [
+  html
+  javascript
+  css
+  image
+]
+node web [
+  <b>Web server</b>
+]
+
+actor client
+
+node routing [
+  <b>routing</b>
+  ----
+  Loadbalancer(L4/L7)
+  API Gateway
+  Ingress Controller
+]
+component app1 [
+  webapp/app1
+]
+component app2 [
+  webapp/app2
+]
+
+component app3 [
+  webapp/app3
+]
+component app4 [
+  webapp/app4
+]
+client --> routing
+routing --> web
+web .. static
+
+routing --> app1
+routing --> app2
+routing --> app3
+routing --> app4
+
+@enduml
+```
 
 ::: tip Pros.
 - Best Practice 기본 설정 지원으로 일반적인 설정이 필요 없다

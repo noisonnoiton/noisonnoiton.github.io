@@ -122,7 +122,32 @@ Task / Monitoring / Summary Service 정의
 ### Task Service
 Argo Workflow 관리, CD Workflow 수행 및 배포 Pipeline 실행/취소 등
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNpdkMFqwzAMhu8Gv4PIaduhD7BTS8ugsEPGBj2sI6i2k3pxrVRWF8bYuw87bdl2EtKnH_2_5kmQ5XQIWmkVXCsgBOy7vYD17Ix4ihktjBDDIxkMWuU5xi44qNbLCjCBN_ClFQDA62pTQ00sGN4yseOg1fcfzfKpaMzxqnnB1MOz4w9vXFEJpv7MFtwRbIj7NtBYIHJHY_sbL1dXYOwELAruMDmoykZNSTp26Riqy6bdFWNaRRIHOxKhA1BbbsM91J-ypwgPmGRRr2EbtxHGs40mTV4bHDzctJyFg4s4-MYE76LcTvvs5MQR3hPFhl0aKCaXL5Y_wmx2N73HjkNpptTlfm4vOad6HWXf_0Y5tFZzF-3pEH4ABVyT0A==" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+
+left to right direction
+
+Actor Local
+rectangle "IC" as ic {
+    [DWP Portal] as dwp
+}
+rectangle "CQ" as cq {
+    [Task Service] as task
+    [Argo Workflow] as argowf
+    [Argo CD] as argocd
+    database "Argo Postgresql" as argodb
+}
+
+note bottom of task : Python FastAPI \n\n workflow_service_api (from openapi_client) \n\n return json_response
+
+Local ..* dwp
+dwp ..* task
+task ..* argowf
+argowf ..* argodb
+argowf ..* argocd
+
+@enduml
+```
 
 
 #### API List
@@ -155,7 +180,34 @@ Method | HTTP request | Description
 ### Monitoring Service
 SSE Service 를 Monitoring 하는 Service
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNptUU1PwkAQvTfpf5j0pCZi9EQ40SAmJBKrPXBQD8t2Wla2OzA7gMb43023LaLxtJn3lZm3Yy-KZVfbOIoji6WAELCpVgKFYdRiyDVUqoUY7kkrG0cNrlxlEZLZJAHlwWj4jCMAgOfbRQYZsSj72jDFYRNHX788k8fg0dujZ07OCLFxFeTIe6MxeOsW7kQpVwQL4nVp6QBpNgsaxRUdyk6yHvojsR76Fi2UqKXyCElIyMhLxei3Nun9xfJf5dy42cNRVBtnKJwSR44EYUkiVAOV_Z4wguxDVuTgTnlJsxm8uBcHeT6dWINO4KxkqsF71GE-b3lG2bGD6R6d5LRjjU_oN-Q8wg-bC6Oqe6LZIfwFDAYXbcXFYROGbpcRXA_gTe2V12w2cprepN4MQPBdrrCBL30Ij6P-jian77V9j1BT1R-oK-bUHLqPozG6Ylfbb08ExJY=" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+
+left to right direction
+
+Actor Local
+rectangle "IC" as ic {
+    [DWP Portal] as dwp
+}
+rectangle "CQ" as cq {
+    [Monitoring Service] as monitor
+    [Argo Workflow API] as argowf
+    [k8s API] as k8s
+    database "Argo Postgresql" as argodb
+    database "Argo MinIO" as argominio
+}
+
+note bottom of monitor : Python FastAPI \n\n SSEClient (from sseclient) \n\n return EventSourceResponse \n return StreamResponse
+
+Local ..* dwp
+dwp ..* monitor: 1. javascript EventSource \n 2. text/event-stream
+monitor ..* argowf
+argowf ..* argodb
+argowf ..* argominio
+monitor ..* k8s
+
+@enduml
+```
 
 #### API List
 
@@ -198,7 +250,33 @@ Argo Workflow / K8S 의 event 를 listen 하여, app별 status data summary
 - sse client 를 연결하는 python module 로 개발하여 container 로 실행
 - _<u>service 별로 분리할지? 혹은 python multiprocess 활용할지?</u>_
 
-<img src="https://www.plantuml.com/plantuml/svg/~1eNqFkEFPwzAMhe-V8h-snQChnSdOm8aQJjSprIcdGIfQuF20NB6Ou2pC_HeUtB3igLjFeX7-7DcPolnaxqlMZQ4rASFgWx8EjGUsxZKPUnxqXzuEyXo5AR3AlvCpMgCA18ddDjmxaPcWFdOdesFo0e86IEy2aGxINo6vwVe0TaP5AgXy2ZaYzKH_U9nXL-jyJbnLjyt0Q94KsfX1b3_AoWHBNcGO-Fg56mCRr5OuuaauGlqOs3AVjrOQoCrzJDhkQNW4EDxAfpEDediQaR3C3u89FMVq6Sx6gZuKqYn0MtW3vc4oLXtYndFLQS2XuMVwIh-XTJgUeaQE_CE86SCLfN2PeJ4VPeIe4kUD7t_pKjPdCabTuzHx8Y4_vlJucYtYjCGNdcpGZXP0pm3cN2qDtD0=" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
+```plantuml
+@startuml
+
+left to right direction
+
+rectangle "IC" as ic {
+    [DWP Portal] as dwp
+    database "Redis" as redis
+    [Summary Service] as summary
+}
+rectangle "CQ" as cq {
+    [Monitoring Service] as sse
+    [Argo Workflow API] as argowf
+    [k8s API] as k8s
+}
+
+note right of summary : Python Module \n\n SSEClient (from sseclient) \n\n return EventSourceResponse
+note left of sse : Python FastAPI \n\n K8SClient, ArgoClient \n\n return EventSourceResponse
+
+dwp ..* redis
+summary ..* redis
+summary ..* sse
+sse ..* argowf
+sse ..* k8s
+
+@enduml
+```
 
 
 #### Service List
