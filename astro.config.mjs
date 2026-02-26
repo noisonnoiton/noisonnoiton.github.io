@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import { createRemarkPlugin } from './node_modules/astro-plantuml/dist/remark-plugin.js';
+import plantuml from 'astro-plantuml';
 
 export default defineConfig({
   site: 'https://noisonnoiton.github.io',
@@ -110,15 +110,8 @@ export default defineConfig({
           ],
         },
       ],
-      components: {
-        // Starlight의 remark 파이프라인에 PlantUML 포함
-      },
     }),
+    // plantuml은 starlight 뒤에 위치해야 Starlight의 remarkPlugins에 추가됨
+    plantuml(),
   ],
-  markdown: {
-    remarkPlugins: [createRemarkPlugin({
-      serverUrl: 'https://www.plantuml.com/plantuml/png/',
-      timeout: 30000,
-    })],
-  },
 });
