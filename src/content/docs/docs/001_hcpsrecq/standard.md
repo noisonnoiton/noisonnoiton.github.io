@@ -62,43 +62,7 @@ Apps. | hcp-sre-apps | hcp-sre-apps.hcpcq.kubepia.net
 - 별도의 gateway 역할을 하는 서비스를 생성하지 않고 k8s ingress 를 이용해서 endpoint 를 관리한다.
 - cluster 간 gateway 역할도 k8s ingress 를 사용하여 endpoint 를 관리한다.
 
-@startuml
-
-scale 1
-skinparam ParticipantPadding 5
-skinparam BoxPadding 5
-title "Service Endpoint 구성"
-
-node hcp {
-    agent DWP_zuul
-    agent ingress_hcp
-}
-node hcpcq {
-    agent ingress_hcpcq
-
-    rectangle app_sre { 
-        agent service_task
-        agent service_monitoring
-        agent service_summary
-
-        collections pod_task
-        collections pod_monitoring
-        collections pod_summary
-    }
-}
-
-DWP_zuul -r-> ingress_hcp
-ingress_hcp -r-> ingress_hcpcq
-
-ingress_hcpcq -d-> service_task
-ingress_hcpcq -d-> service_monitoring
-ingress_hcpcq -d-> service_summary
-
-service_task -d-> pod_task
-service_monitoring -d-> pod_monitoring
-service_summary -d-> pod_summary
-
-@enduml
+<img src="https://www.plantuml.com/plantuml/svg/~1eNp9kLFOwzAQhvdIfodT9wwMrFWFYI_EwBid7FNq1T679qUCqm48DgsDL4V4CBSiEjelzZb7v7vP-ldZMEnvnapUlTU6ghtV5Y3liAk9NJjEahuRpUFjLHdwW-Z34bmYixVHsHiktLOa4IFNDJYFvj7fv98-FoODgyFY6wh7VQEAYEcscP_UtK9978qZ5S5Rzu1aR1Udpk29Pd0tOL0dFEOUSAty5wgwxjYngj2MybSYx2e2gnlzKfOBrYRkubtE5N57TC9H8fDp4BxpsYEzxGBmgnn6n2LO_EmG8PBbh6qOpUGd6uVpXcXPWTqWdDKA2tTLWR9XgPLFV7CimfL0CE29nF-diNI0OztBhWdFbHrvfgBHSO92" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
 
 Type | name | url
 -- | -- | --
@@ -109,33 +73,7 @@ Apps. | hcp-sre-apps-summary | deployment 만 실행
 
 ## application 배포 구성
 
-@startuml
-
-scale 1
-skinparam ParticipantPadding 5
-skinparam BoxPadding 5
-title "Application Deploy Flow"
-
-DWP_zuul -> ingress_hcp : create app.
-ingress_hcp -> ingress_hcpcq
-ingress_hcpcq -> task
-task -> argowf_create : run workflow
-argowf_create <- git : git clone
-argowf_create -> git : push yaml
-argowf_create -> argocd : create argocd application
-
-DWP_zuul -> ingress_hcp : deploy app.
-ingress_hcp -> ingress_hcpcq
-ingress_hcpcq -> task 
-task -> argowf_deploy : run workflow
-argowf_deploy <- git : git clone
-argowf_deploy -> argowf_deploy : modify yaml
-argowf_deploy -> git : push yaml
-argowf_deploy -> argocd : sync argocd application
-
-argocd -> k8s : deploy
-
-@enduml
+<img src="https://www.plantuml.com/plantuml/svg/~1eNqdkM1qwzAQhO8CvcOSuws9FIopJi2hZ996NIskO8KypOgH1336okQ0VlPn0MvC7gyzzLf3AV2Ik6KEEs9QCXikxI9SW3Q4QYsuSCYt6tAi51IP8LTW38zn6h5kUAJ2r9YqyTBIo-EgrDILvCsz79KPw0fbfcWooGpA6sEJ77sjs1ADcwKDALT2gZK1VDrZqVDZKekB_UhJmmlDN5i573JgDS5qmI0be2VmSkr1pYJBBqjPkymjxW9H1WSHjf4ICyZWN450YHzV4rLjlcT98vyC6d_l4aZ9Ttxon9U77bPjj8DJcNkvJYmre4tVmXdm5RfNNkjla9XA-Ox_-CRlLzSPk_oGMnfsrg==" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
 
 ## Deploy Repository 구성
 - base 폴더는 chart 파일을 관리하고 차트 버전별로 폴더를 구성한다.

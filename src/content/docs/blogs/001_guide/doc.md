@@ -90,32 +90,10 @@ jobs:
 
 - 사용 예시
 ```
-@startuml
-actor User
-interface Client
-interface Server
-database MySQL
-
-User ->> Client : Event
-User <<- Client : HTML Document
-Client ->> Server : Http Request
-Server ->> Client : Http Response
-Server <<- MySQL : Data
-@enduml
+<img src="https://www.plantuml.com/plantuml/svg/~1eNpVjk0OgkAMhfc9RS_ABQghJGLiAhYKHqBCTUjmBzsdEm9vBseo2--977VNUBKN1gBN6gWvgQUWpyx3mhgPZmGnP2Bg2VhgJqUbBcb-OZw7gKRhUddZwBKPWxJ3XlXFl5_GvsPWT9GmPONkvpdTQ3XFCz8iB4VM_6ZzIazeBf400pH9GSyxJSVo2M3RmhfC2krP" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
 ```
 
-@startuml
-actor User
-interface Client
-interface Server
-database MySQL
-
-User ->> Client : Event
-User <<- Client : HTML Document
-Client ->> Server : Http Request
-Server ->> Client : Http Response
-Server <<- MySQL : Data
-@enduml
+<img src="https://www.plantuml.com/plantuml/svg/~1eNpVjk0OgkAMhfc9RS_ABQghJGLiAhYKHqBCTUjmBzsdEm9vBseo2--977VNUBKN1gBN6gWvgQUWpyx3mhgPZmGnP2Bg2VhgJqUbBcb-OZw7gKRhUddZwBKPWxJ3XlXFl5_GvsPWT9GmPONkvpdTQ3XFCz8iB4VM_6ZzIazeBf400pH9GSyxJSVo2M3RmhfC2krP" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
 
 <br/>
 

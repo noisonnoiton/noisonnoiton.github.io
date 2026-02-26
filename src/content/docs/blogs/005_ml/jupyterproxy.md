@@ -34,24 +34,7 @@ Hub 에 login 되어 있는 특정 사용자에게 올바른 URL로 redirection 
 
 - Architecture
 
-@startuml
-skinparam component {
-}
-"Client" as client
-node "EKS" as eks {
-  rectangle "Jupyter Hub" as jhub {
-    (AuthClass) as hubauth
-  }
-  rectangle "Jupyter Notebook" as notebook {
-    (Jupyter Server Proxy) as proxy
-    (WebApp:p8080) as webapp
-  }
-}
-top to bottom direction
-client -> jhub: /hub/proxy/8080
-hubauth -down-> proxy: Redirect to {user-redirect}
-proxy <.down.> webapp #line:blue;line.dashed;text:blue : req / res
-@enduml
+<img src="https://www.plantuml.com/plantuml/svg/~1eNptj8FOwzAQRO_-ilG4wCFJj1WKqlYVEgIJIXrgbDcrEurYxl7TVlX-HdlJb9zGs-O3s5vA0nMctAjH3jjp5YCDHZw1ZBhXMYpip3syXEAGHLIUxraE4ul1n006BlwF4OnA0nxpQvES3YXJ4zmqHPnuosoZ4H4budtpGcJDmnRRycidAMb_EW-WSVl7zBwzP26sW2hP_pc83r09XzLWJTVlPkltnWvccrFc5NmJlHQubxwFWwe2UJbZDmj71KC3RkyXolzn7g3qLqo6U-sEEnNvlK09mXI9LWzwQRMiMa8xkC_97IwiR_BYpR_Veq6BO90bapSOtEqqamXoqF0xnTm7aODpBzU8BbEh08ZB_wFtapLp" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
 
 
 ## Customization

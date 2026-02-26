@@ -457,28 +457,7 @@ JupyterHub의 oauthenticator 는 사용자가 GitHub, Google 및 CILogon과 같�
 
 - Test Architecture
 
-@startuml
-skinparam component {
-}
-"Client" as client
-rectangle "GitHub" as github {
-  (Identity Provider Login) as gitlogin
-}
-node "EKS" as eks {
-  rectangle "Jupyter Hub" as jhub {
-    (GenericOAuthenticator) as hubauth
-  }
-  rectangle "KeyCloak" as keycloak {
-    (KeyCloak Login) as keylogin
-  }
-}
-top to bottom direction
-keycloak <.down.> github #line:blue;line.dashed;text:blue : Auth Token Exchange
-client -> jhub: /hub/login
-hubauth -down-> keylogin: Redirect to KeyCloak Login
-keylogin -down-> gitlogin
-gitlogin -up-> client: Authentication Allowed
-@enduml
+<img src="https://www.plantuml.com/plantuml/svg/~1eNpVkc9OwzAMxu95CqtcxqHbvUPV0DQNGBIIeIG0sdrQNK5ah62a-u4o6R9tNzt2ft9ne9exbNnVRnSVto1sZQ051Q1ZtAxXMYhobzRajkB2kIdQtJiztIVBiI6aX1wWioXm0mVwFQCrV4WWNffw2dKfVtjCOxXaPk59xidiEJYUQnQ4fQcAVl34fYN_c03P2MKs8TsrAKyOaLHV-cez49Kr5ZKpDQqly6TjUgAM97gT9ntDsgqsCvvcJzNvLt5YrbAfrXrSIJgaYIKMmKkGpT1ZkxUL6Wmt6GzX6byLB6MtJplxuPXRWsmuRLVlvHB4hQS8e_ihCi0cLnkpbYFiXDPEaZg3gU3pss1oZBoNYi8Up4vDBL5wNOQd3o8i5qbl13KCOYDYNXE63Xc0Na1Uk4VnY-iMSuzQKlebf5H0wcE=" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
 
 
 - 작업 순서

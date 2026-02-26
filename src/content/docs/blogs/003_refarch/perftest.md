@@ -61,48 +61,7 @@ Naver에서 개발하였으며, 스크립트 생성 / 테스트 실행 / 모니�
 
 - Test Architecture  
 
-@startuml
-"Tester" as client
-node "EKS" as eks {
-  node "NS: session-dev" as dev {
-    rectangle "Database" as db {
-      database "mariadb"
-      database "redis-cache" as cache
-      database "redis-aof" as aof
-      database "redis-always" as always
-    }
-    rectangle "Spring API" as api {
-      [dept-mariadb] as dept1
-      [dept-redis] as dept
-      [dept-redis-aof] as deptaof
-      [dept-redis-always] as deptalways
-    }
-    rectangle "nGrinder" as ngrinder {
-      [contoller] as control
-      [agent1] as agent1
-      [agent2] as agent2
-    }
-  }
-  node "NS: Prometheus" as prom {
-
-  }
-  node "NS: Grafana" as graf {
-
-  }
-}
-client <-right-> control
-control -down-> agent1
-control -down-> agent2
-agent1 -> api : GET/POST
-agent2 -> api : GET/POST
-dept1 --> mariadb
-dept -> cache
-deptaof -> aof
-deptalways -> always
-dev -up- prom
-prom -left-> graf
-client <- graf
-@enduml
+<img src="https://www.plantuml.com/plantuml/svg/~1eNp9ksFqwzAQRO_6isV3UZJjKCGFhlAKbcC5lR421toRlSUjyQkl5N-LV46Nm7QnSzPP1qxHqxDRx7Y2IttRiOQzwACF0WSjsE4RZOvXnEX6CnAWAEl9yxcQKATtrFR0ZELRkQkAT0VEWxmC7Bkj7jFQIvY9AKB6HbIavUa1z24MT0oHWWBxSG_z6g8KXckMuvIvwpzwOySIl8xdfufNG69tBU_bl4Q2eoj8oaiJso_7mSZu4mzi8lmDd2t1QQd7DDshON0I_RPWbry2qm_NVmkz5i2cjc4Y8vyxbueduZpYkY0zdtJyYsxHYz6cfZnUv_WupnigNv3UxrsazuIG23gs0SIzlcfyylxEumbwKL2uDlEuh4T9E6RyJyuX13x35blILnRCo2EBm_XuYfue75Ixv2NwbSDlEvoyWenAdMX6bvhNV4qxBVZSH91ll20jeW7Bw0tDZTdGN-U4XNquyKq2Nj_GThDM" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
 
 - TPS 3000 이상의 성능이 나오는 적정 환경에서 수행
 - nGrinder Agent 2ea

@@ -15,55 +15,7 @@ categories:
 
 ### Logical Component
 
-@startuml
-
-skinparam ranksep 10
-
-' Kubernetes
-!define KubernetesPuml https://raw.githubusercontent.com/dcasati/kubernetes-PlantUML/master/dist
-
-
-!includeurl KubernetesPuml/kubernetes_Common.puml
-!includeurl KubernetesPuml/kubernetes_Context.puml
-!includeurl KubernetesPuml/kubernetes_Simplified.puml
-
-!includeurl KubernetesPuml/OSS/KubernetesSvc.puml
-!includeurl KubernetesPuml/OSS/KubernetesIng.puml
-!includeurl KubernetesPuml/OSS/KubernetesPod.puml
-!includeurl KubernetesPuml/OSS/KubernetesDeploy.puml
-!includeurl KubernetesPuml/OSS/KubernetesPvc.puml
-!includeurl KubernetesPuml/OSS/KubernetesPv.puml
-!includeurl KubernetesPuml/OSS/KubernetesCcm.puml
-
-actor "User" as client
-left to right direction
-
-' Kubernetes Components
-Cluster_Boundary(cluster, "Kubernetes Cluster") {    
-        KubernetesIng(ingress, "ingress","")
-        KubernetesSvc(svc, "service", "")
-        KubernetesPod(pod1, "pod", "")
-        KubernetesPod(pod2, "pod", "")
-        KubernetesPod(pod3, "pod", "")
-
-        KubernetesDeploy(deploy,"deployment","")
-        KubernetesPvc(pvc, "pvc", "")
-        KubernetesPv(pv, "pv","")
-        KubernetesCcm(cm, "configmap","")
-}
-
-client --> ingress : www.domain.com/api
-ingress --> svc
-svc --> pod1
-svc --> pod2
-svc --> pod3
-pod1 <.. deploy
-pod2 <.. deploy
-pod3 <.. deploy
-deploy --> pvc
-pvc <.. pv
-deploy --> cm
-@enduml
+<img src="https://www.plantuml.com/plantuml/svg/~1eNqVlE1v2zAMhu_6FawucwHHXpNbMQzFssuwDTMQ9FyoFOMI0RckWVkx7L8PtrPVKZK19oUi-T6mSQq-i0mE1BnNWNwr60UQBoKw-0gebt4z9g6-do8ULCWK7ErSVlmahJrOaNil5ONtXQdxqFqVdt1jFymgs4lsqtCZWqKIIql6_w9cNFrYdP_9W21ETBRqqWJijF0pi7qT1AX9oswEflg7Y5ytfP_hbyVsop9pDrJRxmu1VSRH6n_Yj82mfg5tMr5a6JT4YtuZROPkTOIzee2e5paZ3UqTZwJrNMcBC0wuAL-PFDiICKgV2cQ0bRMkB0G1uwRSBcKknD29nLB2xjtLNkW21l1_px4-uc5KEZ4KHAMl8CkwBvk1_AIAYHB8TrZSKNsGirEEfjzxkvPrM-JNxiJmLIFHClkh8RLOKxsnC-_kTQncO_mabPk22epEdkY3rr-Qgyn5aA3ZdKmhJmPhh4Z8xsvlc-HzoLn0njWaAk0JHJ3dqtYIPyp_MzYuGBaLj3CcLtzC4XCopDNC2eHfIbxif5O9MGZkMeNw7qc4dZZTZ8X6NHyoKhib7f3lC3819Ucz8hmZzzhkfZ5m0LA7srIz-g9RcMPc" alt="PlantUML Diagram" style="max-width:100%;background:white;padding:1rem;" />
 
 ## K8S(kubernetes) Object
 
