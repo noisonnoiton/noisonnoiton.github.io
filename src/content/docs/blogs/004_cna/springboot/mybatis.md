@@ -60,8 +60,7 @@ Lombok 라이브러리를 이용하여 간편하게 작성
   - DB column은 모통 snake case임으로 일반적인 자바 convetion인 camel case로 자동 변환
   - 주) sql 파라미터의 경우 DTO의 property 이름을 사용해야함
 
-::: tip
-DTO 작성 대신에 HashMap<String,Object> 유형을 사용하여 처리도 가능함.
+:::tip[DTO 작성 대신에 HashMap<String,Object> 유형을 사용하여 처리도 가능함.]
 :::
 
 #### Lombok
@@ -85,8 +84,7 @@ public class EmployeeDTO {
 Mapper Interface에 Annotation을 이용하여 SQL을 작성 하는 방법  
 @Select, @Insert, @Update, @Delete
 
-::: tip
-단순한 테이블단위의 쿼리를 적용할 때 용이함
+:::tip[단순한 테이블단위의 쿼리를 적용할 때 용이함]
 :::
 
 ```java
@@ -100,8 +98,7 @@ public interface SamEmployeeMapper {
 [Annotation](https://mybatis.org/mybatis-3/java-api.html)
 
 ### Mapper XML을 이용한 방법
-::: tip
-SQL의 내용이 복잡할 경우 가독성이 떨어져 별도 파일로 관리할 경우 유리함
+:::tip[SQL의 내용이 복잡할 경우 가독성이 떨어져 별도 파일로 관리할 경우 유리함]
 :::
 
 1. Mapper XML 파일 위치 등록: application.properties 파일에 위치 등록  

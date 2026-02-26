@@ -68,14 +68,14 @@ tomcat --> app4 : domain.com/app4
 Application 별로 Computing 자원을 제어하기 위해서는 독립적인 Tomcat을 실행 하여야 함
 Micro Service 적용시 Workload에 따른 Computing 자원을 조율하고 Instance Replicas를 관리하기에는 우
 
-::: tip Pros.
+:::tip[Pros.]
 - 일관된 Resource 설정으로 WAS Engineer에 의해 통합관리에 용이하다
 - JEE Specification 기능을 사용할 수 있다
 - Application을 위한 Was Tunning이 자유롭다(JVM, Datasource, TCP Pooling 등)
 - Application Profile이 용이하다
 :::
 
-::: danger Cons.
+:::danger[Cons.]
 - Infra/Middleware Engineering을 위한 지식이 필요(조직과 협업)
 - Build Once, Deploy Many에 추가 작업이 필요하다
 - Computing 자원의 상세 제어가 어렵다
@@ -135,7 +135,7 @@ routing --> app4
 @enduml
 ```
 
-::: tip Pros.
+:::tip[Pros.]
 - Best Practice 기본 설정 지원으로 일반적인 설정이 필요 없다
 - WAS가 Embedded되어 있어 WAS 없이 Standalone으로 실행 가능하다(Deploy Many)
 - Web/Was를 위한 Descriptor 설정이 필요 없다: WAR, EAR
@@ -143,7 +143,7 @@ routing --> app4
 - 독립적으로 Computing 자원을 설정할 수 있다
 :::
 
-::: danger Cons.
+:::danger[Cons.]
 - Datasource를 여러개 사용하기 불편하다
 - JSP를 사용하기 불편하다(WAR 배포로 재설정해야 함)
 - 지원 WAS 제약 : Tomcat, Jetty, Undertow

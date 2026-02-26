@@ -9,7 +9,7 @@ Cloud Native Application을 개발하기 위한 Resftul API 개발 방법을 설
 본 문서에서는 플랫폼(springboot, nodejs, python)을 이용한 Restful API 개발과
 Kubernetes에서 실행하기 위한 방법 등을 포함하고 있음.
 
-::: tip Definition
+:::tip[Definition]
 클라우드 네이티브 기술을 통해 조직은 퍼블릭, 프라이빗 및 하이브리드 클라우드와 같은 최신 동적 환경에서 확장 가능한 애플리케이션을 빌드하고 실행할 수 있습니다.  컨테이너, 서비스 메시, 마이크로 서비스, 변경 불가능한 인프라 및 선언적 API는 이 접근 방식을 예로 들 수 있습니다.
 
 이러한 기술을 사용하면 복원력 있고 관리 가능하며 관찰 가능한 느슨하게 결합된 시스템을 사용할 수 있습니다. 강력한 자동화와 결합하면 엔지니어가 최소한의 수고로 자주 예측 가능하게 큰 영향을 미치는 변경을 할 수 있습니다.
@@ -20,7 +20,7 @@ Kubernetes에서 실행하기 위한 방법 등을 포함하고 있음.
 
 ## Twelve-Factor for Application
 
-::: warning Info
+:::caution[Info]
 클라우드 기반 애플리케이션을 생성하기 위해 널리 허용되는 방법은 12단계 애플리케이션입니다. 개발자가 최신 클라우드 환경에 최적화된 애플리케이션을 구성하기 위해 따르는 일련의 원칙과 사례에 대해 설명합니다. 환경 간 이식성 및 선언적 자동화에 특히 주의해야 합니다.
 
 모든 웹 기반 애플리케이션에 적용할 수 있지만 많은 전문가들은 클라우드 네이티브 앱을 빌드하기 위한 견고한 기초로 Twelve-Factor 고려합니다. 이러한 원칙을 기반으로 하는 시스템은 신속하게 배포 및 확장할 수 있으며, 시장 변화에 신속하게 대응할 수 있는 기능을 추가할 수 있습니다.
@@ -185,7 +185,7 @@ spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 * admin 코드는 애플리케이션 코드와 함께 배포되어야 한다
 
 
-::: tip 참조
+:::tip[참조]
 - [https://docs.microsoft.com/ko-kr/dotnet/architecture/cloud-native/definition](https://docs.microsoft.com/ko-kr/dotnet/architecture/cloud-native/definition)
 - [https://freedeveloper.tistory.com/434](https://freedeveloper.tistory.com/434)
 - [https://12factor.net/](https://12factor.net/)

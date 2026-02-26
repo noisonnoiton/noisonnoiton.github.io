@@ -69,8 +69,7 @@ categories:
    ```
 
 ## Request Input 처리
-::: tip
-HTTP의 request에서 동적인 값 전달 방식은 Header, Coookie, QueryString, Form, Body를 통해 전달되며, Servlet의 Session 값을 이용하여 메모리 상에 임시로 데이터를 저장하고 활용 할 수 있음.  
+:::tip[HTTP의 request에서 동적인 값 전달 방식은 Header, Coookie, QueryString, Form, Body를 통해 전달되며, Servlet의 Session 값을 이용하여 메모리 상에 임시로 데이터를 저장하고 활용 할 수 있음.]
 Cloud Native Application에서 Session을 활용하는 경우는 여러 불 특정한 여러 instance에서 공유해야 함으로 추가적인 미들웨어(Redis, DB 등)를 활용해야 한다.
 :::
 1. http header 처리  
@@ -171,8 +170,7 @@ Cloud Native Application에서 Session을 활용하는 경우는 여러 불 특�
 
 ## Handling Response.
 
-::: tip
-rest api 요청을 처리하고 응답으로 단순 문자열, json 형태의 데이터를 응답할 수 있으며,  
+:::tip[rest api 요청을 처리하고 응답으로 단순 문자열, json 형태의 데이터를 응답할 수 있으며,]
 응답 http에 필요한 header, http status, cookie 등을 처리 할 수 있음
 본가이드에서는 restful api를 위한 내용만 설명함
 :::

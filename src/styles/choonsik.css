@@ -87,7 +87,9 @@ a:hover {
 }
 
 .sl-markdown-content th {
-  background: var(--sl-color-accent-low);
+  background: var(--choonsik-yellow);
+  color: #2c2418;
+  font-weight: 600;
 }
 
 /* 이미지 */

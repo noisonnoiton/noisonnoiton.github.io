@@ -70,8 +70,7 @@ deploy --> cm
 ## K8S(kubernetes) Object
 
 각각의 Object는 yaml 형식으로 작성하여 생성/수정 할 수 있습니다.
-::: tip
-각각의 Object는 namespace 단위 자원과 cluster 단위로 구분됩니다.
+:::tip[각각의 Object는 namespace 단위 자원과 cluster 단위로 구분됩니다.]
 즉, namespace Object의 name은 namespace에서 유일해야 하며, cluster Object는 cluster 내에서 유일해야 합니다.
 :::
 
@@ -209,7 +208,7 @@ spec:
 Configmap은 키-값 쌍으로 기밀이 아닌 데이터를 저장하는 데 사용하는 Object다. PoD는 볼륨에서 환경 변수, 커맨드-라인 인수 또는 구성 파일로 Configmap을 사용할 수 있다.
 Configmap을 사용하면 컨테이너 이미지에서 환경별 구성을 분리하여, 애플리케이션을 쉽게 이식할 수 있다.
 
-::: danger 주의
+:::danger[주의]
 Configmap은 보안 또는 암호화를 제공하지 않는다. 저장하려는 데이터가 기밀인 경우, Configmap 대신 시크릿(Secret) 또는 추가(써드파티) 도구를 사용하여 데이터를 비공개로 유지하자. secret 또한, 단순 Base64 인코딩임
 :::
 
@@ -238,8 +237,7 @@ data:
 Configmap 사용예 : 환경변수, 디렉토리 파일로 마운트(기존 존재하던 경로는 사라짐)
 기존 경로에 특정 파일만 mount 하기 위해서는 subpath로 파일명을 지정한다.
 
-::: tip
-일반적으로 configmap이 변경되면 pod내부에 반영되나, subpath를 상용하는 경우는 pod 재시작이 필요하다
+:::tip[일반적으로 configmap이 변경되면 pod내부에 반영되나, subpath를 상용하는 경우는 pod 재시작이 필요하다]
 :::
 
 ```yaml

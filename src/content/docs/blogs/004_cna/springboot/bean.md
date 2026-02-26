@@ -7,12 +7,12 @@ categories:
 - Cloud Native App.
 ---
 
-::: warning Definition
+:::caution[Definition]
 Spring Framework의 Container에 의해 등록/생성/조회/관계 설정되는 객체로 일반적인 Java Object임.
 :::
 
 ## Inversion Of Control / Dependency Injection
-::: danger Definition
+:::danger[Definition]
 의존관계 처리 방식으로서, 해석하자면 "역전제어"와 "의존성 주입"
 의역하자면 의존성을 명시적으로 즉, User user = new User(); 코드로 관계 설정을 하는 것이 아니라,
 Spring Container에 의해 처리하도록 xml 또는 annotation으로 선언하는 것을 말합니다.
@@ -57,14 +57,12 @@ Bean 사용
   }
   ```
 ## Instance/Memory 유형
-::: tip
-bean은 기본적으로 Spring Container에 1개의 인스턴스만 존재함. @Scope를 통해
+:::tip[bean은 기본적으로 Spring Container에 1개의 인스턴스만 존재함. @Scope를 통해]
 다양한 방식을 지정할 수 있음
 Bean 선언 뒤에 @Scope("..")로 지정할 수 있음
 :::
 
-::: warning 
-기본적으로 Singleton구조로 객체의 데이터는 request별로 공유되어 조심해야함  
+:::caution[기본적으로 Singleton구조로 객체의 데이터는 request별로 공유되어 조심해야함]
 특히, 사용자 정보 등을 멤버 변수에 보관하게 되면 request 별로 정보가 섞여서 처리될 수 있음
 :::
 
@@ -74,8 +72,7 @@ Bean 선언 뒤에 @Scope("..")로 지정할 수 있음
 4. @Scope("session"):HTTP 세션별로 인스턴스화되며 세션이 끝나며 소멸 (spring mvc webapplication 용도)
 5. @Scope("application"): webapp/springboot에서는 singleton과 동일한 기능으로 동작
 
-::: tip
-stateless한 restful api에서는 singleton 타입이 유효함.
+:::tip[stateless한 restful api에서는 singleton 타입이 유효함.]
 :::
 
 ## Lifecycle
@@ -105,7 +102,7 @@ public class SoccerBall implements Ball {
 ```
 
 ## 선언 및 사용법
-::: tip Usage
+:::tip[Usage]
 Bean은 기본적으로 Bean 생성자 함수 또는 클래스에 Annotation을 지정하여 Bean을 선언함
 
 - @Bean : Method level annotation, bean factory 또는 생성 함수에 지정하여 선언

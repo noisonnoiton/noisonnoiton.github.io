@@ -7,7 +7,7 @@ categories:
 - Cloud Native App.
 ---
 
-::: danger 정의
+:::danger[정의]
 컨테이너는 소프트웨어 서비스를 실행하는 데 필요한 특정 버전의 프로그래밍 언어 런타임 및 라이브러리와 같은 종속 항목과 애플리케이션 코드를 함께 포함하는 경량 패키지입니다.
 :::
 
@@ -213,7 +213,7 @@ CMD { Shell command extending to ENTRYPOINT }
    - --follow, -f: 연속해서 로그 보기
    - --tail, -n : 마지막 로그 줄 숫자
 
-::: tip 참조
+:::tip[참조]
 
 - [https://cloud.google.com/containers/?hl=ko](https://cloud.google.com/containers/?hl=ko)
 - [https://cloud.google.com/learn/what-are-containers?hl=ko](https://cloud.google.com/learn/what-are-containers?hl=ko)

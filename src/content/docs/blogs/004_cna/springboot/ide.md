@@ -36,8 +36,7 @@ categories:
 - [Spring Initializr Java Support](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-spring-initializr)
 - [Spring Boot Dashboard](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-spring-boot-dashboard)
 
-::: tip
-export extension list
+:::tip[export extension list]
 ``` sh
 code --list-extensions > extension.txt
 ```

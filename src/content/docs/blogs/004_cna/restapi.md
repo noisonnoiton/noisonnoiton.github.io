@@ -7,7 +7,7 @@ categories:
 - Cloud Native App.
 ---
 
-::: tip Definition
+:::tip[Definition]
 REST(*RE*presentational *S*tate *T*ransfer)  
 The key abstraction of information in REST is a resource.
 
@@ -16,7 +16,7 @@ Set of definitions and protocols for building and
 integrating application software.
 :::
 
-::: warning tip
+:::caution[tip]
 자원의 정보를 주고 받기 위한 API
 :::
 ref) https://restfulapi.net/
@@ -41,7 +41,7 @@ ref) https://restfulapi.net/
 
 ## Resource Methods
 
-::: tip 설명
+:::tip[설명]
 꼭 http GET/POST/PUT/DELETE을 써야 하는 것은 아니다.  
 필요에 따라 정의하면 된다.  
 그러나, 일반적으로 http methods를 많이 활용한다.
@@ -160,6 +160,6 @@ Content-Type: application/json
 }
  ```
 
-::: tip 참조
+:::tip[참조]
 - [https://blog.restcase.com/4-maturity-levels-of-rest-api-design/](https://blog.restcase.com/4-maturity-levels-of-rest-api-design/)
 :::
