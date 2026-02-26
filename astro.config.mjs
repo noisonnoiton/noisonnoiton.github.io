@@ -31,7 +31,6 @@ export default defineConfig({
         },
         {
           label: 'Spring Boot',
-          collapsed: true,
           autogenerate: { directory: 'blogs/004_cna/springboot' },
         },
         {
