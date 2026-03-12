@@ -21,34 +21,49 @@ description: n8n을 워크플로우 엔진으로 활용하되, 사용자가 n8n�
 
 ### 전체 구조
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Builder UI (Next.js 16)                     │
-│  Agent List │ Agent Form │ Tool Selector │ Execution Panel      │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │ REST API (/api/v1)
-                           ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     Backend API (NestJS)                         │
-│                                                                 │
-│  ┌─ Interface ────────────────────────────────────────────┐     │
-│  │ AgentController  ToolController  ExecutionController   │     │
-│  └────────────────────────────────────────────────────────┘     │
-│  ┌─ Domain ───────────────────────────────────────────────┐     │
-│  │ AgentService     ToolService     ExecutionService      │     │
-│  │ (IAgentRepo)     (IToolRepo)     (IExecutionRepo)      │     │
-│  └────────────────────────────────────────────────────────┘     │
-│  ┌─ Infrastructure ──────────────────────────────────────┐      │
-│  │ TypeORM Adapters    N8nIntegrationService              │      │
-│  └────────────────────────────────────────────────────────┘     │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │
-                           ▼
-┌──────────────────────────┬──────────────────────────────────────┐
-│  PostgreSQL 16           │  n8n 1.94.1                          │
-│  (Agent, Tool,           │  (AI Agent Node + Webhook)           │
-│   Execution 저장)        │  → Gemini 2.5 Flash                  │
-└──────────────────────────┴──────────────────────────────────────┘
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 13
+skinparam rectangle {
+  RoundCorner 15
+}
+
+rectangle "**Builder UI** (Next.js 16)" as UI #E8F5E9 {
+  card "Agent List" as al
+  card "Agent Form" as af
+  card "Tool Selector" as ts
+  card "Execution Panel" as ep
+}
+
+rectangle "**Backend API** (NestJS)" as API #FFF3E0 {
+  package "Interface" as iface {
+    card "AgentController" as ac
+    card "ToolController" as tc
+    card "ExecutionController" as ec
+  }
+  package "Domain" as domain {
+    card "AgentService\n(IAgentRepo)" as as2
+    card "ToolService\n(IToolRepo)" as ts2
+    card "ExecutionService\n(IExecutionRepo)" as es2
+  }
+  package "Infrastructure" as infra {
+    card "TypeORM Adapters" as ta
+    card "N8nIntegrationService" as n8ns
+  }
+}
+
+database "**PostgreSQL 16**\nAgent, Tool,\nExecution 저장" as PG #E3F2FD
+
+rectangle "**n8n 1.94.1**\nAI Agent Node + Webhook\n→ Gemini 2.5 Flash" as N8N #FFF9C4
+
+UI -down-> API : REST API (/api/v1)
+iface -down-> domain
+domain -down-> infra
+infra -down-> PG
+infra -down-> N8N
+
+@enduml
 ```
 
 ### 왜 n8n인가?
@@ -70,12 +85,22 @@ n8n을 선택한 핵심 이유는 **REST API로 Workflow를 프로그래밍 방�
 
 Domain-Driven Design의 Layered Architecture 패턴을 적용했다:
 
-```
-Interface Layer (Controllers)
-    ↓ DTO
-Domain Layer (Services + Port Interfaces)
-    ↓ Port
-Infrastructure Layer (Adapters: TypeORM, n8n Client)
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 13
+skinparam rectangle {
+  RoundCorner 10
+}
+
+rectangle "**Interface Layer**\nControllers" as IL #E8F5E9
+rectangle "**Domain Layer**\nServices + Port Interfaces" as DL #FFF3E0
+rectangle "**Infrastructure Layer**\nAdapters: TypeORM, n8n Client" as InfL #E3F2FD
+
+IL -down-> DL : DTO
+DL -down-> InfL : Port
+
+@enduml
 ```
 
 ### Port 인터페이스 (Domain Layer)
@@ -223,10 +248,24 @@ Agent는 3가지 요소의 조합으로 정의된다:
 
 Agent를 배포하면, `buildAgentWorkflow()` 함수가 Agent 설정을 n8n Workflow JSON으로 변환한다:
 
-```
-[Webhook Trigger] → [AI Agent Node] → [Respond to Webhook]
-                         ↓
-                    [Chat Model Node (Gemini/Anthropic)]
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 13
+skinparam rectangle {
+  RoundCorner 10
+}
+
+rectangle "**Webhook**\nTrigger (POST)" as WH #E8F5E9
+rectangle "**AI Agent**\nNode" as AI #FFF3E0
+rectangle "**Chat Model**\nGemini / Anthropic" as CM #FFF9C4
+rectangle "**Respond to**\n**Webhook**" as RW #E3F2FD
+
+WH -right-> AI
+AI -right-> RW
+AI -down-> CM : sub-node
+
+@enduml
 ```
 
 실제 구현에서 LLM Provider에 따라 Chat Model 노드를 동적으로 생성한다:
@@ -308,6 +347,27 @@ async deployAgent(input: DeployAgentInput): Promise<DeployResult> {
 ### 실행 파이프라인
 
 Agent 실행은 6단계 파이프라인으로 구성된다. `ExecutionService`가 전체 흐름을 오케스트레이션한다:
+
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 12
+skinparam activity {
+  RoundCorner 10
+}
+
+|ExecutionService|
+start
+:1. **Validate**\nAgent 존재 + active 확인;
+:2. **Create Record**\nexecution (status: pending);
+:3. **Render Prompt**\n{{variable}} 치환;
+:4. **Deploy Workflow**\nn8n Workflow 생성/활성화 (idempotent);
+:5. **Execute**\nWebhook 호출 → n8n → LLM;
+:6. **Save Result**\nstatus: completed, durationMs;
+stop
+
+@enduml
+```
 
 ```typescript
 // domain/execution/execution.service.ts
@@ -420,16 +480,30 @@ n8n 내부적으로 Google AI (Gemini) API 키를 `googlePalmApi` credential typ
 
 실제 동작하는 파이프라인을 E2E로 검증했다:
 
-```
-사용자 입력: "안녕하세요, 반품 절차가 궁금합니다"
-    ↓
-Next.js UI → NestJS API → n8n Webhook
-    ↓
-n8n AI Agent Node → Gemini 2.5 Flash
-    ↓
-응답: "안녕하세요! 반품 절차를 안내해 드리겠습니다..."
-    ↓
-결과 저장: Execution + Step Logs → PostgreSQL
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 12
+
+actor User
+participant "Next.js UI" as UI
+participant "NestJS API" as API
+participant "n8n\nWebhook" as N8N
+participant "Gemini\n2.5 Flash" as LLM
+database "PostgreSQL" as DB
+
+User -> UI : "반품 절차가 궁금합니다"
+UI -> API : POST /api/v1/agents/{id}/executions
+API -> API : Validate + Render Prompt
+API -> N8N : POST /webhook/{wfId}/webhook/{path}
+N8N -> LLM : AI Agent Node 실행
+LLM --> N8N : 응답 생성
+N8N --> API : Webhook 응답
+API -> DB : Execution + Step Logs 저장
+API --> UI : { output, durationMs }
+UI --> User : "반품 절차를 안내해 드리겠습니다..."
+
+@enduml
 ```
 
 - **응답 시간**: 약 3~5초

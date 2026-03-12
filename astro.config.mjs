@@ -98,6 +98,14 @@ export default defineConfig({
           ],
         },
         {
+          label: 'AI Agent Builder',
+          items: [
+            { label: 'Overview', slug: 'blogs/008_ai_agent' },
+            { label: '1편: n8n-poc 설계와 구현', slug: 'blogs/008_ai_agent/n8n-poc' },
+            { label: '2편: Backstage 통합', slug: 'blogs/008_ai_agent/backstage' },
+          ],
+        },
+        {
           label: 'Docs - HCP SRE CQ',
           collapsed: true,
           items: [

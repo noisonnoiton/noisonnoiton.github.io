@@ -34,29 +34,37 @@ description: n8n-poc AI Agent Builder를 Backstage 내부 개발자 포털에 �
 
 ### 아키텍처
 
-```
-┌─ Backstage App (:3000 / :7007) ──────────────────────┐
-│                                                       │
-│  Sidebar → AI Agents 메뉴                             │
-│                                                       │
-│  plugin-ai-agent (Frontend)                           │
-│  ├─ AgentListPage    — Agent 목록 + 상태              │
-│  ├─ AgentDetailPage  — 상세 정보, Prompt, Config      │
-│  └─ ExecutionPanel   — 실행 & 결과 표시               │
-│                                                       │
-│  plugin-ai-agent-backend (Backend)                    │
-│  └─ Proxy Router → n8n-poc API 전달                   │
-│                                                       │
-└───────────────────┬───────────────────────────────────┘
-                    │ HTTP Proxy
-                    ▼
-┌─ n8n-poc API (:3001) ─────────────────────────────────┐
-│  NestJS — 기존 API 그대로 사용                         │
-└───────────────────┬───────────────────────────────────┘
-                    ▼
-┌─ n8n (:5678) + PostgreSQL (:5432) ────────────────────┐
-│  Workflow Engine + 데이터 저장소                       │
-└───────────────────────────────────────────────────────┘
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 13
+skinparam rectangle {
+  RoundCorner 15
+}
+
+rectangle "**Backstage App** (:3000 / :7007)" as BS #E8F5E9 {
+  card "Sidebar → AI Agents 메뉴" as menu
+
+  package "plugin-ai-agent (Frontend)" as FE {
+    card "AgentListPage" as alp
+    card "AgentDetailPage" as adp
+    card "ExecutionPanel" as exp
+  }
+
+  package "plugin-ai-agent-backend" as BE {
+    card "Proxy Router" as pr
+  }
+}
+
+rectangle "**n8n-poc API** (:3001)\nNestJS — 기존 API 그대로 사용" as API #FFF3E0
+
+rectangle "**n8n** (:5678) + **PostgreSQL** (:5432)\nWorkflow Engine + 데이터 저장소" as INFRA #E3F2FD
+
+FE -down-> BE
+BE -down-> API : HTTP Proxy
+API -down-> INFRA
+
+@enduml
 ```
 
 ### 왜 프록시 패턴인가?
@@ -419,18 +427,41 @@ Backstage는 Material UI v4를 사용한다. MUI v5의 `gap` prop 대신 `style=
 
 Backstage를 통한 전체 파이프라인 검증:
 
-```
-[Backstage UI] → Guest 로그인
-    ↓
-사이드바 "AI Agents" 클릭 → Agent 목록 확인
-    ↓
-"고객 응대 Agent" 클릭 → 상세 (Prompt, Model Config)
-    ↓
-실행 패널에서 메시지 전송: "안녕하세요, 반품 절차가 궁금합니다"
-    ↓
-Backstage Backend → n8n-poc API → n8n → Gemini 2.5 Flash
-    ↓
-응답: "안녕하세요! 반품 절차를 안내해 드리겠습니다..."
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 12
+
+actor User
+participant "Backstage UI\n(:3000)" as BS
+participant "Backstage Backend\n(:7007)" as BE
+participant "n8n-poc API\n(:3001)" as API
+participant "n8n\n(:5678)" as N8N
+participant "Gemini\n2.5 Flash" as LLM
+
+User -> BS : Guest 로그인
+User -> BS : "AI Agents" 클릭
+BS -> BE : GET /api/ai-agent/agents
+BE -> API : GET /api/v1/agents
+API --> BE : { data: [...], total }
+BE --> BS : [...] (unwrapped)
+
+User -> BS : "고객 응대 Agent" 클릭
+BS -> BE : GET /api/ai-agent/agents/{id}
+BE -> API : GET /api/v1/agents/{id}
+API --> BS : Agent 상세 (Prompt, Config)
+
+User -> BS : "반품 절차가 궁금합니다"
+BS -> BE : POST /api/ai-agent/agents/{id}/execute
+BE -> API : POST /api/v1/agents/{id}/executions
+API -> N8N : POST /webhook/{wfId}/webhook/{path}
+N8N -> LLM : AI Agent Node
+LLM --> N8N : 응답 생성
+N8N --> API : Webhook 응답
+API --> BS : { output, executionTime }
+BS --> User : "반품 절차를 안내해 드리겠습니다..."
+
+@enduml
 ```
 
 | 검증 항목 | 결과 | 비고 |
