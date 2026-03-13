@@ -18,6 +18,49 @@ export default defineConfig({
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/noisonnoiton' },
       ],
+      head: [
+        // Google Analytics (GA4) — TODO: GA_MEASUREMENT_ID 교체
+        // {
+        //   tag: 'script',
+        //   attrs: { src: 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX', async: true },
+        // },
+        // {
+        //   tag: 'script',
+        //   content: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');`,
+        // },
+        // Google Search Console 소유권 확인 — TODO: content 값 교체
+        // {
+        //   tag: 'meta',
+        //   attrs: { name: 'google-site-verification', content: 'YOUR_VERIFICATION_CODE' },
+        // },
+        // Open Graph 기본 메타
+        {
+          tag: 'meta',
+          attrs: { property: 'og:type', content: 'website' },
+        },
+        {
+          tag: 'meta',
+          attrs: { property: 'og:site_name', content: 'noisonnoiton' },
+        },
+        {
+          tag: 'meta',
+          attrs: { property: 'og:locale', content: 'ko_KR' },
+        },
+        // Twitter Card
+        {
+          tag: 'meta',
+          attrs: { name: 'twitter:card', content: 'summary_large_image' },
+        },
+        // 추가 SEO
+        {
+          tag: 'meta',
+          attrs: { name: 'author', content: 'noisonnoiton' },
+        },
+        {
+          tag: 'link',
+          attrs: { rel: 'canonical', href: 'https://noisonnoiton.github.io' },
+        },
+      ],
       sidebar: [
         {
           label: 'AI Agent Builder',
