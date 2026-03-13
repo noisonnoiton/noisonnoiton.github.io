@@ -5,9 +5,20 @@ categories:
 - Cloud Native App.
 ---
 
-Cloud Native Application을 개발하기 위한 Resftul API 개발 방법을 설명함.
-본 문서에서는 플랫폼(springboot, nodejs, python)을 이용한 Restful API 개발과
-Kubernetes에서 실행하기 위한 방법 등을 포함하고 있음.
+Cloud Native Application을 개발하기 위한 Resftul API 개발 방법을 설명함.  
+본 문서에서는 플랫폼(springboot, nodejs, python)을 이용한 Restful API 개발과 Kubernetes에서 실행하기 위한 방법 등을 포함하고 있음.
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+## 📚 Contents
+
+<CardGrid>
+  <LinkCard title="Container" href="/blogs/004_cna/container/" description="컨테이너 기술 개요 및 Docker 활용" />
+  <LinkCard title="Kubernetes" href="/blogs/004_cna/k8s/" description="Kubernetes 핵심 개념 및 운영" />
+  <LinkCard title="REST API" href="/blogs/004_cna/restapi/" description="RESTful API 설계 가이드" />
+  <LinkCard title="Tips" href="/blogs/004_cna/tip/" description="클라우드 네이티브 개발 팁" />
+</CardGrid>
+
 
 :::tip[Definition]
 클라우드 네이티브 기술을 통해 조직은 퍼블릭, 프라이빗 및 하이브리드 클라우드와 같은 최신 동적 환경에서 확장 가능한 애플리케이션을 빌드하고 실행할 수 있습니다.  컨테이너, 서비스 메시, 마이크로 서비스, 변경 불가능한 인프라 및 선언적 API는 이 접근 방식을 예로 들 수 있습니다.
@@ -190,16 +201,3 @@ spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 - [https://freedeveloper.tistory.com/434](https://freedeveloper.tistory.com/434)
 - [https://12factor.net/](https://12factor.net/)
 :::
-
-
-
-import { LinkCard, CardGrid } from '@astrojs/starlight/components';
-
-## 📚 Contents
-
-<CardGrid>
-  <LinkCard title="Container" href="/blogs/004_cna/container/" description="컨테이너 기술 개요 및 Docker 활용" />
-  <LinkCard title="Kubernetes" href="/blogs/004_cna/k8s/" description="Kubernetes 핵심 개념 및 운영" />
-  <LinkCard title="REST API" href="/blogs/004_cna/restapi/" description="RESTful API 설계 가이드" />
-  <LinkCard title="Tips" href="/blogs/004_cna/tip/" description="클라우드 네이티브 개발 팁" />
-</CardGrid>

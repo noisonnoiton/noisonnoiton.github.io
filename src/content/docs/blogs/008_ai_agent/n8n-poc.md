@@ -1,5 +1,5 @@
 ---
-title: "1편: n8n 기반 AI Agent Builder 설계와 구현"
+title: "n8n 기반 AI Agent Builder 설계와 구현"
 description: n8n을 워크플로우 엔진으로 활용하되, 사용자가 n8n을 몰라도 Agent를 생성하고 실행할 수 있는 추상화 레이어 PoC
 ---
 
@@ -532,7 +532,7 @@ UI --> User : "반품 절차를 안내해 드리겠습니다..."
 
 ### 다음 단계
 
-이 PoC를 기반으로 [2편](/blogs/008_ai_agent/backstage/)에서는 Backstage IDP 플러그인으로 통합하여, 조직 내부의 개발자 포털에서 AI Agent를 관리하는 구조를 만들어본다.
+이 PoC를 기반으로 [](/blogs/008_ai_agent/backstage/)에서는 Backstage IDP 플러그인으로 통합하여, 조직 내부의 개발자 포털에서 AI Agent를 관리하는 구조를 만들어본다.
 
 ---
 
