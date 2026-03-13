@@ -28,11 +28,11 @@ export default defineConfig({
         //   tag: 'script',
         //   content: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');`,
         // },
-        // Google Search Console 소유권 확인 — TODO: content 값 교체
-        // {
-        //   tag: 'meta',
-        //   attrs: { name: 'google-site-verification', content: 'YOUR_VERIFICATION_CODE' },
-        // },
+        // Google Search Console 소유권 확인
+        {
+          tag: 'meta',
+          attrs: { name: 'google-site-verification', content: '5Cf8lzznSYAmH9JYOQxyE3AsnKWj_ZeCZ8P8jxnP3L4' },
+        },
         // Open Graph 기본 메타
         {
           tag: 'meta',
