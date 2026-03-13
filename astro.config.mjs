@@ -7,6 +7,9 @@ export default defineConfig({
   site: 'https://noisonnoiton.github.io',
   integrations: [
     starlight({
+      components: {
+        Footer: './src/components/Footer.astro',
+      },
       title: 'noisonnoiton',
       logo: {
         src: './src/assets/choonsik.png',
