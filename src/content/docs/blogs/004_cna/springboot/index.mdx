@@ -13,9 +13,9 @@ Web Application을 Embedded하여 처리하여 단일 Process로 관리할 수 �
 
 | 구분              | Springboot                                                                                          | Spring Framework                                                                           |
 | ----------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 실행 방법         | Java Application<br> 예) java -jar /app/app.jar                                                     | Web Application에 실행될 수 있도록 Web Context Descriptor 필요(war, ear)                   |
+| 실행 방법         | Java Application<br/> 예) java -jar /app/app.jar                                                     | Web Application에 실행될 수 있도록 Web Context Descriptor 필요(war, ear)                   |
 | App 자원 관리     | Spring Context에서 관리 됨                                                                          | Web Application의 설정에 의해 관리됨                                                       |
-| Web app 환경 설정 | 기본값으로 모든 설정 값이 자동설정되며, <br>application.yml(properties) 파일에 의해 설정 할 수 있음 | Web Context(server.xml)에 의해 설정되며, <br>사용되는 servlet 및 Web App Server마다 상이함 |
+| Web app 환경 설정 | 기본값으로 모든 설정 값이 자동설정되며, <br/>application.yml(properties) 파일에 의해 설정 할 수 있음 | Web Context(server.xml)에 의해 설정되며, <br/>사용되는 servlet 및 Web App Server마다 상이함 |
 
 ## tomcat model
 
@@ -151,5 +151,16 @@ routing --> app4
 - Multiple App, MSA의 경우 Traffic 제어를 위한 Gateway 또는 LB가 필수적으로 필요하다
 :::
 
-## [VSCode로 IDE 구성하기](ide.md)
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+## 📚 Contents
+
+<CardGrid>
+  <LinkCard title="VSCode IDE 구성" href="/blogs/004_cna/springboot/ide/" description="VSCode로 Spring Boot 개발 환경 구성하기" />
+  <LinkCard title="Spring Bean" href="/blogs/004_cna/springboot/bean/" description="Spring Bean 개념 및 활용" />
+  <LinkCard title="REST API" href="/blogs/004_cna/springboot/restapi/" description="Spring Boot REST API 개발" />
+  <LinkCard title="REST Client" href="/blogs/004_cna/springboot/rest-client/" description="REST Client 활용" />
+  <LinkCard title="MyBatis" href="/blogs/004_cna/springboot/mybatis/" description="MyBatis 연동 및 활용" />
+  <LinkCard title="환경 설정" href="/blogs/004_cna/springboot/env/" description="Spring Boot 환경 설정 가이드" />
+</CardGrid>
 
