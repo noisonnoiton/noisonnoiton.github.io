@@ -1,11 +1,11 @@
 ---
-title: "2편: Backstage IDP로 AI Agent Builder 통합"
+title: "Backstage IDP로 AI Agent Builder 통합"
 description: n8n-poc AI Agent Builder를 Backstage 내부 개발자 포털에 플러그인으로 통합한 경험
 ---
 
 ## 왜 Backstage인가
 
-[1편](/blogs/008_ai_agent/n8n-poc/)에서 만든 AI Agent Builder는 독립적인 애플리케이션이다. 하지만 실제 조직에서 운영하려면 다음 질문이 생긴다:
+[n8n-poc](/blogs/008_ai_agent/n8n-poc/)에서 만든 AI Agent Builder는 독립적인 애플리케이션이다. 하지만 실제 조직에서 운영하려면 다음 질문이 생긴다:
 
 - Agent를 **누가** 만들었고, **어떤 팀**이 소유하는가?
 - 다른 서비스(API, 인프라)와의 **의존 관계**는?
