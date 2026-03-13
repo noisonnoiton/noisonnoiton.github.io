@@ -1,0 +1,143 @@
+/* 🐱 춘식이 (Choonsik) 테마 - 카카오프렌즈 */
+/* Starlight 시맨틱: :root = 다크모드 기본, [data-theme='light']에서 white↔black 반전 */
+/* white = "가장 밝은 전경" (다크: 밝은 텍스트, 라이트: 어두운 텍스트) */
+/* black = "가장 어두운 배경" (다크: 어두운 배경, 라이트: 밝은 배경) */
+/* gray 1→6: 다크에서 밝음→어두움, 라이트에서 어두움→밝음 */
+
+/* 춘식이 컬러: 노랑 #f5d76e / 복숭아 볼 #f4a87c / 외곽선 #2d2d2d */
+
+:root {
+  /* === 다크모드 (기본) === */
+  --sl-color-white: #f8f3eb;           /* 밝은 전경 텍스트 */
+  --sl-color-gray-1: #ddd2c2;          /* 밝은쪽 */
+  --sl-color-gray-2: #b8a890;
+  --sl-color-gray-3: #887560;
+  --sl-color-gray-4: #504436;
+  --sl-color-gray-5: #302820;
+  --sl-color-gray-6: #241e16;          /* 어두운쪽 */
+  --sl-color-black: #1c1812;           /* 어두운 배경 */
+
+  --sl-color-accent-low: #2a2010;
+  --sl-color-accent: #f5d76e;
+  --sl-color-accent-high: #fbe8a0;
+
+  /* 춘식이 변수 */
+  --choonsik-yellow: #f5d76e;
+  --choonsik-peach: #f4a87c;
+  --choonsik-outline: #2d2d2d;
+
+  /* 폰트 */
+  --sl-font: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --sl-font-system-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+:root[data-theme='light'] {
+  /* === 라이트모드 (반전 시맨틱) === */
+  --sl-color-white: #2c2418;           /* 어두운 전경 텍스트 */
+  --sl-color-gray-1: #3b3128;          /* 어두운쪽 */
+  --sl-color-gray-2: #5c5040;
+  --sl-color-gray-3: #9e8e7a;
+  --sl-color-gray-4: #d6cdbf;
+  --sl-color-gray-5: #f5f0e4;
+  --sl-color-gray-6: #fdfaf3;          /* 밝은쪽 */
+  --sl-color-gray-7: #fffdf7;
+  --sl-color-black: #ffffff;           /* 밝은 배경 */
+
+  --sl-color-accent-low: #fef9e7;
+  --sl-color-accent: #d4a017;
+  --sl-color-accent-high: #8b6914;
+}
+
+/* ===== Components ===== */
+
+/* 코드블록 */
+pre {
+  border-radius: 12px !important;
+  border: 1px solid var(--sl-color-hairline-light) !important;
+}
+
+code {
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+}
+
+/* 링크 */
+a:hover {
+  text-decoration-color: var(--choonsik-peach);
+}
+
+/* 헤딩 */
+.sl-markdown-content h2 {
+  border-bottom: 2px dashed var(--sl-color-accent-low);
+  padding-bottom: 0.4em;
+}
+
+/* 인용문 */
+.sl-markdown-content blockquote {
+  border-left: 4px solid var(--choonsik-peach);
+  background: var(--sl-color-accent-low);
+  border-radius: 0 12px 12px 0;
+  padding: 1em 1.2em;
+}
+
+/* 테이블 */
+.sl-markdown-content table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sl-markdown-content th,
+.sl-markdown-content td {
+  padding: 0.75rem 1rem;
+}
+
+.sl-markdown-content th {
+  background: var(--choonsik-yellow);
+  color: #2c2418;
+  font-weight: 600;
+}
+
+/* 이미지 */
+.sl-markdown-content img {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 버튼 */
+.sl-link-button {
+  border-radius: 24px !important;
+}
+
+/* aside/callout */
+.starlight-aside {
+  border-radius: 12px;
+}
+
+/* 스크롤바 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sl-color-gray-6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--choonsik-yellow);
+  border-radius: 4px;
+}
+
+/* 선택 영역 */
+::selection {
+  background: rgba(245, 215, 110, 0.3);
+}
+
+/* 페이지 전환 */
+main {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
