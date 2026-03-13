@@ -20,9 +20,17 @@ export default defineConfig({
       ],
       sidebar: [
         {
+          label: 'AI Agent Builder',
+          items: [
+            { label: 'Overview', slug: 'blogs/008_ai_agent' },
+            { label: 'n8n-poc 설계와 구현', slug: 'blogs/008_ai_agent/n8n-poc' },
+            { label: 'Backstage 통합', slug: 'blogs/008_ai_agent/backstage' },
+          ],
+        },
+        {
           label: 'Cloud Native App',
           items: [
-            { label: 'Overview', slug: 'blogs/004_cna' },
+            { label: 'Introduction', slug: 'blogs/004_cna' },
             { label: 'Container', slug: 'blogs/004_cna/container' },
             { label: 'Kubernetes', slug: 'blogs/004_cna/k8s' },
             { label: 'REST API', slug: 'blogs/004_cna/restapi' },

@@ -86,6 +86,11 @@ a:hover {
   overflow: hidden;
 }
 
+.sl-markdown-content th,
+.sl-markdown-content td {
+  padding: 0.75rem 1rem;
+}
+
 .sl-markdown-content th {
   background: var(--choonsik-yellow);
   color: #2c2418;
