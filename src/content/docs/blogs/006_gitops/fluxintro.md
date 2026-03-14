@@ -1,10 +1,6 @@
 ---
 title: Basics
-date: 2021-07-27
 tags:
-- fluxcd
-categories: 
-- GitOps
 ---
 
 Flux v2 의 Core Concepts 및 GOTK (GitOps Toolkit) components 정리.

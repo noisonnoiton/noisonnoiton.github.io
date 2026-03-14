@@ -1,11 +1,6 @@
 ---
 title: Restful API Client
-date: 2021-09-10
 tags:
-- Spring Boot
-- REST API
-categories: 
-- Cloud Native App.
 ---
 
 :::tip[Overview]

@@ -1,11 +1,6 @@
 ---
 title: Amazon ALB
-date: 2021-03-24
 tags:
-- aws
-- kubernetes
-categories: 
-- Cloud
 ---
 
 ## Application Load Balancer 

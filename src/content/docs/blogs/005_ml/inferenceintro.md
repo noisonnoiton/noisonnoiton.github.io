@@ -1,10 +1,6 @@
 ---
 title: Introduction
-date: 2021-06-05
 tags:
-- inference
-categories: 
-- Machine Learning
 ---
 
 - ML Pipeline Introduction

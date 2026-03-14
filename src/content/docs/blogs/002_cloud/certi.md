@@ -1,10 +1,6 @@
 ---
 title: Certification
-date: 2021-06-15
 tags:
-- aws
-categories: 
-- Cloud
 ---
 
 AWS Certification 관련 요구 지식 및 자격증 취득을 위한 가이드 정리.

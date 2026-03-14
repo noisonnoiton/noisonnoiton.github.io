@@ -1,11 +1,6 @@
 ---
 title: Amazon EFS
-date: 2021-03-24
 tags:
-- aws
-- kubernetes
-categories: 
-- Cloud
 ---
 
 - Amazon Elastic File System(Amazon EFS)은 AWS 클라우드 서비스와 온프레미스 리소스에서 사용할 수 있는 간단하고 확장 가능하며 탄력적인 완전 관리형 탄력적 NFS 파일 시스템을 제공

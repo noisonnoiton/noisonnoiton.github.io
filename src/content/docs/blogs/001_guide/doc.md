@@ -1,10 +1,6 @@
 ---
 title: Blog Management
-date: 2021-03-15
 tags:
-- vuepress
-categories: 
-- Guide
 ---
 
 vuepress + github pages 및 action 을 활용하여, 문서 관리하는 방안 정리한 내역.

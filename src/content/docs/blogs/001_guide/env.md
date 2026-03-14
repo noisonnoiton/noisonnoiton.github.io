@@ -1,10 +1,6 @@
 ---
 title: Dev. Environment
-date: 2021-03-15
 tags:
-- development
-categories: 
-- Guide
 ---
 
 ## IDE

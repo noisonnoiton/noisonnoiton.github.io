@@ -1,10 +1,6 @@
 ---
 title: Redis 성능 측정
-date: 2021-04-07
 tags:
-- kubernetes
-- database
-categories: 
  - Ref. Arch.
 ---
 

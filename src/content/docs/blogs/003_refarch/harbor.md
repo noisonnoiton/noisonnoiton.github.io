@@ -1,10 +1,6 @@
 ---
 title: Harbor
-date: 2021-08-14
 tags:
-- kubernetes
-- container
-categories: 
  - Ref. Arch.
 ---
 
