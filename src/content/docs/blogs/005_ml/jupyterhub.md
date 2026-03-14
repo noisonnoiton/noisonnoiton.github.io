@@ -1,11 +1,6 @@
 ---
 title: Jupyter Hub
-date: 2021-05-30
 tags:
-- jupyter
-- kubernetes
-categories: 
-- Machine Learning
 ---
 
 ## Introduction

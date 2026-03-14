@@ -1,10 +1,6 @@
 ---
 title: Restful API
-date: 2021-09-07
 tags:
-- REST API
-categories: 
-- Cloud Native App.
 ---
 
 :::tip[Definition]

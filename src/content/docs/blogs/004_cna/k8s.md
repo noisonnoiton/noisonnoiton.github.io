@@ -1,10 +1,6 @@
 ---
 title: Kubernetes
-date: 2021-09-07
 tags:
-- kubernetes
-categories: 
-- Cloud Native App.
 ---
 
 ## Architecture

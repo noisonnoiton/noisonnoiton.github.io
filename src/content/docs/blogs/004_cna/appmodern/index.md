@@ -1,8 +1,5 @@
 ---
 title: App. Modernization
-date: 2021-09-07
-categories: 
-- Cloud Native App.
 ---
 
 App modern

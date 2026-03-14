@@ -1,9 +1,6 @@
 ---
 title: Apache Camel and EIP
-date: 2021-03-31
 tags:
-- EIP
-categories: 
  - Ref. Arch.
 ---
 

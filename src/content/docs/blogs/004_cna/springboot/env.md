@@ -1,10 +1,6 @@
 ---
 title: App. 환경설정
-date: 2021-09-10
 tags:
-- Spring Boot
-categories: 
-- Cloud Native App.
 ---
 
 springboot가 실행하는데 필요한 환경설정은 application.properties 파일에 의해 관리됨.

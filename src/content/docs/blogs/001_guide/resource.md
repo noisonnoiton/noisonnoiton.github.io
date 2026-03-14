@@ -1,11 +1,6 @@
 ---
 title: Database
-date: 2021-03-15
 tags:
-- kubernetes
-- database
-categories: 
-- Guide
 ---
 
 ## MariaDB

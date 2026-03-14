@@ -1,10 +1,6 @@
 ---
 title: Redis HA with standalone
-date: 2021-04-14
 tags:
-- kubernetes
-- database
-categories: 
  - Ref. Arch.
 ---
 

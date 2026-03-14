@@ -1,10 +1,6 @@
 ---
 title: MyBatis
-date: 2021-09-10
 tags:
-- Spring Boot
-categories: 
-- Cloud Native App.
 ---
 
 데이터 처리를 위한 방법 중 많이 사용되고 있는 mybatis 기본적인 사용법을 설명 합니다.

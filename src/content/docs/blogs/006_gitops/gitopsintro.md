@@ -1,11 +1,6 @@
 ---
 title: GitOps
-date: 2021-07-27
 tags:
-- fluxcd
-- argocd
-categories: 
-- GitOps
 ---
 
 ## GitOps란

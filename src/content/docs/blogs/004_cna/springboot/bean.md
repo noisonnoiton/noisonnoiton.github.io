@@ -1,10 +1,6 @@
 ---
 title: Bean
-date: 2021-09-10
 tags:
-- Spring Boot
-categories: 
-- Cloud Native App.
 ---
 
 :::caution[Definition]

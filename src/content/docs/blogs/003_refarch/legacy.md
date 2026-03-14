@@ -1,10 +1,6 @@
 ---
 title: Legacy Interface 개발
-date: 2021-03-31
 tags:
-- EIP
-- Spring Boot
-categories: 
  - Ref. Arch.
 ---
 

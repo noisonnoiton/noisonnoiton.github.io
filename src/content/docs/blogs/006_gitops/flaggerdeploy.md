@@ -1,10 +1,6 @@
 ---
 title: Flagger on EKS App Mesh
-date: 2021-07-28
 tags:
-- flagger
-categories: 
-- GitOps
 ---
 
 AWS 에서 제공하는 Service Mesh 인 Amazon App Mesh 에서, Flagger 를 활용한 Kubernetes Object Delivery 환경 구성 및 FluxCD 기반 Amazon EKS GitOps 환경과의 통합.

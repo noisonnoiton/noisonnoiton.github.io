@@ -1,10 +1,6 @@
 ---
 title: Basics
-date: 2021-08-16
 tags:
-- argocd
-categories: 
-- GitOps
 ---
 
 ![ArgoCD GitOps CD](./images/gitops-argocd.png)

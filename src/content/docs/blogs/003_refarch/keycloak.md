@@ -1,10 +1,6 @@
 ---
 title: Keycloak
-date: 2021-07-30
 tags:
-- kubernetes
-- auth
-categories: 
  - Ref. Arch.
 ---
 

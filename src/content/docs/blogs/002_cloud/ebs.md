@@ -1,11 +1,6 @@
 ---
 title: Amazon EBS
-date: 2021-03-24
 tags:
-- aws
-- kubernetes
-categories: 
-- Cloud
 ---
 
 - Amazon Elastic Block Store(Amazon EBS)는 EC2 인스턴스에 사용할 수 있는 블록 수준 스토리지 볼륨을 제공

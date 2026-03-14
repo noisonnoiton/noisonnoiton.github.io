@@ -1,9 +1,6 @@
 ---
 title: Modern API
-date: 2021-12-17
 tags:
-- REST API
-categories: 
  - Ref. Arch.
 ---
 

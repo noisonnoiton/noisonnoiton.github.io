@@ -1,11 +1,6 @@
 ---
 title: Triton Inference Server
-date: 2021-06-11
 tags:
-- inference
-- kubernetes
-categories: 
-- Machine Learning
 ---
 
 ## Introduction
