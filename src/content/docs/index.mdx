@@ -1,0 +1,48 @@
+---
+title: 춘돌이
+description: 춘돌이의 기술·문화·일상 블로그
+template: splash
+hero:
+  title: 춘돌이
+  tagline: |
+    Tech · Culture · Life<br/>
+    다양한 이야기를 담는 블로그
+  image:
+    file: ../../assets/choonsik.png
+  actions:
+    - text: Go to Blog
+      link: /blogs/004_cna/
+      icon: right-arrow
+      variant: primary
+    - text: GitHub
+      link: https://github.com/noisonnoiton
+      icon: external
+      variant: minimal
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+## 📚 Contents
+
+<CardGrid>
+  <LinkCard title="🎬 영화/드라마" href="/movies/" description="영화, 드라마, 애니메이션 리뷰와 추천" />
+  <LinkCard title="📚 문학/독서" href="/books/" description="책 리뷰, 독서 노트, 문학 이야기" />
+  <LinkCard title="🧳 여기저기" href="/food/" description="여행, 맛집, 일상 탐방기" />
+  <LinkCard title="🔍 이것저것" href="/knowledge/" description="살면서 알게 된 것들, 사회 이슈, 새로운 발견" />
+</CardGrid>
+
+## 🖥️ Tech
+
+<CardGrid>
+  <LinkCard title="AI Agent Builder" href="/blogs/008_ai_agent/" description="n8n 기반 AI Agent Builder PoC + Backstage IDP 통합" />
+  <LinkCard title="Cloud Native App" href="/blogs/004_cna/" description="컨테이너, Kubernetes, REST API 등 클라우드 네이티브 개발 가이드" />
+  <LinkCard title="Spring Boot" href="/blogs/004_cna/springboot/" description="Spring Boot 기반 마이크로서비스 개발" />
+  <LinkCard title="Ref. Architecture" href="/blogs/003_refarch/" description="Modern API, Redis, Apache Camel, Keycloak 등" />
+  <LinkCard title="ML / Inference" href="/blogs/005_ml/" description="Jupyter, KFServing, Triton 등 ML 추론 환경" />
+  <LinkCard title="GitOps" href="/blogs/006_gitops/" description="FluxCD, Flagger, ArgoCD 기반 GitOps" />
+  <LinkCard title="Multi-Cloud" href="/blogs/007_multicloud/" description="멀티 클라우드 아키텍처" />
+</CardGrid>
+
+---
+
+> 🐱 **춘돌이** — Tech · Culture · Life, 다양한 이야기를 담는 블로그
