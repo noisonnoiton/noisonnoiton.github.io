@@ -89,13 +89,13 @@ export default defineConfig({
           ],
         },
         {
-          label: '🍽️ 맛집',
+          label: '🧳 여기저기',
           items: [
             { label: 'Overview', slug: 'food' },
           ],
         },
         {
-          label: '📰 시사/상식',
+          label: '🔍 이것저것',
           items: [
             { label: 'Overview', slug: 'knowledge' },
           ],
