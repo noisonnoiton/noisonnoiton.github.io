@@ -80,6 +80,7 @@ export default defineConfig({
           label: '🎬 영화/드라마',
           items: [
             { label: 'Overview', slug: 'movies' },
+            { label: '내 영화 평가 목록', slug: 'movies/watcha-ratings' },
           ],
         },
         {

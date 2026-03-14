@@ -7,8 +7,6 @@ import { LinkCard, CardGrid } from '@astrojs/starlight/components';
 
 영화, 드라마, 애니메이션에 대한 리뷰와 추천을 담는 공간입니다.
 
-{/* 글이 추가되면 CardGrid로 목록 표시 */}
-
-:::tip[Coming Soon]
-곧 다양한 리뷰가 올라올 예정입니다! 🎬
-:::
+<CardGrid>
+  <LinkCard title="🎬 내 영화 평가 목록" description="왓챠피디아에서 평가한 영화 767편" href="/movies/watcha-ratings/" />
+</CardGrid>
