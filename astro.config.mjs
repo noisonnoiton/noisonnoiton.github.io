@@ -10,7 +10,7 @@ export default defineConfig({
       components: {
         Footer: './src/components/Footer.astro',
       },
-      title: 'noisonnoiton',
+      title: '춘돌이',
       logo: {
         src: './src/assets/choonsik.png',
         alt: '춘식이',
@@ -43,7 +43,7 @@ export default defineConfig({
         },
         {
           tag: 'meta',
-          attrs: { property: 'og:site_name', content: 'noisonnoiton' },
+          attrs: { property: 'og:site_name', content: '춘돌이' },
         },
         {
           tag: 'meta',
@@ -57,7 +57,7 @@ export default defineConfig({
         // 추가 SEO
         {
           tag: 'meta',
-          attrs: { name: 'author', content: 'noisonnoiton' },
+          attrs: { name: 'author', content: '춘돌이' },
         },
         {
           tag: 'link',
