@@ -1,11 +1,11 @@
 ---
 import type { Props } from '@astrojs/starlight/props';
-import Default from '@astrojs/starlight/components/Footer.astro';
+import Default from '@astrojs/starlight/components/Banner.astro';
 ---
 
 <Default {...Astro.props}><slot /></Default>
 
-<div class="kakao-ad-container kakao-ad-footer">
+<div class="kakao-ad-container kakao-ad-top">
   <ins class="kakao_ad_area" style="display:none;"
     data-ad-unit="DAN-zHXbzhtivpd6MTA0"
     data-ad-width="250"
@@ -16,11 +16,11 @@ import Default from '@astrojs/starlight/components/Footer.astro';
 <script is:inline src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
 
 <style>
-  .kakao-ad-footer {
+  .kakao-ad-top {
     display: flex;
     justify-content: center;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--sl-color-gray-5);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--sl-color-gray-5);
   }
 </style>

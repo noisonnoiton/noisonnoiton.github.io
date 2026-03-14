@@ -9,6 +9,7 @@ export default defineConfig({
     starlight({
       components: {
         Footer: './src/components/Footer.astro',
+        Banner: './src/components/Banner.astro',
       },
       title: '춘돌이',
       logo: {
