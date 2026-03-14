@@ -40,7 +40,7 @@ export default defineConfig({
         // Naver Search Advisor
         {
           tag: 'meta',
-          attrs: { name: 'naver-site-verification', content: 'cdcc6158d7a4e818b062d62e65cbe52b9765572d' },
+          attrs: { name: 'naver-site-verification', content: 'd3c1f1b07eacea0cd9a3c3c03468e5c8bafe6393' },
         },
         // RSS Feed
         {
