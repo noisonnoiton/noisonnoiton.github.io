@@ -36,6 +36,16 @@ export default defineConfig({
           tag: 'meta',
           attrs: { name: 'google-site-verification', content: '5Cf8lzznSYAmH9JYOQxyE3AsnKWj_ZeCZ8P8jxnP3L4' },
         },
+        // Naver Search Advisor — TODO: content 값 교체 후 주석 해제
+        // {
+        //   tag: 'meta',
+        //   attrs: { name: 'naver-site-verification', content: 'YOUR_NAVER_CODE' },
+        // },
+        // RSS Feed
+        {
+          tag: 'link',
+          attrs: { rel: 'alternate', type: 'application/rss+xml', title: '춘돌이 RSS', href: '/rss.xml' },
+        },
         // Open Graph 기본 메타
         {
           tag: 'meta',
