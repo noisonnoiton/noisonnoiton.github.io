@@ -13,7 +13,7 @@ export async function GET(context) {
     }));
 
   return rss({
-    title: '춘돌이',
+    title: 'noisonnoiton',
     description: '춘돌이의 기술·문화·일상 블로그',
     site: context.site,
     items,
