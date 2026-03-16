@@ -1,6 +1,7 @@
 # Starlight Starter Kit: Basics
 
 [![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+[![Deploy to GitHub Pages](https://github.com/noisonnoiton/noisonnoiton.github.io/actions/workflows/deploy-gh.yml/badge.svg)](https://github.com/noisonnoiton/noisonnoiton.github.io/actions/workflows/deploy-gh.yml)
 
 ```
 npm create astro@latest -- --template starlight
