@@ -106,6 +106,14 @@ export default defineConfig({
           collapsed: false,
           items: [
             {
+              label: 'Envoy Gateway',
+              collapsed: true,
+              items: [
+                { label: 'Overview', slug: 'blogs/009_envoy_gateway' },
+                { label: '도입 및 검증', slug: 'blogs/009_envoy_gateway/envoy-gateway-setup' },
+              ],
+            },
+            {
               label: 'AI Agent Builder',
               collapsed: true,
               items: [
