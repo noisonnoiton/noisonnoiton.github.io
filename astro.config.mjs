@@ -106,11 +106,21 @@ export default defineConfig({
           collapsed: false,
           items: [
             {
-              label: 'Envoy Gateway',
+              label: 'Kubernetes',
               collapsed: true,
               items: [
-                { label: 'Overview', slug: 'blogs/009_envoy_gateway' },
-                { label: '도입 및 검증', slug: 'blogs/009_envoy_gateway/envoy-gateway-setup' },
+                { label: 'Overview', slug: 'blogs/010_kubernetes' },
+                { label: '왜 Gateway API인가', slug: 'blogs/010_kubernetes/gateway-api-overview' },
+                { label: 'Envoy Gateway 구성', slug: 'blogs/010_kubernetes/envoy-gateway-setup' },
+                { label: 'HTTPRoute 라우팅 및 검증', slug: 'blogs/010_kubernetes/envoy-gateway-routing' },
+                { label: 'GitOps Overview', slug: 'blogs/006_gitops' },
+                { label: 'GitOps 소개', slug: 'blogs/006_gitops/gitopsintro' },
+                { label: 'FluxCD Intro', slug: 'blogs/006_gitops/fluxintro' },
+                { label: 'FluxCD v2', slug: 'blogs/006_gitops/fluxcdv2' },
+                { label: 'Flagger Intro', slug: 'blogs/006_gitops/flaggerintro' },
+                { label: 'Flagger Deploy', slug: 'blogs/006_gitops/flaggerdeploy' },
+                { label: 'ArgoCD Intro', slug: 'blogs/006_gitops/argocdintro' },
+                { label: 'ArgoCD Deploy', slug: 'blogs/006_gitops/argocddeploy' },
               ],
             },
             {
@@ -164,20 +174,6 @@ export default defineConfig({
                 { label: 'Inference Intro', slug: 'blogs/005_ml/inferenceintro' },
                 { label: 'Triton', slug: 'blogs/005_ml/inferencetriton' },
                 { label: 'KFServing', slug: 'blogs/005_ml/inferencekfserving' },
-              ],
-            },
-            {
-              label: 'GitOps',
-              collapsed: true,
-              items: [
-                { label: 'Overview', slug: 'blogs/006_gitops' },
-                { label: 'GitOps 소개', slug: 'blogs/006_gitops/gitopsintro' },
-                { label: 'FluxCD Intro', slug: 'blogs/006_gitops/fluxintro' },
-                { label: 'FluxCD v2', slug: 'blogs/006_gitops/fluxcdv2' },
-                { label: 'Flagger Intro', slug: 'blogs/006_gitops/flaggerintro' },
-                { label: 'Flagger Deploy', slug: 'blogs/006_gitops/flaggerdeploy' },
-                { label: 'ArgoCD Intro', slug: 'blogs/006_gitops/argocdintro' },
-                { label: 'ArgoCD Deploy', slug: 'blogs/006_gitops/argocddeploy' },
               ],
             },
             {

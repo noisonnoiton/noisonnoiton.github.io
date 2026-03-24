@@ -1,0 +1,38 @@
+---
+title: "Kubernetes"
+description: Kubernetes 기반 인프라 구성, Gateway API, GitOps 등 실무 가이드
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+Kubernetes 기반 인프라 운영과 관련된 실무 가이드 모음.
+
+### Envoy Gateway
+
+<CardGrid>
+  <LinkCard
+    title="왜 Gateway API인가"
+    description="Ingress의 한계, Gateway API 표준, NGINX Ingress Controller EOS"
+    href="/blogs/010_kubernetes/gateway-api-overview"
+  />
+  <LinkCard
+    title="Envoy Gateway 구성"
+    description="GatewayClass, Gateway, EnvoyProxy, 정책(Security/ClientTraffic), Helm 배포"
+    href="/blogs/010_kubernetes/envoy-gateway-setup"
+  />
+  <LinkCard
+    title="HTTPRoute 라우팅 및 검증"
+    description="앱별 HTTPRoute 설계, NodePort 패치, 배포 순서, 검증 및 테스트"
+    href="/blogs/010_kubernetes/envoy-gateway-routing"
+  />
+</CardGrid>
+
+### GitOps
+
+<CardGrid>
+  <LinkCard
+    title="GitOps"
+    description="FluxCD, Flagger, ArgoCD 기반 GitOps 파이프라인"
+    href="/blogs/006_gitops/"
+  />
+</CardGrid>
