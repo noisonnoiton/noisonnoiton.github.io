@@ -5,6 +5,45 @@ description: 앱별 HTTPRoute 설계, NodePort 패치 설계, 배포 순서, Env
 
 ## HTTPRoute 설계 (앱별)
 
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 12
+skinparam rectangle {
+  RoundCorner 15
+  BorderColor #555555
+}
+
+title HTTPRoute 트래픽 흐름
+
+rectangle "**Gateway**\nlasp-gateway\n(envoy-gateway ns)" as gw #FFE0B2
+
+rectangle "**HTTPRoute: nginx-proxy**\n(앱 ns)" as hr1 #C8E6C9 {
+  rectangle "internal-midm.*.nip.io\n→ nginx-proxy:9090" as r1 #DCEDC8
+  rectangle "midm.*.nip.io\n→ nginx-proxy:8080" as r2 #DCEDC8
+}
+
+rectangle "**HTTPRoute: pgadmin**\n(앱 ns)" as hr2 #C8E6C9 {
+  rectangle "pgadmin.*.nip.io\n→ pgadmin:5050" as r3 #DCEDC8
+}
+
+rectangle "**HTTPRoute: rabbitmq**\n(앱 ns)" as hr3 #C8E6C9 {
+  rectangle "rabbitmq.*.nip.io\n→ rabbitmq:15672" as r4 #DCEDC8
+}
+
+gw --> hr1 : parentRefs
+gw --> hr2 : parentRefs
+gw --> hr3 : parentRefs
+
+note right of gw
+  cross-namespace
+  allowedRoutes:
+    from: All
+end note
+
+@enduml
+```
+
 HTTPRoute는 **앱 네임스페이스에 배치**하고, `parentRefs`로 `envoy-gateway` 네임스페이스의 Gateway를 참조한다.
 
 ### nginx-proxy (Host 기반 라우팅)

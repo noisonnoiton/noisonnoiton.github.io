@@ -38,6 +38,45 @@ Kubernetes `Ingress` 리소스는 오랫동안 L7 트래픽 관리의 표준이�
 
 ### 리소스 모델
 
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 13
+skinparam rectangle {
+  RoundCorner 15
+  BorderColor #555555
+}
+skinparam package {
+  BorderColor #888888
+  BackgroundColor #F8F9FA
+}
+
+title Gateway API 리소스 모델
+
+package "인프라 제공자" #E3F2FD {
+  rectangle "**GatewayClass**\n컨트롤러 지정\n(envoyproxy.io)" as GC #BBDEFB
+}
+
+package "클러스터 운영자" #FFF3E0 {
+  rectangle "**Gateway**\nHTTP :80 / HTTPS :443\nTLS Terminate" as GW #FFE0B2
+  rectangle "**EnvoyProxy**\nDaemonSet / NodePort\n이미지·리소스" as EP #FFE0B2
+  rectangle "**SecurityPolicy**\nIP 화이트리스트" as SP #FFE0B2
+  rectangle "**ClientTrafficPolicy**\nXFF / bufferLimit" as CTP #FFE0B2
+}
+
+package "애플리케이션 개발자" #E8F5E9 {
+  rectangle "**HTTPRoute**\n호스트·경로 라우팅\nbackendRefs" as HR #C8E6C9
+}
+
+GC --> GW : gatewayClassName
+GC ..> EP : parametersRef
+GW --> HR : parentRefs
+SP --> GW : targetRefs
+CTP --> GW : targetRefs
+
+@enduml
+```
+
 Gateway API는 4개의 Stable API로 구성된다:
 
 | 리소스 | 역할 | 담당 |

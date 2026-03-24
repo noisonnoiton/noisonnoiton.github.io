@@ -39,6 +39,46 @@ description: AKS Dev 환경에서 Envoy Gateway v1.7.0의 GatewayClass, Gateway,
 
 ## 아키텍처
 
+```plantuml
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 13
+skinparam rectangle {
+  RoundCorner 15
+  BorderColor #555555
+}
+skinparam node {
+  BorderColor #555555
+}
+
+title Envoy Gateway 아키텍처 (Dev)
+
+cloud "클라이언트" as client #E3F2FD
+
+node "AKS 클러스터" {
+  package "envoy-gateway 네임스페이스" #FFF3E0 {
+    rectangle "**Envoy Gateway**\n(컨트롤 플레인)\nDeployment" as ctrl #FFE0B2
+    rectangle "**Envoy Proxy**\n(데이터 플레인)\nDaemonSet" as proxy #FFCC80
+    rectangle "**Service**\nNodePort\n30080 / 30443" as svc #FFE0B2
+  }
+
+  package "앱 네임스페이스" #E8F5E9 {
+    rectangle "nginx-proxy\n:8080 / :9090" as nginx #C8E6C9
+    rectangle "pgadmin\n:5050" as pg #C8E6C9
+    rectangle "rabbitmq\n:15672" as rmq #C8E6C9
+  }
+}
+
+client --> svc : "NodePort\n30080/30443"
+svc --> proxy : "targetPort\n10080"
+ctrl ..> proxy : "xDS\n설정 전달"
+proxy --> nginx : "HTTPRoute\nHost 매칭"
+proxy --> pg : "HTTPRoute\nHost 매칭"
+proxy --> rmq : "HTTPRoute\nHost 매칭"
+
+@enduml
+```
+
 ### 컨트롤 플레인 vs 데이터 플레인
 
 | 역할 | 설명 |
