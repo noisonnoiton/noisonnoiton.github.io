@@ -200,8 +200,8 @@ spec:
       - action: Allow
         principal:
           clientCIDRs:
-            - 211.192.87.243/32
-            - 211.192.87.209/32
+            - xxx.xxx.xxx.xxx/32
+            - xxx.xxx.xxx.yyy/32
 ```
 
 Gateway 레벨에서 **IP 기반 접근 제어**를 선언적으로 적용할 수 있다. Ingress의 annotation 방식보다 구조적이다.

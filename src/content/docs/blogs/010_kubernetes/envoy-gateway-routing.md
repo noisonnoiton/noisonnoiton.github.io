@@ -19,16 +19,16 @@ title HTTPRoute 트래픽 흐름
 rectangle "**Gateway**\nlasp-gateway\n(envoy-gateway ns)" as gw #FFE0B2
 
 rectangle "**HTTPRoute: nginx-proxy**\n(앱 ns)" as hr1 #C8E6C9 {
-  rectangle "internal-midm.*.nip.io\n→ nginx-proxy:9090" as r1 #DCEDC8
-  rectangle "midm.*.nip.io\n→ nginx-proxy:8080" as r2 #DCEDC8
+  rectangle "internal-midm.<NODE-IP>.nip.io\n→ nginx-proxy:9090" as r1 #DCEDC8
+  rectangle "midm.<NODE-IP>.nip.io\n→ nginx-proxy:8080" as r2 #DCEDC8
 }
 
 rectangle "**HTTPRoute: pgadmin**\n(앱 ns)" as hr2 #C8E6C9 {
-  rectangle "pgadmin.*.nip.io\n→ pgadmin:5050" as r3 #DCEDC8
+  rectangle "pgadmin.<NODE-IP>.nip.io\n→ pgadmin:5050" as r3 #DCEDC8
 }
 
 rectangle "**HTTPRoute: rabbitmq**\n(앱 ns)" as hr3 #C8E6C9 {
-  rectangle "rabbitmq.*.nip.io\n→ rabbitmq:15672" as r4 #DCEDC8
+  rectangle "rabbitmq.<NODE-IP>.nip.io\n→ rabbitmq:15672" as r4 #DCEDC8
 }
 
 gw --> hr1 : parentRefs
@@ -58,20 +58,20 @@ spec:
     - name: lasp-gateway
       namespace: envoy-gateway
   hostnames:
-    - "internal-midm.20.214.216.102.nip.io"
-    - "midm.20.214.216.102.nip.io"
+    - "internal-midm.<NODE-IP>.nip.io"
+    - "midm.<NODE-IP>.nip.io"
   rules:
     - matches:
         - headers:
             - name: Host
-              value: internal-midm.20.214.216.102.nip.io
+              value: internal-midm.<NODE-IP>.nip.io
       backendRefs:
         - name: nginx-proxy
           port: 9090
     - matches:
         - headers:
             - name: Host
-              value: midm.20.214.216.102.nip.io
+              value: midm.<NODE-IP>.nip.io
       backendRefs:
         - name: nginx-proxy
           port: 8080
@@ -90,7 +90,7 @@ spec:
     - name: lasp-gateway
       namespace: envoy-gateway
   hostnames:
-    - "pgadmin.20.214.216.102.nip.io"
+    - "pgadmin.<NODE-IP>.nip.io"
   rules:
     - backendRefs:
         - name: pgadmin
@@ -106,7 +106,7 @@ spec:
     - name: lasp-gateway
       namespace: envoy-gateway
   hostnames:
-    - "rabbitmq.20.214.216.102.nip.io"
+    - "rabbitmq.<NODE-IP>.nip.io"
   rules:
     - backendRefs:
         - name: rabbitmq
@@ -117,10 +117,10 @@ spec:
 
 | HTTPRoute | 호스트명 | 백엔드 | 포트 |
 |-----------|---------|--------|------|
-| nginx-proxy | `internal-midm.*.nip.io` | nginx-proxy | 9090 |
-| nginx-proxy | `midm.*.nip.io` | nginx-proxy | 8080 |
-| pgadmin | `pgadmin.*.nip.io` | pgadmin | 5050 |
-| rabbitmq | `rabbitmq.*.nip.io` | rabbitmq | 15672 |
+| nginx-proxy | `internal-midm.<NODE-IP>.nip.io` | nginx-proxy | 9090 |
+| nginx-proxy | `midm.<NODE-IP>.nip.io` | nginx-proxy | 8080 |
+| pgadmin | `pgadmin.<NODE-IP>.nip.io` | pgadmin | 5050 |
+| rabbitmq | `rabbitmq.<NODE-IP>.nip.io` | rabbitmq | 15672 |
 
 **`nip.io`를 활용**하면 별도 DNS 설정 없이 IP 기반 호스트 라우팅을 테스트할 수 있다.
 
