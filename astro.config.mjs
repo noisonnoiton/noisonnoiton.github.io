@@ -10,6 +10,7 @@ export default defineConfig({
       components: {
         Footer: './src/components/Footer.astro',
         Banner: './src/components/Banner.astro',
+        PageTitle: './src/components/PageTitle.astro',
       },
       title: 'noisonnoiton',
       logo: {
