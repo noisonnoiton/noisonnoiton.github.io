@@ -1,5 +1,7 @@
 ---
 title: App. Modernization
+date: "2021-09-07"
+author: "iamnogada"
 ---
 
 App modern

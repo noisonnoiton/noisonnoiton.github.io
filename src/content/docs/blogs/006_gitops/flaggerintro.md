@@ -1,5 +1,7 @@
 ---
 title: Basics
+date: "2021-07-28"
+author: "noisonnoiton"
 tags:
 ---
 

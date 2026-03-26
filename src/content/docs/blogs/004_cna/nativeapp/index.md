@@ -1,5 +1,7 @@
 ---
 title: Cloud Native Application
+date: "2021-09-07"
+author: "iamnogada"
 ---
 
 Cloud Native Application을 개발하기 위한 Resftul API 개발 방법을 설명함.

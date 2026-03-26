@@ -1,5 +1,7 @@
 ---
 title: "HTTPRoute 라우팅 및 검증"
+date: "2026-03-24"
+author: "noisonnoiton"
 description: 앱별 HTTPRoute 설계, NodePort 패치 설계, 배포 순서, Envoy access log 검증
 ---
 

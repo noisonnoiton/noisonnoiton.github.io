@@ -1,5 +1,7 @@
 ---
 title: "Envoy Gateway 구성"
+date: "2026-03-24"
+author: "noisonnoiton"
 description: AKS Dev 환경에서 Envoy Gateway v1.7.0의 GatewayClass, Gateway, EnvoyProxy, 정책 리소스 구성
 ---
 

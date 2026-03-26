@@ -1,5 +1,7 @@
 ---
 title: App. 환경설정
+date: "2021-09-10"
+author: "iamnogada"
 tags:
 ---
 
