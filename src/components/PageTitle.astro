@@ -1,0 +1,28 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+
+const route = Astro.locals.starlightRoute;
+const date = route?.entry?.data?.date as string | undefined;
+const author = route?.entry?.data?.author as string | undefined;
+---
+
+<Default {...Astro.props}><slot /></Default>
+
+{(date || author) && (
+  <div class="post-meta">
+    {date && <span>📅 {date}</span>}
+    {author && <span>✍️ {author}</span>}
+  </div>
+)}
+
+<style>
+  .post-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-3);
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+</style>
