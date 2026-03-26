@@ -1,5 +1,7 @@
 ---
 title: Basics
+date: "2021-08-16"
+author: "heyKim"
 tags:
 ---
 

@@ -1,7 +1,8 @@
 ---
 title: Modern API
+date: "2021-12-17"
+author: "jaemyeong.lee"
 tags:
- - Ref. Arch.
 ---
 
 - Database 를 기반으로 개발되는 Backend Service 를 빠르게 개발하는 목적으로 개발

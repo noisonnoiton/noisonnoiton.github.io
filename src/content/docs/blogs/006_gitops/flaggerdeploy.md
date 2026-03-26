@@ -1,5 +1,7 @@
 ---
 title: Flagger on EKS App Mesh
+date: "2021-07-28"
+author: "noisonnoiton"
 tags:
 ---
 

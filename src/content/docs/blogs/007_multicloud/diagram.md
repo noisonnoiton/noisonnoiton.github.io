@@ -1,5 +1,7 @@
 ---
 title: Multi Cluster 구축
+date: "2021-09-17"
+author: "jaemyeong.lee"
 ---
 
 - 구축 목표

@@ -1,5 +1,7 @@
 ---
 title: "n8n 기반 AI Agent Builder 설계와 구현"
+date: "2026-03-13"
+author: "noisonnoiton"
 description: n8n을 워크플로우 엔진으로 활용하되, 사용자가 n8n을 몰라도 Agent를 생성하고 실행할 수 있는 추상화 레이어 PoC
 ---
 

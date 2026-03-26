@@ -1,5 +1,7 @@
 ---
 title: Jupyter Hub
+date: "2021-05-30"
+author: "noisonnoiton"
 tags:
 ---
 

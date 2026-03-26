@@ -1,5 +1,7 @@
 ---
 title: "왜 Gateway API인가"
+date: "2026-03-24"
+author: "noisonnoiton"
 description: Kubernetes Ingress의 한계, Gateway API 표준 등장, NGINX Ingress Controller EOS까지 — 전환이 필요한 이유
 ---
 

@@ -1,5 +1,7 @@
 ---
 title: "Backstage IDP로 AI Agent Builder 통합"
+date: "2026-03-13"
+author: "noisonnoiton"
 description: n8n-poc AI Agent Builder를 Backstage 내부 개발자 포털에 플러그인으로 통합한 경험
 ---
 

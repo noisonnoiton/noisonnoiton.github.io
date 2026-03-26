@@ -1,5 +1,7 @@
 ---
 title: Bean
+date: "2021-09-10"
+author: "iamnogada"
 tags:
 ---
 

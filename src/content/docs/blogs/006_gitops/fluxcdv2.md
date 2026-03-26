@@ -1,5 +1,7 @@
 ---
 title: Flux v2 with AWS Managed Services
+date: "2021-07-27"
+author: "noisonnoiton"
 tags:
 ---
 

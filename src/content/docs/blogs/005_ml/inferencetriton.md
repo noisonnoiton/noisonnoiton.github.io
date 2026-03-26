@@ -1,5 +1,7 @@
 ---
 title: Triton Inference Server
+date: "2021-06-11"
+author: "noisonnoiton"
 tags:
 ---
 

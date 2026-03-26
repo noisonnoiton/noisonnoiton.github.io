@@ -1,6 +1,7 @@
 ---
 title: Amazon EKS Cluster
-tags:
+date: "2021-03-24"
+author: "noisonnoiton"
 ---
 
 ## Overview

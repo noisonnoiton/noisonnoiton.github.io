@@ -1,7 +1,8 @@
 ---
 title: Redis 성능 측정
+date: "2021-04-07"
+author: "noisonnoiton"
 tags:
- - Ref. Arch.
 ---
 
 ## Prerequisite

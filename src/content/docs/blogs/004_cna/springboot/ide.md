@@ -1,5 +1,7 @@
 ---
 title: IDE 구성
+date: "2021-09-10"
+author: "iamnogada"
 tags:
 ---
 
