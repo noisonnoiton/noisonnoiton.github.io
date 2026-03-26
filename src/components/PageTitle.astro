@@ -2,16 +2,17 @@
 import type { Props } from '@astrojs/starlight/props';
 import Default from '@astrojs/starlight/components/PageTitle.astro';
 
-const date = Astro.props.entry?.data?.date as string | undefined;
-const author = Astro.props.entry?.data?.author as string | undefined;
+const route = Astro.locals.starlightRoute;
+const date = route?.entry?.data?.date as string | undefined;
+const author = route?.entry?.data?.author as string | undefined;
 ---
 
 <Default {...Astro.props}><slot /></Default>
 
 {(date || author) && (
   <div class="post-meta">
-    {date && <span class="post-meta-date">📅 {date}</span>}
-    {author && <span class="post-meta-author">✍️ {author}</span>}
+    {date && <span>📅 {date}</span>}
+    {author && <span>✍️ {author}</span>}
   </div>
 )}
 
