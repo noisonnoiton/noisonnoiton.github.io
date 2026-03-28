@@ -1,0 +1,101 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+
+// 작성자 프로필 맵
+const authorProfiles: Record<string, { displayName: string; avatar: string; url: string }> = {
+  'noisonnoiton': {
+    displayName: 'noisonnoiton',
+    avatar: 'https://avatars.githubusercontent.com/u/39892319?v=4',
+    url: 'https://github.com/noisonnoiton',
+  },
+  'jaemyeong.lee': {
+    displayName: 'jaemyeong.lee',
+    avatar: 'https://avatars.githubusercontent.com/u/42926480?v=4',
+    url: 'https://github.com/jaemyeonglee',
+  },
+  'iamnogada': {
+    displayName: 'iamnogada',
+    avatar: 'https://avatars.githubusercontent.com/u/13878666?v=4',
+    url: 'https://github.com/iamnogada',
+  },
+  'heyKim': {
+    displayName: 'heyKim',
+    avatar: 'https://avatars.githubusercontent.com/u/35487539?v=4',
+    url: 'https://github.com/heyKim',
+  },
+  'yanghn04': {
+    displayName: 'yanghn04',
+    avatar: 'https://avatars.githubusercontent.com/u/21998949?v=4',
+    url: 'https://github.com/yanghn04',
+  },
+  'bae': {
+    displayName: 'bae',
+    avatar: 'https://avatars.githubusercontent.com/u/52666714?v=4',
+    url: 'https://github.com/OhYeYJYJ',
+  },
+};
+
+const route = Astro.locals.starlightRoute;
+const date = route?.entry?.data?.date as string | undefined;
+const authorKey = route?.entry?.data?.author as string | undefined;
+const author = authorKey ? authorProfiles[authorKey] : undefined;
+---
+
+<Default {...Astro.props}><slot /></Default>
+
+{(date || author) && (
+  <div class="post-meta not-content">
+    {date && (
+      <time class="post-date" datetime={date}>
+        📅 {date}
+      </time>
+    )}
+    {author && (
+      <a href={author.url} class="post-author">
+        <img src={author.avatar} alt={author.displayName} class="author-avatar" width="24" height="24" loading="eager" />
+        <span class="author-name">{author.displayName}</span>
+      </a>
+    )}
+  </div>
+)}
+
+<style>
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-3);
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .post-date {
+    color: var(--sl-color-gray-3);
+  }
+
+  .post-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    color: var(--sl-color-text-accent);
+    transition: color 0.2s;
+  }
+
+  .post-author:hover {
+    color: var(--sl-color-text);
+  }
+
+  .author-avatar {
+    border-radius: 9999px;
+    border: 1px solid var(--sl-color-gray-5);
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .author-name {
+    font-weight: 600;
+  }
+</style>
