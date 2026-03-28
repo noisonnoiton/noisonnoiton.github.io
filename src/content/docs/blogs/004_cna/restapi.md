@@ -2,7 +2,6 @@
 title: Restful API
 date: "2021-09-07"
 author: "iamnogada"
-tags:
 ---
 
 :::tip[Definition]

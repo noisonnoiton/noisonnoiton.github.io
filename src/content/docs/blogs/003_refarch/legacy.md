@@ -2,7 +2,6 @@
 title: Legacy Interface 개발
 date: "2021-03-31"
 author: "jaemyeong.lee"
-tags:
 ---
 
 ## Overview

@@ -1,15 +1,16 @@
 import { defineCollection, z } from 'astro:content';
 import { docsLoader } from '@astrojs/starlight/loaders';
 import { docsSchema } from '@astrojs/starlight/schema';
+import { blogSchema } from 'starlight-blog/schema';
 
 export const collections = {
 	docs: defineCollection({
 		loader: docsLoader(),
 		schema: docsSchema({
-			extend: z.object({
-				date: z.string().optional(),
+			extend: (context) => blogSchema(context).merge(z.object({
+				date: z.union([z.date(), z.string()]).optional(),
 				author: z.string().optional(),
-			}),
+			})),
 		}),
 	}),
 };

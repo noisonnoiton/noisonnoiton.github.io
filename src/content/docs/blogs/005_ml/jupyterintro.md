@@ -2,7 +2,6 @@
 title: Basics
 date: "2021-05-30"
 author: "noisonnoiton"
-tags:
 ---
 
 - Issue

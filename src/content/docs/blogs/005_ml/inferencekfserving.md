@@ -2,7 +2,6 @@
 title: KFServing
 date: "2021-06-12"
 author: "noisonnoiton"
-tags:
 ---
 
 ## Introduction
