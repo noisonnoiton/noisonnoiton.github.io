@@ -1,5 +1,7 @@
 ---
 title: Basics
+date: "2021-11-10"
+author: "noisonnoiton"
 ---
 
 API Design To-Do Preview

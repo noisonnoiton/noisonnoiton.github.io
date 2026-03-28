@@ -1,5 +1,7 @@
 ---
 title: MVP Introduction
+date: "2022-08-01"
+author: "noisonnoiton"
 ---
 
 Collab. Portal MVP (Minimum Viable Product) Introduction.

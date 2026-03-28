@@ -1,5 +1,7 @@
 ---
 title: Redis 활용
+date: "2022-07-30"
+author: "noisonnoiton"
 ---
 
 Redis 기반 Caching, Queue 관리 기능 검증
