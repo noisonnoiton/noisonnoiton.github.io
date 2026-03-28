@@ -2,7 +2,6 @@
 title: Redis HA with standalone
 date: "2021-04-14"
 author: "noisonnoiton"
-tags:
 ---
 
 - 제안배경

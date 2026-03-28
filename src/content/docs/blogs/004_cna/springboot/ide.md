@@ -2,7 +2,6 @@
 title: IDE 구성
 date: "2021-09-10"
 author: "iamnogada"
-tags:
 ---
 
 본 가이드에서는 [Visual Studio Code](https://code.visualstudio.com/)를 활용하여 설명하고 있어, Springboot을 위한 설정과 환경변수 내용을 설명 합니다.

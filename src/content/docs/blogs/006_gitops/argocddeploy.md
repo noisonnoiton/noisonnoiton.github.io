@@ -2,7 +2,6 @@
 title: ArgoCD 실습
 date: "2021-08-16"
 author: "heyKim"
-tags:
 ---
 
 ![ArgoCD GitOps CD](./images/argocd-flow.png)

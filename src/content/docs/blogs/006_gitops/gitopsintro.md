@@ -2,7 +2,6 @@
 title: GitOps
 date: "2021-07-27"
 author: "heyKim"
-tags:
 ---
 
 ## GitOps란

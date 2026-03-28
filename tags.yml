@@ -1,0 +1,51 @@
+tags:
+  movies:
+    label: "🎬 영화"
+    description: "영화 리뷰와 평가"
+    color: "#e74c3c"
+  books:
+    label: "📚 독서"
+    description: "책 리뷰와 독서 기록"
+    color: "#8e44ad"
+  travel:
+    label: "🧳 여행"
+    description: "여행 기록"
+    color: "#27ae60"
+  misc:
+    label: "🔍 이것저것"
+    description: "잡다한 이야기"
+    color: "#f39c12"
+  kubernetes:
+    label: "☸️ Kubernetes"
+    description: "Kubernetes 관련 기술 문서"
+    color: "#326ce5"
+  gateway-api:
+    label: "Gateway API"
+    description: "Kubernetes Gateway API"
+    color: "#3498db"
+  gitops:
+    label: "GitOps"
+    description: "GitOps, FluxCD, ArgoCD"
+    color: "#2ecc71"
+  ai:
+    label: "🤖 AI"
+    description: "AI, ML, Agent Builder"
+    color: "#9b59b6"
+  spring-boot:
+    label: "🍃 Spring Boot"
+    description: "Spring Boot 개발"
+    color: "#6aab35"
+  cloud-native:
+    label: "Cloud Native"
+    description: "Cloud Native Application"
+    color: "#1abc9c"
+  redis:
+    label: "Redis"
+    description: "Redis 성능, 고가용성"
+    color: "#dc382d"
+  security:
+    label: "🔐 Security"
+    description: "인증, Keycloak, Harbor"
+    color: "#e67e22"
+defaults:
+  color: "#6b7280"

@@ -2,7 +2,6 @@
 title: Basics
 date: "2021-07-28"
 author: "noisonnoiton"
-tags:
 ---
 
 Flux GitoOps 제품군이며, Kubernetes operating 을 위한 delivery 도구인, flagger 기본 기능 및 Canary custom resource 상세 정리.

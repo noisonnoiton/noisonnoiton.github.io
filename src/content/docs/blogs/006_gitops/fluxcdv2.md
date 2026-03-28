@@ -2,7 +2,6 @@
 title: Flux v2 with AWS Managed Services
 date: "2021-07-27"
 author: "noisonnoiton"
-tags:
 ---
 
 Flux v2 는 2020년 7월에 최초 release 되었으며, 현재는 참고 reference 가 그다지 많지는 않다. v1 과 v2 의 차이점을 공식 문서에서는 아래와 같이 간단하게 얘기하고 있다.

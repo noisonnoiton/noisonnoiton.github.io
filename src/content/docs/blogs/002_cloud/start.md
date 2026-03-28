@@ -2,7 +2,6 @@
 title: Quick Start
 date: "2021-03-24"
 author: "noisonnoiton"
-tags:
 ---
 
 AWS에 생성한 Resource 및 필요한 초기 설정 정리한 내역임

@@ -2,7 +2,6 @@
 title: Kubernetes
 date: "2021-09-07"
 author: "iamnogada"
-tags:
 ---
 
 ## Architecture

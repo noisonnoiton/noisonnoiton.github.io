@@ -2,7 +2,6 @@
 title: Basics
 date: "2021-07-27"
 author: "noisonnoiton"
-tags:
 ---
 
 Flux v2 의 Core Concepts 및 GOTK (GitOps Toolkit) components 정리.
