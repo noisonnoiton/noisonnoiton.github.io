@@ -115,9 +115,9 @@ export default defineConfig({
                   label: 'Gateway API',
                   collapsed: true,
                   items: [
-                    { label: '왜 Gateway API인가', slug: 'blogs/010_kubernetes/gateway-api-overview' },
+                    { label: 'K8s Native Gateway API', slug: 'blogs/010_kubernetes/gateway-api-overview' },
                     { label: 'Envoy Gateway 구성', slug: 'blogs/010_kubernetes/envoy-gateway-setup' },
-                    { label: 'HTTPRoute 라우팅 및 검증', slug: 'blogs/010_kubernetes/envoy-gateway-routing' },
+                    { label: 'HTTPRoute 검증', slug: 'blogs/010_kubernetes/envoy-gateway-routing' },
                   ],
                 },
                 {
