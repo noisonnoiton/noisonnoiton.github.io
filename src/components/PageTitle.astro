@@ -6,33 +6,33 @@ import Default from '@astrojs/starlight/components/PageTitle.astro';
 const authorProfiles: Record<string, { displayName: string; avatar: string; url: string }> = {
   'noisonnoiton': {
     displayName: 'noisonnoiton',
-    avatar: 'https://avatars.githubusercontent.com/u/48385288?v=4',
+    avatar: 'https://avatars.githubusercontent.com/u/39892319?v=4',
     url: 'https://github.com/noisonnoiton',
   },
   'jaemyeong.lee': {
     displayName: 'jaemyeong.lee',
-    avatar: 'https://ui-avatars.com/api/?name=JL&background=6B4C9A&color=fff&size=80',
-    url: '#',
+    avatar: 'https://avatars.githubusercontent.com/u/42926480?v=4',
+    url: 'https://github.com/jaemyeonglee',
   },
   'iamnogada': {
     displayName: 'iamnogada',
-    avatar: 'https://avatars.githubusercontent.com/u/49816609?v=4',
+    avatar: 'https://avatars.githubusercontent.com/u/13878666?v=4',
     url: 'https://github.com/iamnogada',
   },
   'heyKim': {
     displayName: 'heyKim',
-    avatar: 'https://ui-avatars.com/api/?name=HK&background=2E86AB&color=fff&size=80',
-    url: '#',
+    avatar: 'https://avatars.githubusercontent.com/u/35487539?v=4',
+    url: 'https://github.com/heyKim',
   },
   'yanghn04': {
     displayName: 'yanghn04',
-    avatar: 'https://ui-avatars.com/api/?name=YH&background=A23B72&color=fff&size=80',
-    url: '#',
+    avatar: 'https://avatars.githubusercontent.com/u/21998949?v=4',
+    url: 'https://github.com/yanghn04',
   },
   'bae': {
     displayName: 'bae',
-    avatar: 'https://ui-avatars.com/api/?name=B&background=F18F01&color=fff&size=80',
-    url: '#',
+    avatar: 'https://avatars.githubusercontent.com/u/52666714?v=4',
+    url: 'https://github.com/OhYeYJYJ',
   },
 };
 
@@ -52,7 +52,7 @@ const author = authorKey ? authorProfiles[authorKey] : undefined;
       </time>
     )}
     {author && (
-      <a href={author.url} class="post-author" class:list={[{ 'no-link': author.url === '#' }]}>
+      <a href={author.url} class="post-author">
         <img src={author.avatar} alt={author.displayName} class="author-avatar" width="24" height="24" loading="eager" />
         <span class="author-name">{author.displayName}</span>
       </a>
@@ -86,11 +86,6 @@ const author = authorKey ? authorProfiles[authorKey] : undefined;
 
   .post-author:hover {
     color: var(--sl-color-text);
-  }
-
-  .post-author.no-link {
-    color: var(--sl-color-gray-3);
-    pointer-events: none;
   }
 
   .author-avatar {
