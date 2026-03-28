@@ -9,7 +9,14 @@ authors:
   url: https://github.com/noisonnoiton
 ---
 
+import { Image } from 'astro:assets';
+import interior from '../../../assets/food/wednesday-dongtan/interior.jpg';
+import pastaRisotto from '../../../assets/food/wednesday-dongtan/pasta-risotto.jpg';
+import pastaCloseup from '../../../assets/food/wednesday-dongtan/pasta-closeup.jpg';
+
 > 동탄 센트럴파크 근처에서 파스타 맛집을 찾고 있다면? **웬즈데이 동탄센트럴파크점**을 추천합니다! 🍝
+
+<Image src={interior} alt="웬즈데이 동탄센트럴파크점 매장 내부" />
 
 ## 📍 가게 정보
 
@@ -20,7 +27,11 @@ authors:
 
 ## 🍽️ 오늘의 메뉴
 
+<Image src={pastaRisotto} alt="비스크파스타와 게살로제 리조또" />
+
 ### 비스크파스타 ⭐ 추천!
+
+<Image src={pastaCloseup} alt="비스크파스타 클로즈업 - 새우와 루꼴라 토핑" />
 
 새우향이 **완전 진해서** 한 입 먹는 순간 바다가 느껴지는 파스타! 비스크 소스가 진하고 풍미가 깊어서, 새우 좋아하는 분이라면 무조건 이거 드세요. 오늘의 MVP 메뉴입니다 👑
 
