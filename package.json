@@ -10,7 +10,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/rss": "^4.0.17",
+    "@astrojs/rss": "^4.0.18",
     "@astrojs/starlight": "^0.37.6",
     "astro": "^5.6.1",
     "astro-plantuml": "^0.1.4",
