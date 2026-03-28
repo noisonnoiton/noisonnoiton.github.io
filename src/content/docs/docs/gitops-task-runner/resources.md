@@ -1,5 +1,7 @@
 ---
 title: Resources
+date: "2021-11-11"
+author: "noisonnoiton"
 ---
 Definition of Service & API Resources
 

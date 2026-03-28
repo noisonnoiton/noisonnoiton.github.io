@@ -1,5 +1,7 @@
 ---
 title: RDB + ORM
+date: "2022-07-29"
+author: "noisonnoiton"
 ---
 
 RDB PostgreSQL 기반, node.js ORM 기능 검토.

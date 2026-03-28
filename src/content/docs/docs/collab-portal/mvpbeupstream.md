@@ -1,5 +1,7 @@
 ---
 title: Upstream Process (Backend)
+date: "2022-08-02"
+author: "noisonnoiton"
 ---
 
 Collab. Portal 의 순거래 관련 Backend 기능에 대한 설계 및 개발.

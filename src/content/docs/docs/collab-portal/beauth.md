@@ -1,5 +1,7 @@
 ---
 title: Authentication
+date: "2022-08-04"
+author: "noisonnoiton"
 ---
 
 Nest 기반 인증 기능 검토.

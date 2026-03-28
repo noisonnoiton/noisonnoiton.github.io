@@ -1,5 +1,7 @@
 ---
 title: Platform API
+date: "2021-11-07"
+author: "jaemyeong.lee"
 ---
 
 ## Deployment View
