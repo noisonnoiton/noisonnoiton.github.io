@@ -1,0 +1,558 @@
+<!DOCTYPE html><html lang="en" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-bguv2lll"> <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>tech | noisonnoiton</title><link rel="canonical" href="https://noisonnoiton.github.io/en/blog/tags/tech/"/><link rel="alternate" hreflang="ko" href="https://noisonnoiton.github.io/blog/tags/tech/"/><link rel="alternate" hreflang="en" href="https://noisonnoiton.github.io/en/blog/tags/tech/"/><link rel="sitemap" href="/sitemap-index.xml"/><link rel="alternate" type="application/rss+xml" title="noisonnoiton RSS" href="/rss.xml"/><script async src="https://www.googletagmanager.com/gtag/js?id=G-0BHX9CF6JP"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-0BHX9CF6JP');</script><link href="https://noisonnoiton.github.io/blog/rss.xml" rel="alternate" title="noisonnoiton blog" type="application/rss+xml"/><link rel="shortcut icon" href="/favicon.png" type="image/png"/><meta name="generator" content="Astro v6.1.1"/><meta name="generator" content="Starlight v0.38.2"/><meta property="og:title" content="tech"/><meta property="og:url" content="https://noisonnoiton.github.io/en/blog/tags/tech/"/><meta property="og:locale" content="en"/><meta name="google-site-verification" content="5Cf8lzznSYAmH9JYOQxyE3AsnKWj_ZeCZ8P8jxnP3L4"/><meta name="naver-site-verification" content="d3c1f1b07eacea0cd9a3c3c03468e5c8bafe6393"/><meta property="og:type" content="website"/><meta property="og:site_name" content="noisonnoiton"/><meta name="twitter:card" content="summary_large_image"/><meta name="author" content="noisonnoiton"/> <script>
+(function() {
+  var ALL_LOCALES = [
+    { code: 'ko', label: '🇰🇷 한국어', prefix: '' },
+    { code: 'en', label: '🇺🇸 English', prefix: '/en' },
+    { code: 'fr', label: '🇫🇷 Français', prefix: '/fr' },
+  ];
+  var STORAGE_KEY = '***';
+  var ROOT = ALL_LOCALES[0];
+
+  function availableLocales(bare) {
+    if (bare === '/') return ALL_LOCALES;
+    return ALL_LOCALES.filter(function(locale) { return locale.code !== 'fr'; });
+  }
+
+  function detectCurrent() {
+    var p = window.location.pathname;
+    for (var i = 1; i < ALL_LOCALES.length; i++) {
+      if (p === ALL_LOCALES[i].prefix || p.startsWith(ALL_LOCALES[i].prefix + '/')) return ALL_LOCALES[i];
+    }
+    return ROOT;
+  }
+
+  function stripLocale(path) {
+    for (var i = 1; i < ALL_LOCALES.length; i++) {
+      if (path === ALL_LOCALES[i].prefix) return '/';
+      if (path.startsWith(ALL_LOCALES[i].prefix + '/')) return path.slice(ALL_LOCALES[i].prefix.length);
+    }
+    return path;
+  }
+
+  function buildPath(locale, bare) {
+    if (locale.prefix === '') return bare;
+    return locale.prefix + (bare === '/' ? '/' : bare);
+  }
+
+  function autoRedirect() {
+    var pref = localStorage.getItem(STORAGE_KEY);
+    if (!pref) return;
+    var current = detectCurrent();
+    if (current.code === pref) return;
+    var bare = stripLocale(window.location.pathname);
+    var locales = availableLocales(bare);
+    var target = locales.find(function(l) { return l.code === pref; });
+    if (!target) return;
+    var dest = buildPath(target, bare);
+    fetch(dest, { method: 'HEAD' }).then(function(r) {
+      if (r.ok) window.location.replace(dest);
+    }).catch(function() {});
+  }
+
+  function createSelector() {
+    var header = document.querySelector('header.header');
+    if (!header || document.getElementById('locale-selector')) return;
+
+    var current = detectCurrent();
+    var bare = stripLocale(window.location.pathname);
+    var locales = availableLocales(bare);
+    document.querySelectorAll('starlight-lang-select').forEach(function(el) {
+      // Keep the custom selector next to Search; remove Starlight's duplicate.
+      el.style.display = 'none';
+    });
+
+    var wrap = document.createElement('div');
+    wrap.id = 'locale-selector';
+    wrap.style.cssText = 'position:relative;display:inline-flex;align-items:center;z-index:100;';
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = current.label;
+    btn.setAttribute('aria-label', 'Select language');
+    btn.style.cssText = [
+      'display:inline-flex;align-items:center;gap:0.25rem',
+      'padding:0.25rem 0.55rem',
+      'border:1px solid var(--sl-color-gray-5)',
+      'border-radius:1rem',
+      'font-size:0.78rem;font-weight:500',
+      'color:var(--sl-color-text)',
+      'background:transparent',
+      'cursor:pointer',
+      'white-space:nowrap',
+      'transition:background 0.15s',
+    ].join(';');
+    btn.addEventListener('mouseenter', function() { btn.style.background = 'var(--sl-color-gray-6)'; });
+    btn.addEventListener('mouseleave', function() { btn.style.background = 'transparent'; });
+
+    var menu = document.createElement('div');
+    menu.style.cssText = [
+      'display:none;position:absolute;top:calc(100% + 4px);right:0',
+      'background:var(--sl-color-bg-nav)',
+      'border:1px solid var(--sl-color-gray-5)',
+      'border-radius:0.5rem',
+      'padding:0.25rem 0',
+      'box-shadow:0 4px 12px rgba(0,0,0,0.15)',
+      'min-width:130px',
+      'z-index:200',
+    ].join(';');
+
+    locales.forEach(function(loc) {
+      var item = document.createElement('a');
+      item.textContent = loc.label;
+      item.href = buildPath(loc, bare);
+      item.style.cssText = [
+        'display:block;padding:0.4rem 0.75rem',
+        'font-size:0.8rem;color:var(--sl-color-text)',
+        'text-decoration:none;white-space:nowrap',
+        'transition:background 0.1s',
+      ].join(';');
+
+      if (loc.code === current.code) {
+        item.style.fontWeight = '700';
+        item.style.background = 'var(--sl-color-gray-6)';
+      }
+
+      item.addEventListener('mouseenter', function() { item.style.background = 'var(--sl-color-gray-6)'; });
+      item.addEventListener('mouseleave', function() {
+        item.style.background = loc.code === current.code ? 'var(--sl-color-gray-6)' : 'transparent';
+      });
+
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.setItem(STORAGE_KEY, loc.code);
+        if (loc.code === current.code) { menu.style.display = 'none'; return; }
+        var dest = buildPath(loc, bare);
+        fetch(dest, { method: 'HEAD' }).then(function(r) {
+          if (r.ok) {
+            window.location.href = dest;
+          } else {
+            window.location.href = loc.prefix || '/';
+          }
+        }).catch(function() {
+          window.location.href = loc.prefix || '/';
+        });
+      });
+
+      menu.appendChild(item);
+    });
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function() { menu.style.display = 'none'; });
+
+    wrap.appendChild(btn);
+    wrap.appendChild(menu);
+
+    var search = header.querySelector('site-search') || header.querySelector('.search-toggle');
+    if (search) {
+      search.parentElement.insertBefore(wrap, search);
+    } else {
+      header.appendChild(wrap);
+    }
+  }
+
+  function init() {
+    autoRedirect();
+    createSelector();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', function() {
+    var old = document.getElementById('locale-selector');
+    if (old) old.remove();
+    createSelector();
+  });
+})();
+</script><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/_astro/print.DNXP8c50.css" media="print"><style>[data-has-toc] :is(.right-sidebar-panel,mobile-starlight-toc){display:none}[data-has-toc] .main-frame{padding-top:var(--sl-nav-height)}.preview:where(.astro-dr56dw7m){display:flex;flex-direction:column;gap:1.5rem}h2:where(.astro-dr56dw7m){margin-bottom:1.5rem}h2:where(.astro-dr56dw7m) a:where(.astro-dr56dw7m){text-decoration:none}.posts:where(.astro-xaz7kpyh){display:flex;flex-direction:column;gap:3rem}
+</style>
+<link rel="stylesheet" href="/_astro/middleware.DPGkAFlG.css">
+<style>.archive-total:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-size:var(--sl-text-sm);margin-block:0 1rem}.archive-years:where(.astro-bdepfles){display:flex;flex-wrap:wrap;gap:.5rem;margin-block-end:2.5rem;position:sticky;top:0;z-index:1;background:var(--sl-color-bg);padding-block:.6rem}.archive-year-chip:where(.astro-bdepfles){border:1px solid var(--sl-color-gray-5);border-radius:999px;padding:.25rem .85rem;text-decoration:none;color:var(--sl-color-white);font-size:var(--sl-text-sm);white-space:nowrap}.archive-year-chip:where(.astro-bdepfles):hover{background:var(--sl-color-gray-6);border-color:var(--sl-color-accent)}.archive-year-count:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-weight:400;font-size:.85em}.archive-section:where(.astro-bdepfles){margin-block-end:2.5rem}.archive-section:where(.astro-bdepfles) h2:where(.astro-bdepfles){border-block-end:1px solid var(--sl-color-gray-5);padding-block-end:.35rem;margin-block-end:1rem;scroll-margin-block-start:6rem}.archive-month:where(.astro-bdepfles){margin-block-end:1.25rem}.archive-month:where(.astro-bdepfles) h3:where(.astro-bdepfles){font-size:var(--sl-text-base);color:var(--sl-color-gray-2);margin-block:0 .5rem}.archive-month:where(.astro-bdepfles) ul:where(.astro-bdepfles){list-style:none;padding:0;margin:0}.archive-month:where(.astro-bdepfles) li:where(.astro-bdepfles){display:flex;gap:.75rem;align-items:baseline;padding-block:.3rem}.archive-month:where(.astro-bdepfles) time:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-size:var(--sl-text-xs);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:2.75rem;text-align:right}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles){color:var(--sl-color-gray-1);text-decoration:none}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles):hover{color:var(--sl-color-text-accent);text-decoration:underline}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles):visited{color:var(--sl-color-gray-3)}@media(max-width:42rem){.archive-month:where(.astro-bdepfles) li:where(.astro-bdepfles){flex-direction:row;gap:.6rem}.archive-month:where(.astro-bdepfles) time:where(.astro-bdepfles){min-width:2.25rem}}
+.count:where(.astro-bu4jbvld){font-size:var(--sl-text-xl);font-weight:600}
+</style>
+<link rel="stylesheet" href="/_astro/tag-page@_@astro.DavP-_5P.css">
+<link rel="stylesheet" href="/_astro/tags-index@_@astro.-NwLVRix.css">
+<style>.content-panel:first-of-type{display:none}.content-panel:nth-of-type(2){border-top:none}
+</style>
+<link rel="stylesheet" href="/_astro/Code.3GXCdK6h.css"><script type="module" src="/_astro/page.BIhdncjw.js"></script><style>.photo-gallery:where(.astro-zbo42owe){overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:1.5rem 0;border-radius:12px}.photo-gallery-track:where(.astro-zbo42owe){display:flex;gap:12px;min-width:min-content}.photo-gallery-item:where(.astro-zbo42owe){flex:0 0 auto;border-radius:10px;overflow:hidden}.photo-gallery-item:where(.astro-zbo42owe) img{height:360px;width:auto;object-fit:cover;display:block}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar{height:6px}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-track{background:transparent}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-thumb{background:var(--sl-color-gray-4);border-radius:3px}
+</style><style>.photo-gallery:where(.astro-zbo42owe){overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:1.5rem 0;border-radius:12px}.photo-gallery-track:where(.astro-zbo42owe){display:flex;gap:12px;min-width:min-content}.photo-gallery-item:where(.astro-zbo42owe){flex:0 0 auto;border-radius:10px;overflow:hidden}.photo-gallery-item:where(.astro-zbo42owe) img{height:360px;width:auto;object-fit:cover;display:block}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar{height:6px}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-track{background:transparent}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-thumb{background:var(--sl-color-gray-4);border-radius:3px}
+</style></head> <body class="astro-bguv2lll"> <a href="#_top" class="astro-7q3lir66">Skip to content</a> <div class="page sl-flex astro-vrdttmbt"> <header class="header astro-vrdttmbt"><div class="header astro-kmkmnagf"> <div class="title-wrapper sl-flex astro-kmkmnagf"> <a href="/en" class="site-title sl-flex astro-m46x6ez3">  <img class="astro-m46x6ez3" alt="춘식이" src="/_astro/choonsik.CaiAjGH-.png" width="1200" height="1200">  <span class="astro-m46x6ez3" translate="no"> noisonnoiton </span> </a> </div> <div class="sl-flex print:hidden astro-kmkmnagf"> <site-search class="astro-kmkmnagf astro-v37mnknz" data-translations="{&#34;placeholder&#34;:&#34;Search&#34;}"> <button data-open-modal disabled aria-label="Search" aria-keyshortcuts="Control+K" class="astro-v37mnknz"> <svg aria-hidden="true" class="astro-v37mnknz astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg> <span class="sl-hidden md:sl-block astro-v37mnknz" aria-hidden="true">Search</span> <kbd class="sl-hidden md:sl-flex astro-v37mnknz" style="display: none;"> <kbd class="astro-v37mnknz">Ctrl</kbd><kbd class="astro-v37mnknz">K</kbd> </kbd> </button> <dialog style="padding:0" aria-label="Search" class="astro-v37mnknz"> <div class="dialog-frame sl-flex astro-v37mnknz">  <button data-close-modal class="sl-flex md:sl-hidden astro-v37mnknz"> Cancel </button> <div class="search-container astro-v37mnknz"> <div id="starlight__search" class="astro-v37mnknz"></div> </div> </div> </dialog> </site-search>  <script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.BdDgbKxW.js"></script>  </div> <div class="sl-hidden md:sl-flex print:hidden right-group astro-kmkmnagf"> <div class="sl-flex social-icons astro-kmkmnagf"> <a href="https://github.com/noisonnoiton" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">GitHub</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://noisonnoiton.github.io/blog/rss.xml" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">RSS</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M2.88 16.88a3 3 0 0 0 0 4.24 3 3 0 0 0 4.24 0 3 3 0 0 0-4.24-4.24Zm2.83 2.83a1 1 0 0 1-1.42-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42ZM5 12a1 1 0 0 0 0 2 5 5 0 0 1 5 5 1 1 0 0 0 2 0 7 7 0 0 0-7-7Zm0-4a1 1 0 0 0 0 2 9 9 0 0 1 9 9 1 1 0 0 0 2 0 11.08 11.08 0 0 0-3.22-7.78A11.08 11.08 0 0 0 5 8Zm10.61.39A15.11 15.11 0 0 0 5 4a1 1 0 0 0 0 2 13 13 0 0 1 13 13 1 1 0 0 0 2 0 15.11 15.11 0 0 0-4.39-10.61Z"/></svg></a> </div> <div class="astro-eboeziq4"> <a href="/en/blog/" class="astro-eboeziq4">noisonnoiton blog</a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">Select theme</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="dark" class="astro-4yphtoen">Dark</option><option value="light" class="astro-4yphtoen">Light</option><option value="auto" selected class="astro-4yphtoen">Auto</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script> <script type="module">const r="starlight-theme",o=e=>e==="auto"||e==="dark"||e==="light"?e:"auto",c=()=>o(typeof localStorage<"u"&&localStorage.getItem(r));function n(e){typeof localStorage<"u"&&localStorage.setItem(r,e==="light"||e==="dark"?e:"")}const l=()=>matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";function t(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e==="auto"?l():e,n(e)}matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{c()==="auto"&&t("auto")});class s extends HTMLElement{constructor(){super(),t(c()),this.querySelector("select")?.addEventListener("change",a=>{a.currentTarget instanceof HTMLSelectElement&&t(o(a.currentTarget.value))})}}customElements.define("starlight-theme-select",s);</script> <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">Select language</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="/blog/tags/tech/" class="astro-4yphtoen">한국어</option><option value="/en/blog/tags/tech/" selected class="astro-4yphtoen">English</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label></starlight-lang-select><script type="module">class s extends HTMLElement{constructor(){super();const e=this.querySelector("select");e&&(e.addEventListener("change",t=>{t.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=t.currentTarget.value)}),window.addEventListener("pageshow",t=>{if(!t.persisted)return;const n=e.querySelector("option[selected]")?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}}customElements.define("starlight-lang-select",s);</script> </div> </div></header> <nav class="sidebar print:hidden astro-vrdttmbt" aria-label="Main"> <starlight-menu-button class="print:hidden astro-jif73yzw"> <button aria-expanded="false" aria-label="Menu" aria-controls="starlight__sidebar" class="sl-flex md:sl-hidden astro-jif73yzw"> <svg aria-hidden="true" class="open-menu astro-jif73yzw astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg> <svg aria-hidden="true" class="close-menu astro-jif73yzw astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg> </button> </starlight-menu-button> <script type="module">class s extends HTMLElement{constructor(){super(),this.btn=this.querySelector("button"),this.btn.addEventListener("click",()=>this.toggleExpanded());const t=this.closest("nav");t&&t.addEventListener("keyup",e=>this.closeOnEscape(e))}setExpanded(t){this.setAttribute("aria-expanded",String(t)),document.body.toggleAttribute("data-mobile-menu-expanded",t)}toggleExpanded(){this.setExpanded(this.getAttribute("aria-expanded")!=="true")}closeOnEscape(t){t.code==="Escape"&&(this.setExpanded(!1),this.btn.focus())}}customElements.define("starlight-menu-button",s);</script>  <div id="starlight__sidebar" class="sidebar-pane astro-vrdttmbt"> <div class="sidebar-content sl-flex astro-vrdttmbt"> <nav class="sidebar-switcher astro-ssfzsv2f" aria-label="Primary sections"> <a class="sidebar-switcher-link astro-ssfzsv2f" href="/en/blogs/010_kubernetes/">Tech</a> <a class="sidebar-switcher-link sidebar-archive-link astro-ssfzsv2f" href="/en/archive/">📅 Archive (by year)</a> <div class="sidebar-section-divider astro-ssfzsv2f" role="separator"></div> <a class="sidebar-switcher-link astro-ssfzsv2f" href="/en/blog/">Blog</a> </nav> <sl-sidebar-state-persist data-hash="13c5j21" class="astro-kku4brbg"> <script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script>  <ul class="top-level astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/" class="large astro-3ii7xxms"> <span class="astro-3ii7xxms">All posts</span>  </a> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Featured posts</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="0"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/poppy-birth/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🐶 뽀삐 탄생기 — 이 블로그를 돌보는 AI 강아지</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Recent posts</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="1"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/poppy-migration/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🐶 뽀삐 이사 가던 날 — VM 마이그레이션 &amp; OpenClaw 버전업</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/google-cloud-onboard-2026/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">☁️ Google Cloud OnBoard 2026 상반기 — AI의 방향성을 엿보다</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/geudaeege-dongtan/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🦀 그대에게 동탄점 — 생일날 소고기 + 킹크랩 풀코스!</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/datadog-live-seoul-2026/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🐕 Datadog Live Seoul 2026 — AI × Observability의 미래</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/maison-hannam/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🌸 메종 한남 — 한강뷰 테라스에서 즐기는 스테이크 런치 코스</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Tags</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="2"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/tags/food/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">food (6)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/맛집/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">맛집 (6)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/ai/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">ai (4)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/동탄/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">동탄 (4)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/tech/" aria-current="page" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">tech (2)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/azure/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">azure (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/datadog/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Datadog (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/google-cloud/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Google Cloud (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/movies/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">movies (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/observability/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Observability (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/openclaw/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">openclaw (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/ops/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">ops (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/고기/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">고기 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/소고기/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">소고기 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/코스요리/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">코스요리 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/킹크랩/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">킹크랩 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/한남동/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">한남동 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/회/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">회 (1)</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Authors</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="3"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/authors/chocolat423/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">chocolat423 (8)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/authors/뽀삐-/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">뽀삐 🐶 (2)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/authors/noisonnoiton/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">noisonnoiton (1)</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <a href="/en/blog/rss.xml" class="large astro-3ii7xxms"> <span class="astro-3ii7xxms">RSS</span>  </a> </li> </ul>  <script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script> </sl-sidebar-state-persist> <div class="md:sl-hidden"> <div class="mobile-preferences sl-flex astro-wu23bvmt"> <div class="social-icons astro-wu23bvmt"> <a href="https://github.com/noisonnoiton" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">GitHub</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://noisonnoiton.github.io/blog/rss.xml" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">RSS</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M2.88 16.88a3 3 0 0 0 0 4.24 3 3 0 0 0 4.24 0 3 3 0 0 0-4.24-4.24Zm2.83 2.83a1 1 0 0 1-1.42-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42ZM5 12a1 1 0 0 0 0 2 5 5 0 0 1 5 5 1 1 0 0 0 2 0 7 7 0 0 0-7-7Zm0-4a1 1 0 0 0 0 2 9 9 0 0 1 9 9 1 1 0 0 0 2 0 11.08 11.08 0 0 0-3.22-7.78A11.08 11.08 0 0 0 5 8Zm10.61.39A15.11 15.11 0 0 0 5 4a1 1 0 0 0 0 2 13 13 0 0 1 13 13 1 1 0 0 0 2 0 15.11 15.11 0 0 0-4.39-10.61Z"/></svg></a> </div> <div class="astro-eboeziq4"> <a href="/en/blog/" class="astro-eboeziq4">noisonnoiton blog</a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">Select theme</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="dark" class="astro-4yphtoen">Dark</option><option value="light" class="astro-4yphtoen">Light</option><option value="auto" selected class="astro-4yphtoen">Auto</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script>  <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">Select language</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="/blog/tags/tech/" class="astro-4yphtoen">한국어</option><option value="/en/blog/tags/tech/" selected class="astro-4yphtoen">English</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label></starlight-lang-select> </div> </div> </div> </div> </nav> <div class="main-frame astro-vrdttmbt">  <script type="module">const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);</script> <div class="lg:sl-flex astro-67yu43on"> <aside class="right-sidebar-container print:hidden astro-67yu43on"> <div class="right-sidebar astro-67yu43on"> <script type="module" src="/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.hwBsy0Mo.js"></script><script type="module" src="/_astro/TableOfContents.astro_astro_type_script_index_0_lang.FuRcXuRY.js"></script><div class="lg:sl-hidden astro-pb3aqygn"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-doynk5tl"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-doynk5tl"><details id="starlight__mobile-toc" class="astro-doynk5tl"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-doynk5tl"><span class="toggle sl-flex astro-doynk5tl">On this page<svg aria-hidden="true" class="caret astro-doynk5tl astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-doynk5tl"></span></summary><div class="dropdown astro-doynk5tl"><ul class="isMobile astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Overview</span> </a>  </li> </ul></div></details></nav></mobile-starlight-toc></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-pb3aqygn"><div class="sl-container astro-pb3aqygn"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Overview</span> </a>  </li> </ul></nav></starlight-toc></div></div> </div> </aside> <div class="main-pane astro-67yu43on">  <main class="astro-bguv2lll" lang="en" dir="ltr">   <div class="kakao-ad-container kakao-ad-top astro-kggsjsm4"> <!-- PC: 728x90 --> <div class="ad-pc astro-kggsjsm4"> <ins class="kakao_ad_area astro-kggsjsm4" style="display:none;" data-ad-unit="DAN-zPDP0gYVaGwOEH3v" data-ad-width="728" data-ad-height="90"></ins> </div> <!-- Mobile: 250x250 --> <div class="ad-mobile astro-kggsjsm4"> <ins class="kakao_ad_area astro-kggsjsm4" style="display:none;" data-ad-unit="DAN-zHXbzhtivpd6MTA0" data-ad-width="250" data-ad-height="250"></ins> </div> </div> <script src="//t1.daumcdn.net/kas/static/ba.min.js" async></script> <script type="module" src="/_astro/ImageZoom.astro_astro_type_script_index_0_lang.J1tlcSSG.js"></script> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <h1 id="_top" class="astro-j6tvhyss">tech</h1>   </div> </div> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <starlight-image-zoom> <template class="astro-vjux6bgf"> <dialog class="starlight-image-zoom-dialog astro-vjux6bgf"> <button aria-label="Unzoom image" class="starlight-image-zoom-control astro-vjux6bgf"> <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24" class="astro-vjux6bgf"> <use href="#starlight-image-zoom-icon-unzoom" class="astro-vjux6bgf"></use> </svg> </button> <figure class="astro-vjux6bgf"></figure> </dialog> </template> <svg xmlns="http://www.w3.org/2000/svg" style="display:none" class="astro-vjux6bgf"> <symbol id="starlight-image-zoom-icon-zoom" viewBox="0 0 24 24" class="astro-vjux6bgf"> <path d="M9.79 12.79 4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38 1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42ZM21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38Z" class="astro-vjux6bgf"></path> </symbol> <symbol id="starlight-image-zoom-icon-unzoom" viewBox="0 0 24 24" class="astro-vjux6bgf"> <path d="M21.71 2.29a1 1 0 0 0-1.42 0l-5.79 5.8V6.5a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38 1 1 0 0 0 .54.54 1 1 0 0 0 .38.08h4a1 1 0 0 0 0-2h-1.59l5.8-5.79a1 1 0 0 0 0-1.42ZM10.88 12.58a1 1 0 0 0-.38-.08h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l5.79-5.8v1.59a1 1 0 0 0 2 0v-4a1 1 0 0 0-.08-.38 1 1 0 0 0-.54-.54Z" class="astro-vjux6bgf"></path> </symbol> </svg> </starlight-image-zoom>    <div class="sl-markdown-content">    <div class="count astro-bu4jbvld">2 posts with the tag “tech”</div> <div class="posts astro-xaz7kpyh"> <article class="preview astro-dr56dw7m"> <header class="astro-dr56dw7m"> <h2 class="astro-dr56dw7m"> <a href="/en/blog/google-cloud-onboard-2026/" class="astro-dr56dw7m">☁️ Google Cloud OnBoard 2026 상반기 — AI의 방향성을 엿보다</a> </h2>  <div class="metadata not-content astro-2oxtfctb"> <div class="dates astro-2oxtfctb"> <time datetime="2026-04-30T00:00:00.000Z" class="astro-2oxtfctb"> Apr 30, 2026 </time>    </div> <div class="authors astro-2oxtfctb"> <div class="author astro-kbhsbk7c"><img src="https://www.gravatar.com/avatar/?d=mp&#38;s=64" alt="chocolat423" loading="eager" decoding="async" width="40" height="40" class="astro-kbhsbk7c"><div class="text astro-kbhsbk7c"> <div class="name astro-kbhsbk7c">chocolat423</div>  </div> </div> </div>  </div> </header> <div class="sl-markdown-content astro-dr56dw7m"> <blockquote>
+<p>구글이 AI에 어떤 노력을 기울이고 있고, 앞으로 어디로 가려는지 — 대략적인 방향성을 알 수 있었던 좋은 시간이었다 ☁️</p>
+</blockquote>
+<div class="sl-heading-wrapper level-h2"><h2 id="-행사-정보">📍 행사 정보</h2><a class="sl-anchor-link" href="#-행사-정보"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📍 행사 정보”</span></a></div>
+<ul>
+<li><strong>행사명</strong>: 2026년 상반기 Google Cloud OnBoard</li>
+<li><strong>일시</strong>: 2026년 4월 30일(수) 10:00 ~ 17:00</li>
+<li><strong>장소</strong>: 웨스틴 서울 파르나스 (서울 강남구 봉은사로 524)</li>
+<li><strong>공식 사이트</strong>: <a href="https://cloudonair.withgoogle.com/events/google-cloud-onboard-h1">Google Cloud OnBoard H1 2026</a></li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-오전-키노트--google의-ai-전략">🎤 오전 키노트 — Google의 AI 전략</h2><a class="sl-anchor-link" href="#-오전-키노트--google의-ai-전략"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🎤 오전 키노트 — Google의 AI 전략”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img52.C-uY94gB_ZDrRPd.webp" alt="키노트 - Hello OnBoarder! Ruth Sun (Managing Director, Google Cloud)" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img53.DymmEcr7_Z150bSv.webp" alt="Google Cloud for AI - 배일호 (Customer Engineering Manager)" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>아침부터 구글의 빅 피처들이 쏟아졌다. 웨스틴 서울 파르나스의 넓은 홀이 가득 찰 정도로 참석자가 많았다!</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="ruth-sun--hello-onboarder">Ruth Sun — Hello OnBoarder!</h3><a class="sl-anchor-link" href="#ruth-sun--hello-onboarder"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “Ruth Sun — Hello OnBoarder!”</span></a></div>
+<p>Google Cloud Managing Director가 직접 오프닝. Google Cloud가 AI 시대에 어떤 포지션을 잡으려 하는지 큰 그림을 보여줬다. “클라우드는 이제 AI를 위한 플랫폼”이라는 메시지가 확실했다.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="배일호--google-cloud-for-ai">배일호 — Google Cloud for AI</h3><a class="sl-anchor-link" href="#배일호--google-cloud-for-ai"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “배일호 — Google Cloud for AI”</span></a></div>
+<p>Customer Engineering Manager가 Google Cloud의 AI 인프라와 서비스를 소개. TPU, Vertex AI, Gemini API… 엔터프라이즈에서 AI를 어떻게 실질적으로 도입할 수 있는지 방향을 제시했다.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-오픈-모델의-시대--gemma--model-garden">🧠 오픈 모델의 시대 — Gemma &#x26; Model Garden</h2><a class="sl-anchor-link" href="#-오픈-모델의-시대--gemma--model-garden"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🧠 오픈 모델의 시대 — Gemma &#x26; Model Garden”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img54.DDiSkT4s_1ha2bQ.webp" alt="Why Gemma? Why Open LLM models matter to Business - 장규혁 (Google DeepMind)" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img55.B3axtS0a_ZBtEC4.webp" alt="200+ models in the Model Garden - Gemini 3, Imagen 4, Veo 3 등" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<div class="sl-heading-wrapper level-h3"><h3 id="장규혁-google-deepmind--why-open-llm-models-matter-to-business">장규혁 (Google DeepMind) — Why Open LLM models matter to Business?</h3><a class="sl-anchor-link" href="#장규혁-google-deepmind--why-open-llm-models-matter-to-business"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “장규혁 (Google DeepMind) — Why Open LLM models matter to Business?”</span></a></div>
+<p>이 세션이 개인적으로 가장 인상 깊었다! <strong>Gemma</strong> 오픈 모델이 왜 필요한지, 기업이 오픈 LLM을 어떻게 활용할 수 있는지를 설명했다.</p>
+<p>핵심 포인트:</p>
+<ul>
+<li>🔓 오픈 모델 = 기업이 자체 인프라에서 커스터마이징 가능</li>
+<li>💰 API 호출 비용 절감 + 데이터 프라이버시 확보</li>
+<li>🎯 특정 도메인에 파인튜닝해서 전문가 모델로 활용</li>
+</ul>
+<div class="sl-heading-wrapper level-h3"><h3 id="200-models-in-the-model-garden">200+ Models in the Model Garden</h3><a class="sl-anchor-link" href="#200-models-in-the-model-garden"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “200+ Models in the Model Garden”</span></a></div>
+<p>Google Cloud의 <strong>Model Garden</strong>에 200개 이상의 모델! Gemini 3, Imagen 4, Veo 3 같은 자체 모델뿐 아니라, OpenAI, Meta Llama, Mistral AI, Alibaba Qwen, DeepSeek 등 주요 오픈 모델까지 MaaS(Model as a Service)로 제공. 한 곳에서 다 쓸 수 있다는 게 매력적!</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-오후-트랙--4개-병렬-세션">📅 오후 트랙 — 4개 병렬 세션</h2><a class="sl-anchor-link" href="#-오후-트랙--4개-병렬-세션"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📅 오후 트랙 — 4개 병렬 세션”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/schedule.B1pRY2Cb_1gKYHt.webp" alt="Google Cloud OnBoard 2026 트랙 스케줄 전체" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<div class="sl-heading-wrapper level-h3"><h3 id="트랙-구성">트랙 구성</h3><a class="sl-anchor-link" href="#트랙-구성"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “트랙 구성”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>시간</th><th>세션</th><th>발표자</th></tr></thead><tbody><tr><td>10:00~10:10</td><td>Welcoming with Google Skills</td><td>루스 선, Managing Director</td></tr><tr><td>10:10~10:40</td><td>Google Cloud for AI</td><td>김일호, Customer Engineering Manager</td></tr><tr><td>10:40~11:10</td><td>Google DeepMind</td><td>최현정, Senior Engineering Director</td></tr><tr><td>11:10~11:40</td><td>Why Open LLM models matter to Business?</td><td>장규혁, Senior Staff Software Engineer</td></tr><tr><td>11:40~13:00</td><td><strong>Lunch and Learning Zone</strong> 🍽️</td><td></td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="오후-4개-트랙">오후 4개 트랙</h3><a class="sl-anchor-link" href="#오후-4개-트랙"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “오후 4개 트랙”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>트랙</th><th>주제</th><th>주요 세션</th></tr></thead><tbody><tr><td>🔴 <strong>Track 1</strong></td><td>AI Build-up</td><td>에이전트 AI 구축 (ADK, A2A, MCP), Cloud Run 에이전트, RAG + Multi-layered Memory Architecture</td></tr><tr><td>🟡 <strong>Track 2</strong></td><td>AI for Productivity</td><td>Gemini Enterprise Agentic Platform, 에이전트 만들기 + Canvas 활용, Vibe coding</td></tr><tr><td>🟢 <strong>Track 3</strong></td><td>Advanced AI</td><td>Generative Media Models (Nano Banana, Live API), Agent Observability, Practical RAG</td></tr><tr><td>⚫ <strong>Track 4</strong></td><td>AI Hands-on Lab</td><td>TPU 기반 모델 학습, Open LLM 서빙, Agent Engine + AgentOps</td></tr></tbody></table>
+<p>나는 주로 <strong>Track 3 (Advanced AI)</strong> 세션을 집중적으로 들었다. Generative Media Models이랑 Agent Observability 쪽이 요즘 관심사라서!</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-아쉬웠던-점">😢 아쉬웠던 점</h2><a class="sl-anchor-link" href="#-아쉬웠던-점"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “😢 아쉬웠던 점”</span></a></div>
+<ul>
+<li><strong>Track 2 에이전트 만들기</strong> 세션이 너무 인기가 많아서 <strong>자리가 없어서 못 들었다!</strong> 😱 이런 인기 세션은 미리 이동해서 자리를 잡아야 한다는 교훈…</li>
+<li>**실습 세션(Track 4)**에 참여하면 다른 세션을 못 들어서 패스했는데, 직접 해보고 싶었다</li>
+<li>결국 시간은 한정적이고 듣고 싶은 건 많고… 다음엔 2명이서 와서 나눠 들을까? ㅋㅋ</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="️-점심--웨스틴-호텔-도시락">🍽️ 점심 — 웨스틴 호텔 도시락</h2><a class="sl-anchor-link" href="#️-점심--웨스틴-호텔-도시락"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🍽️ 점심 — 웨스틴 호텔 도시락”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/lunch1.BCKiAVLV_2n5gSe.webp" alt="웨스틴 호텔 도시락 풀세팅 - 수프와 함께" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/lunch2.DPE-2K89_ZT3OhC.webp" alt="도시락 클로즈업 - 비프 스튜, 새우 샐러드, 마카롱 등" loading="lazy" decoding="async" width="1280" height="956" class="astro-zbo42owe"> </div> </div> </div>
+<p>세미나 중간에 점심도 제공됐는데, 웨스틴 서울 파르나스답게 <strong>고급지고 깔끔</strong>했다!</p>
+<p>구성을 보면:</p>
+<ul>
+<li>🥩 비프 스튜 (메인)</li>
+<li>🦐 새우 샐러드</li>
+<li>🐟 생선구이</li>
+<li>🍗 치킨</li>
+<li>🧀 그라탕</li>
+<li>🫒 올리브 &#x26; 피클</li>
+<li>🍰 마카롱 &#x26; 타르트</li>
+<li>🍇 과일 &#x26; 모짜렐라</li>
+<li>🍵 단호박 수프</li>
+</ul>
+<p>양이 너무 많아서 다 못 먹고 남겼을 정도 😋 세미나 점심치곤 너무 호화롭다!</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-느낀-점">💡 느낀 점</h2><a class="sl-anchor-link" href="#-느낀-점"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💡 느낀 점”</span></a></div>
+<ul>
+<li><strong>Google이 AI에 올인</strong>하고 있다는 걸 확실히 느꼈다 — 모든 서비스가 AI 중심으로 재편되는 중</li>
+<li><strong>오픈 모델(Gemma) 전략</strong>이 인상적 — “우리 거만 쓰세요”가 아니라 “다 갖다 쓰세요”</li>
+<li><strong>Model Garden</strong>으로 멀티 모델 전략 — Google 모델 + 외부 오픈 모델을 한 곳에서</li>
+<li><strong>에이전트(Agent)가 대세</strong> — 4개 트랙 중 3개에서 에이전트 관련 세션이 있었다</li>
+<li>다음엔 인기 세션 <strong>미리 자리 확보</strong> 전략 필수!</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="총평">총평</h2><a class="sl-anchor-link" href="#총평"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “총평”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>평가</th></tr></thead><tbody><tr><td>콘텐츠 퀄리티</td><td>⭐⭐⭐⭐⭐ 최신 AI 트렌드 총정리</td></tr><tr><td>Track 다양성</td><td>⭐⭐⭐⭐⭐ 선택지 풍부</td></tr><tr><td>장소 (웨스틴)</td><td>⭐⭐⭐⭐⭐ 깔끔하고 접근성 좋음</td></tr><tr><td>점심</td><td>⭐⭐⭐⭐⭐ 웨스틴 도시락 고급짐</td></tr><tr><td>아쉬운 점</td><td>인기 세션 자리 부족 😢</td></tr></tbody></table>
+<p>구글이 어디로 가고 있는지 감을 잡기 좋은 행사였다. AI에 관심 있는 엔지니어라면 다음 OnBoard도 꼭 참석해보길! ☁️🚀</p> </div> <footer class="astro-dr56dw7m"> <div class="astro-sg3lsd66"><b class="astro-sg3lsd66">Tags:</b><ul class="astro-sg3lsd66"><li class="astro-sg3lsd66"><a href="/en/blog/tags/tech/" class="astro-sg3lsd66">tech</a></li><li class="astro-sg3lsd66"><a href="/en/blog/tags/ai/" class="astro-sg3lsd66">AI</a></li><li class="astro-sg3lsd66"><a href="/en/blog/tags/google-cloud/" class="astro-sg3lsd66">Google Cloud</a></li></ul></div> </footer> </article><article class="preview astro-dr56dw7m"> <header class="astro-dr56dw7m"> <h2 class="astro-dr56dw7m"> <a href="/en/blog/datadog-live-seoul-2026/" class="astro-dr56dw7m">🐕 Datadog Live Seoul 2026 — AI × Observability의 미래</a> </h2>  <div class="metadata not-content astro-2oxtfctb"> <div class="dates astro-2oxtfctb"> <time datetime="2026-04-16T00:00:00.000Z" class="astro-2oxtfctb"> Apr 16, 2026 </time>    </div> <div class="authors astro-2oxtfctb"> <div class="author astro-kbhsbk7c"><img src="https://www.gravatar.com/avatar/?d=mp&#38;s=64" alt="chocolat423" loading="eager" decoding="async" width="40" height="40" class="astro-kbhsbk7c"><div class="text astro-kbhsbk7c"> <div class="name astro-kbhsbk7c">chocolat423</div>  </div> </div> </div>  </div> </header> <div class="sl-markdown-content astro-dr56dw7m"> <blockquote>
+<p>이제 모니터링도 데이터만 주면 사람이 분석하던 시대는 끝났다. 로그 데이터를 이용해서 알아서 분석하고 문제점도 찾아주는 방향으로 가고 있다 🐕</p>
+</blockquote>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/welcome.0RvOSN7o_mHN9u.webp" alt="Welcome to Datadog Live Seoul 2026 - 등록 로비" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/venue.CmvDvt22_1SzVaV.webp" alt="Datadog Live Seoul 2026 행사장 - 웨스틴 서울 파르나스" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/keynote.BDB8Hg5Q_260Gif.webp" alt="키노트 - When AI Breaks, Who Do You Blame? (정영석, Datadog Korea)" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/ai-observability.DNa-rJNG_Bxcdz.webp" alt="기존 Observability로는 안 되는 이유 - AI 서비스에 필요한 가시성" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<div class="sl-heading-wrapper level-h2"><h2 id="-행사-정보">📍 행사 정보</h2><a class="sl-anchor-link" href="#-행사-정보"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📍 행사 정보”</span></a></div>
+<ul>
+<li><strong>행사명</strong>: Datadog Live Seoul 2026 : AI &#x26; Observability의 미래</li>
+<li><strong>일시</strong>: 2026년 4월 16일(목) 13:30 ~ 18:00</li>
+<li><strong>장소</strong>: 웨스틴 서울 파르나스 LL 하모니볼룸</li>
+<li><strong>공식 사이트</strong>: <a href="https://events.datadoghq.com/ko/events/datadog-live-seoul-2026">Datadog Live Seoul 2026</a></li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-참석-동기">🎯 참석 동기</h2><a class="sl-anchor-link" href="#-참석-동기"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🎯 참석 동기”</span></a></div>
+<p>맡고 있는 시스템의 모니터링이 부실해서, <strong>이런 솔루션을 도입해보면 어떨까?</strong> 다른 곳은 어떻게 하나 알아보러 갔다. 관제 인력을 최소화하면서도 효율적으로 모니터링하는 방향을 찾고 싶었다.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-키노트--when-ai-breaks-who-do-you-blame">📝 키노트 — When AI Breaks, Who Do You Blame?</h2><a class="sl-anchor-link" href="#-키노트--when-ai-breaks-who-do-you-blame"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📝 키노트 — When AI Breaks, Who Do You Blame?”</span></a></div>
+<p><strong>발표자</strong>: Yadi Narayana (Field CTO, Datadog) / 정영석 (기술 총괄, Datadog Korea)</p>
+<p>AI 시스템이 미션 크리티컬 환경으로 확장되면서, 장애 원인을 규명하고 책임을 정의하는 일이 더욱 복잡해지고 있다. AI가 스스로 해석하고 판단하고 결정을 내리는데… <strong>AI가 잘못된 결정을 내렸을 때, 무엇을 기준으로 문제를 진단할 수 있을까?</strong></p>
+<p>핵심 메시지:</p>
+<ul>
+<li>기존 Observability: 서비스 정상 작동? 레이턴시 허용 범위?</li>
+<li>AI 시대 Observability: 모델 응답 품질은? 입출력 데이터 Drift? 문제는 retrieval vs prompt vs model 중 어디?</li>
+<li><strong>“정상 동작하면서도 잘못된 결과를 만들 수 있다”</strong> ← 이게 AI 모니터링의 핵심 난제</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-인상-깊었던-세션들">🏢 인상 깊었던 세션들</h2><a class="sl-anchor-link" href="#-인상-깊었던-세션들"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🏢 인상 깊었던 세션들”</span></a></div>
+<div class="sl-heading-wrapper level-h3"><h3 id="삼성전자--reactive에서-proactive로">삼성전자 — Reactive에서 Proactive로</h3><a class="sl-anchor-link" href="#삼성전자--reactive에서-proactive로"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “삼성전자 — Reactive에서 Proactive로”</span></a></div>
+<p><strong>김제민</strong> (Dev Lead, Samsung Account팀)</p>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/samsung-proactive.Bq3ONbcg_1euiLI.webp" alt="삼성전자 - AI 기반 Proactive 패러다임 전환 아키텍처" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>21억 글로벌 사용자를 보유한 삼성 계정의 가용성 확보 전략. Datadog MCP로 클라우드 지역 장애를 <strong>선제 예측</strong>한 사례가 인상적이었다.</p>
+<p>아키텍처가 깔끔했다:</p>
+<ul>
+<li>Data Sources (CloudWatch, Datadog APM) → Datadog MCP Server → Multi-Agent (AIOps, Service, Security, WAF Agents) → Slack 알림</li>
+<li>Knowledge base (RAG) + Foundation Model (LLM)로 자동 분석</li>
+</ul>
+<div class="sl-heading-wrapper level-h3"><h3 id="sk브로드밴드--silo에서-end-to-end로">SK브로드밴드 — Silo에서 End-to-End로</h3><a class="sl-anchor-link" href="#sk브로드밴드--silo에서-end-to-end로"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “SK브로드밴드 — Silo에서 End-to-End로”</span></a></div>
+<p><strong>서범석</strong> (팀장, 플랫폼SRE팀)</p>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/skb-session.te_P6FMo_ZXvqyy.webp" alt="SK브로드밴드 - Silo에서 End-to-End로, 미디어 서비스 관측과 런타임 코드 보안" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/devsecops.BPg0RRn__FXvaG.webp" alt="Datadog 기반 통합 DevSecOps 체계 구축 - SAST, SCA, IAST" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>여러 자체/상용 모니터링 툴들의 사일로 현상을 Datadog으로 통합한 사례. Metric–Trace–Log–Security를 단일 파이프라인으로! 런타임 IAST/SCA로 보안 강화까지 내재화한 전환 과정이 실무적으로 와닿았다.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="furiosaai--slack에서-물어봤더니-datadog이-대답했다">FuriosaAI — Slack에서 물어봤더니, Datadog이 대답했다</h3><a class="sl-anchor-link" href="#furiosaai--slack에서-물어봤더니-datadog이-대답했다"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “FuriosaAI — Slack에서 물어봤더니, Datadog이 대답했다”</span></a></div>
+<p><strong>이종서</strong> (SW Engineer, Compiler팀)</p>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/furiosa-slack.CBlyFZcy_Z1e9PCC.webp" alt="FuriosaAI - Slack에서 물어봤더니, Datadog이 대답했다" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>제목부터 센스 있다 ㅋㅋ LLM과 MCP를 활용한 운영 자동화 — Slack으로 물어보면 Datadog이 알아서 답하는 시스템!</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="cj올리브네트웍스--통합-인프라-관제에서-ai-모니터링으로">CJ올리브네트웍스 — 통합 인프라 관제에서 AI 모니터링으로</h3><a class="sl-anchor-link" href="#cj올리브네트웍스--통합-인프라-관제에서-ai-모니터링으로"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “CJ올리브네트웍스 — 통합 인프라 관제에서 AI 모니터링으로”</span></a></div>
+<p><strong>송규동</strong> (Professional, Infra Modernization팀)</p>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/cj-ai-monitoring.C8EY5qOV_wb0FI.webp" alt="CJ올리브네트웍스 - On-Premise 데이터센터의 진화 여정" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/datadog-aiops.rnCEGgwA_Z1bNU4X.webp" alt="Datadog AIOps - Watchdog → Bits AI SRE → Ask Bits → 운영 협업" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>On-Premise 데이터센터에서 AI 모니터링으로의 전환. Datadog AIOps 파이프라인이 인상적:</p>
+<ol>
+<li><strong>Watchdog</strong> — AI 기반 이상 감지, 자동 알람</li>
+<li><strong>Bits AI SRE</strong> — 자동 원인 분석, RCA 수행</li>
+<li><strong>Ask Bits</strong> — 자연어 기반 이슈 공유</li>
+<li><strong>운영 협업</strong> — Slack/Teams 신속 대응</li>
+</ol>
+<div class="sl-heading-wrapper level-h3"><h3 id="동원fb--스마트한-이커머스-관제탑-구축-">동원F&#x26;B — 스마트한 이커머스 관제탑 구축 ⭐</h3><a class="sl-anchor-link" href="#동원fb--스마트한-이커머스-관제탑-구축-"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “동원F&#x26;B — 스마트한 이커머스 관제탑 구축 ⭐”</span></a></div>
+<p><strong>정회성</strong> (실장, 플랫폼개발팀)</p>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/dongwon-session.DdWJWjKg_1PRA8F.webp" alt="동원F&#38;B - Datadog을 활용한 스마트한 이커머스 관제탑 구축" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/dongwon-performance.Be9jtvVv_ZqhJHF.webp" alt="동원F&#38;B 핵심 성능 개선 - 응답시간 53% 개선, 에러율 83% 감소" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>이 세션이 진짜 재밌었다! 현업 입장에서 솔직하게 많이 얘기해줬다. 실제 성능 개선 수치가 인상적:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>지표</th><th>도입 전 (2025 1Q)</th><th>현재 (2026 1Q)</th><th>개선율</th></tr></thead><tbody><tr><td>WEB 평균 응답시간</td><td>450ms</td><td>210ms</td><td>▼53% 개선</td></tr><tr><td>MO 평균 응답시간</td><td>300ms</td><td>220ms</td><td>▼30% 개선</td></tr><tr><td>에러율</td><td>0.06%</td><td>0.01%</td><td>▼83% 감소</td></tr><tr><td>WEB 처리량 (TPS)</td><td>5.3 req/s</td><td>10.2 req/s</td><td>▲93% 증가</td></tr><tr><td>MO 처리량 (TPS)</td><td>14.8 req/s</td><td>19.2 req/s</td><td>▲30% 증가</td></tr></tbody></table>
+<p>그리고 부가적으로… <strong>쿨피스가 동원 거라는 걸 처음 알았다</strong> 😂</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-참석-특전">🎁 참석 특전</h2><a class="sl-anchor-link" href="#-참석-특전"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🎁 참석 특전”</span></a></div>
+<p>설문조사 하니까 Datadog 티셔츠도 줬다 ㅋㅋ 굿즈백도 귀여움!</p>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/goodie-bag.D-uleLKz_v3LpN.webp" alt="Datadog 굿즈백 - 에스컬레이터에서 인증샷" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<div class="sl-heading-wrapper level-h2"><h2 id="-느낀-점">💡 느낀 점</h2><a class="sl-anchor-link" href="#-느낀-점"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💡 느낀 점”</span></a></div>
+<ul>
+<li><strong>모니터링의 패러다임이 변하고 있다</strong> — 사람이 로그 보고 분석하는 시대는 끝</li>
+<li>AI가 알아서 이상 감지 → 원인 분석 → 알림까지 자동화</li>
+<li>관제 인력을 최소화하려는 방향으로 많은 회사들이 움직이고 있다</li>
+<li>발표자들이 하나같이 말을 잘해서 재밌게 들었다 ㅎㅎ</li>
+<li><strong>실제 도입 사례</strong> 위주의 발표가 가장 유익했다 (삼성전자, SKB, 동원)</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="총평">총평</h2><a class="sl-anchor-link" href="#총평"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “총평”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>평가</th></tr></thead><tbody><tr><td>콘텐츠 퀄리티</td><td>⭐⭐⭐⭐⭐ 실무 사례 중심!</td></tr><tr><td>발표자 수준</td><td>⭐⭐⭐⭐⭐ 다들 말 잘함</td></tr><tr><td>장소</td><td>⭐⭐⭐⭐⭐ 웨스틴 파르나스</td></tr><tr><td>굿즈</td><td>⭐⭐⭐⭐ 티셔츠 + 굿즈백</td></tr><tr><td>실무 적용 가능성</td><td>⭐⭐⭐⭐ 도입 검토 동기부여 확실</td></tr></tbody></table>
+<p>모니터링 고민 있는 엔지니어라면 다음 Datadog Live도 꼭 가보길 추천! 🐕✨</p> </div> <footer class="astro-dr56dw7m"> <div class="astro-sg3lsd66"><b class="astro-sg3lsd66">Tags:</b><ul class="astro-sg3lsd66"><li class="astro-sg3lsd66"><a href="/en/blog/tags/tech/" class="astro-sg3lsd66">tech</a></li><li class="astro-sg3lsd66"><a href="/en/blog/tags/ai/" class="astro-sg3lsd66">AI</a></li><li class="astro-sg3lsd66"><a href="/en/blog/tags/observability/" class="astro-sg3lsd66">Observability</a></li><li class="astro-sg3lsd66"><a href="/en/blog/tags/datadog/" class="astro-sg3lsd66">Datadog</a></li></ul></div> </footer> </article> </div>    </div> <footer class="sl-flex astro-3yyafb3n"> <div class="meta sl-flex astro-3yyafb3n">   </div> <div class="pagination-links print:hidden astro-u2l5gyhi" dir="ltr">   </div>  </footer> <!-- Giscus 댓글 --> <div class="giscus-container astro-sz7xmlte"> <script src="https://giscus.app/client.js" data-repo="noisonnoiton/noisonnoiton.github.io" data-repo-id="R_kgDOGjaniQ" data-category="Announcements" data-category-id="DIC_kwDOGjanic4C4fBW" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="en" data-loading="lazy" crossorigin="anonymous" async>
+  </script> </div> <!-- 카카오 애드핏 --> <div class="kakao-ad-footer astro-sz7xmlte"> <!-- PC: 728x90 --> <div class="ad-pc astro-sz7xmlte"> <ins class="kakao_ad_area astro-sz7xmlte" style="display:none;" data-ad-unit="DAN-zPDP0gYVaGwOEH3v" data-ad-width="728" data-ad-height="90"></ins> </div> <!-- Mobile: 250x250 --> <div class="ad-mobile astro-sz7xmlte"> <ins class="kakao_ad_area astro-sz7xmlte" style="display:none;" data-ad-unit="DAN-zHXbzhtivpd6MTA0" data-ad-width="250" data-ad-height="250"></ins> </div> </div> <script src="//t1.daumcdn.net/kas/static/ba.min.js" async></script> </div> </div>  </main> </div> </div> </div> </div> </body></html>

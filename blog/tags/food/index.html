@@ -1,0 +1,960 @@
+<!DOCTYPE html><html lang="ko" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-bguv2lll"> <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>food | noisonnoiton</title><link rel="canonical" href="https://noisonnoiton.github.io/blog/tags/food/"/><link rel="alternate" hreflang="ko" href="https://noisonnoiton.github.io/blog/tags/food/"/><link rel="alternate" hreflang="en" href="https://noisonnoiton.github.io/en/blog/tags/food/"/><link rel="sitemap" href="/sitemap-index.xml"/><link rel="alternate" type="application/rss+xml" title="noisonnoiton RSS" href="/rss.xml"/><script async src="https://www.googletagmanager.com/gtag/js?id=G-0BHX9CF6JP"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-0BHX9CF6JP');</script><link href="https://noisonnoiton.github.io/blog/rss.xml" rel="alternate" title="noisonnoiton blog" type="application/rss+xml"/><link rel="shortcut icon" href="/favicon.png" type="image/png"/><meta name="generator" content="Astro v6.1.1"/><meta name="generator" content="Starlight v0.38.2"/><meta property="og:title" content="food"/><meta property="og:url" content="https://noisonnoiton.github.io/blog/tags/food/"/><meta property="og:locale" content="ko"/><meta name="google-site-verification" content="5Cf8lzznSYAmH9JYOQxyE3AsnKWj_ZeCZ8P8jxnP3L4"/><meta name="naver-site-verification" content="d3c1f1b07eacea0cd9a3c3c03468e5c8bafe6393"/><meta property="og:type" content="website"/><meta property="og:site_name" content="noisonnoiton"/><meta name="twitter:card" content="summary_large_image"/><meta name="author" content="noisonnoiton"/> <script>
+(function() {
+  var ALL_LOCALES = [
+    { code: 'ko', label: '🇰🇷 한국어', prefix: '' },
+    { code: 'en', label: '🇺🇸 English', prefix: '/en' },
+    { code: 'fr', label: '🇫🇷 Français', prefix: '/fr' },
+  ];
+  var STORAGE_KEY = '***';
+  var ROOT = ALL_LOCALES[0];
+
+  function availableLocales(bare) {
+    if (bare === '/') return ALL_LOCALES;
+    return ALL_LOCALES.filter(function(locale) { return locale.code !== 'fr'; });
+  }
+
+  function detectCurrent() {
+    var p = window.location.pathname;
+    for (var i = 1; i < ALL_LOCALES.length; i++) {
+      if (p === ALL_LOCALES[i].prefix || p.startsWith(ALL_LOCALES[i].prefix + '/')) return ALL_LOCALES[i];
+    }
+    return ROOT;
+  }
+
+  function stripLocale(path) {
+    for (var i = 1; i < ALL_LOCALES.length; i++) {
+      if (path === ALL_LOCALES[i].prefix) return '/';
+      if (path.startsWith(ALL_LOCALES[i].prefix + '/')) return path.slice(ALL_LOCALES[i].prefix.length);
+    }
+    return path;
+  }
+
+  function buildPath(locale, bare) {
+    if (locale.prefix === '') return bare;
+    return locale.prefix + (bare === '/' ? '/' : bare);
+  }
+
+  function autoRedirect() {
+    var pref = localStorage.getItem(STORAGE_KEY);
+    if (!pref) return;
+    var current = detectCurrent();
+    if (current.code === pref) return;
+    var bare = stripLocale(window.location.pathname);
+    var locales = availableLocales(bare);
+    var target = locales.find(function(l) { return l.code === pref; });
+    if (!target) return;
+    var dest = buildPath(target, bare);
+    fetch(dest, { method: 'HEAD' }).then(function(r) {
+      if (r.ok) window.location.replace(dest);
+    }).catch(function() {});
+  }
+
+  function createSelector() {
+    var header = document.querySelector('header.header');
+    if (!header || document.getElementById('locale-selector')) return;
+
+    var current = detectCurrent();
+    var bare = stripLocale(window.location.pathname);
+    var locales = availableLocales(bare);
+    document.querySelectorAll('starlight-lang-select').forEach(function(el) {
+      // Keep the custom selector next to Search; remove Starlight's duplicate.
+      el.style.display = 'none';
+    });
+
+    var wrap = document.createElement('div');
+    wrap.id = 'locale-selector';
+    wrap.style.cssText = 'position:relative;display:inline-flex;align-items:center;z-index:100;';
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = current.label;
+    btn.setAttribute('aria-label', 'Select language');
+    btn.style.cssText = [
+      'display:inline-flex;align-items:center;gap:0.25rem',
+      'padding:0.25rem 0.55rem',
+      'border:1px solid var(--sl-color-gray-5)',
+      'border-radius:1rem',
+      'font-size:0.78rem;font-weight:500',
+      'color:var(--sl-color-text)',
+      'background:transparent',
+      'cursor:pointer',
+      'white-space:nowrap',
+      'transition:background 0.15s',
+    ].join(';');
+    btn.addEventListener('mouseenter', function() { btn.style.background = 'var(--sl-color-gray-6)'; });
+    btn.addEventListener('mouseleave', function() { btn.style.background = 'transparent'; });
+
+    var menu = document.createElement('div');
+    menu.style.cssText = [
+      'display:none;position:absolute;top:calc(100% + 4px);right:0',
+      'background:var(--sl-color-bg-nav)',
+      'border:1px solid var(--sl-color-gray-5)',
+      'border-radius:0.5rem',
+      'padding:0.25rem 0',
+      'box-shadow:0 4px 12px rgba(0,0,0,0.15)',
+      'min-width:130px',
+      'z-index:200',
+    ].join(';');
+
+    locales.forEach(function(loc) {
+      var item = document.createElement('a');
+      item.textContent = loc.label;
+      item.href = buildPath(loc, bare);
+      item.style.cssText = [
+        'display:block;padding:0.4rem 0.75rem',
+        'font-size:0.8rem;color:var(--sl-color-text)',
+        'text-decoration:none;white-space:nowrap',
+        'transition:background 0.1s',
+      ].join(';');
+
+      if (loc.code === current.code) {
+        item.style.fontWeight = '700';
+        item.style.background = 'var(--sl-color-gray-6)';
+      }
+
+      item.addEventListener('mouseenter', function() { item.style.background = 'var(--sl-color-gray-6)'; });
+      item.addEventListener('mouseleave', function() {
+        item.style.background = loc.code === current.code ? 'var(--sl-color-gray-6)' : 'transparent';
+      });
+
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.setItem(STORAGE_KEY, loc.code);
+        if (loc.code === current.code) { menu.style.display = 'none'; return; }
+        var dest = buildPath(loc, bare);
+        fetch(dest, { method: 'HEAD' }).then(function(r) {
+          if (r.ok) {
+            window.location.href = dest;
+          } else {
+            window.location.href = loc.prefix || '/';
+          }
+        }).catch(function() {
+          window.location.href = loc.prefix || '/';
+        });
+      });
+
+      menu.appendChild(item);
+    });
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function() { menu.style.display = 'none'; });
+
+    wrap.appendChild(btn);
+    wrap.appendChild(menu);
+
+    var search = header.querySelector('site-search') || header.querySelector('.search-toggle');
+    if (search) {
+      search.parentElement.insertBefore(wrap, search);
+    } else {
+      header.appendChild(wrap);
+    }
+  }
+
+  function init() {
+    autoRedirect();
+    createSelector();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', function() {
+    var old = document.getElementById('locale-selector');
+    if (old) old.remove();
+    createSelector();
+  });
+})();
+</script><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/_astro/print.DNXP8c50.css" media="print"><style>[data-has-toc] :is(.right-sidebar-panel,mobile-starlight-toc){display:none}[data-has-toc] .main-frame{padding-top:var(--sl-nav-height)}.preview:where(.astro-dr56dw7m){display:flex;flex-direction:column;gap:1.5rem}h2:where(.astro-dr56dw7m){margin-bottom:1.5rem}h2:where(.astro-dr56dw7m) a:where(.astro-dr56dw7m){text-decoration:none}.posts:where(.astro-xaz7kpyh){display:flex;flex-direction:column;gap:3rem}
+</style>
+<link rel="stylesheet" href="/_astro/middleware.DPGkAFlG.css">
+<style>.archive-total:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-size:var(--sl-text-sm);margin-block:0 1rem}.archive-years:where(.astro-bdepfles){display:flex;flex-wrap:wrap;gap:.5rem;margin-block-end:2.5rem;position:sticky;top:0;z-index:1;background:var(--sl-color-bg);padding-block:.6rem}.archive-year-chip:where(.astro-bdepfles){border:1px solid var(--sl-color-gray-5);border-radius:999px;padding:.25rem .85rem;text-decoration:none;color:var(--sl-color-white);font-size:var(--sl-text-sm);white-space:nowrap}.archive-year-chip:where(.astro-bdepfles):hover{background:var(--sl-color-gray-6);border-color:var(--sl-color-accent)}.archive-year-count:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-weight:400;font-size:.85em}.archive-section:where(.astro-bdepfles){margin-block-end:2.5rem}.archive-section:where(.astro-bdepfles) h2:where(.astro-bdepfles){border-block-end:1px solid var(--sl-color-gray-5);padding-block-end:.35rem;margin-block-end:1rem;scroll-margin-block-start:6rem}.archive-month:where(.astro-bdepfles){margin-block-end:1.25rem}.archive-month:where(.astro-bdepfles) h3:where(.astro-bdepfles){font-size:var(--sl-text-base);color:var(--sl-color-gray-2);margin-block:0 .5rem}.archive-month:where(.astro-bdepfles) ul:where(.astro-bdepfles){list-style:none;padding:0;margin:0}.archive-month:where(.astro-bdepfles) li:where(.astro-bdepfles){display:flex;gap:.75rem;align-items:baseline;padding-block:.3rem}.archive-month:where(.astro-bdepfles) time:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-size:var(--sl-text-xs);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:2.75rem;text-align:right}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles){color:var(--sl-color-gray-1);text-decoration:none}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles):hover{color:var(--sl-color-text-accent);text-decoration:underline}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles):visited{color:var(--sl-color-gray-3)}@media(max-width:42rem){.archive-month:where(.astro-bdepfles) li:where(.astro-bdepfles){flex-direction:row;gap:.6rem}.archive-month:where(.astro-bdepfles) time:where(.astro-bdepfles){min-width:2.25rem}}
+.count:where(.astro-bu4jbvld){font-size:var(--sl-text-xl);font-weight:600}
+</style>
+<link rel="stylesheet" href="/_astro/tag-page@_@astro.DavP-_5P.css">
+<link rel="stylesheet" href="/_astro/tags-index@_@astro.-NwLVRix.css">
+<style>.content-panel:first-of-type{display:none}.content-panel:nth-of-type(2){border-top:none}
+</style>
+<link rel="stylesheet" href="/_astro/Code.3GXCdK6h.css"><script type="module" src="/_astro/page.BIhdncjw.js"></script><style>.photo-gallery:where(.astro-zbo42owe){overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:1.5rem 0;border-radius:12px}.photo-gallery-track:where(.astro-zbo42owe){display:flex;gap:12px;min-width:min-content}.photo-gallery-item:where(.astro-zbo42owe){flex:0 0 auto;border-radius:10px;overflow:hidden}.photo-gallery-item:where(.astro-zbo42owe) img{height:360px;width:auto;object-fit:cover;display:block}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar{height:6px}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-track{background:transparent}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-thumb{background:var(--sl-color-gray-4);border-radius:3px}
+</style><style>.photo-gallery:where(.astro-zbo42owe){overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:1.5rem 0;border-radius:12px}.photo-gallery-track:where(.astro-zbo42owe){display:flex;gap:12px;min-width:min-content}.photo-gallery-item:where(.astro-zbo42owe){flex:0 0 auto;border-radius:10px;overflow:hidden}.photo-gallery-item:where(.astro-zbo42owe) img{height:360px;width:auto;object-fit:cover;display:block}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar{height:6px}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-track{background:transparent}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-thumb{background:var(--sl-color-gray-4);border-radius:3px}
+</style><style>.photo-gallery:where(.astro-zbo42owe){overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:1.5rem 0;border-radius:12px}.photo-gallery-track:where(.astro-zbo42owe){display:flex;gap:12px;min-width:min-content}.photo-gallery-item:where(.astro-zbo42owe){flex:0 0 auto;border-radius:10px;overflow:hidden}.photo-gallery-item:where(.astro-zbo42owe) img{height:360px;width:auto;object-fit:cover;display:block}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar{height:6px}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-track{background:transparent}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-thumb{background:var(--sl-color-gray-4);border-radius:3px}
+</style><style>.photo-gallery:where(.astro-zbo42owe){overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:1.5rem 0;border-radius:12px}.photo-gallery-track:where(.astro-zbo42owe){display:flex;gap:12px;min-width:min-content}.photo-gallery-item:where(.astro-zbo42owe){flex:0 0 auto;border-radius:10px;overflow:hidden}.photo-gallery-item:where(.astro-zbo42owe) img{height:360px;width:auto;object-fit:cover;display:block}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar{height:6px}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-track{background:transparent}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-thumb{background:var(--sl-color-gray-4);border-radius:3px}
+</style><style>.photo-gallery:where(.astro-zbo42owe){overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:1.5rem 0;border-radius:12px}.photo-gallery-track:where(.astro-zbo42owe){display:flex;gap:12px;min-width:min-content}.photo-gallery-item:where(.astro-zbo42owe){flex:0 0 auto;border-radius:10px;overflow:hidden}.photo-gallery-item:where(.astro-zbo42owe) img{height:360px;width:auto;object-fit:cover;display:block}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar{height:6px}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-track{background:transparent}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-thumb{background:var(--sl-color-gray-4);border-radius:3px}
+</style><style>.photo-gallery:where(.astro-zbo42owe){overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:1.5rem 0;border-radius:12px}.photo-gallery-track:where(.astro-zbo42owe){display:flex;gap:12px;min-width:min-content}.photo-gallery-item:where(.astro-zbo42owe){flex:0 0 auto;border-radius:10px;overflow:hidden}.photo-gallery-item:where(.astro-zbo42owe) img{height:360px;width:auto;object-fit:cover;display:block}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar{height:6px}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-track{background:transparent}.photo-gallery:where(.astro-zbo42owe)::-webkit-scrollbar-thumb{background:var(--sl-color-gray-4);border-radius:3px}
+</style></head> <body class="astro-bguv2lll"> <a href="#_top" class="astro-7q3lir66">콘텐츠로 이동</a> <div class="page sl-flex astro-vrdttmbt"> <header class="header astro-vrdttmbt"><div class="header astro-kmkmnagf"> <div class="title-wrapper sl-flex astro-kmkmnagf"> <a href="/" class="site-title sl-flex astro-m46x6ez3">  <img class="astro-m46x6ez3" alt="춘식이" src="/_astro/choonsik.CaiAjGH-.png" width="1200" height="1200">  <span class="astro-m46x6ez3" translate="no"> noisonnoiton </span> </a> </div> <div class="sl-flex print:hidden astro-kmkmnagf"> <site-search class="astro-kmkmnagf astro-v37mnknz" data-translations="{&#34;placeholder&#34;:&#34;검색&#34;}"> <button data-open-modal disabled aria-label="검색" aria-keyshortcuts="Control+K" class="astro-v37mnknz"> <svg aria-hidden="true" class="astro-v37mnknz astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg> <span class="sl-hidden md:sl-block astro-v37mnknz" aria-hidden="true">검색</span> <kbd class="sl-hidden md:sl-flex astro-v37mnknz" style="display: none;"> <kbd class="astro-v37mnknz">Ctrl</kbd><kbd class="astro-v37mnknz">K</kbd> </kbd> </button> <dialog style="padding:0" aria-label="검색" class="astro-v37mnknz"> <div class="dialog-frame sl-flex astro-v37mnknz">  <button data-close-modal class="sl-flex md:sl-hidden astro-v37mnknz"> 취소 </button> <div class="search-container astro-v37mnknz"> <div id="starlight__search" class="astro-v37mnknz"></div> </div> </div> </dialog> </site-search>  <script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.BdDgbKxW.js"></script>  </div> <div class="sl-hidden md:sl-flex print:hidden right-group astro-kmkmnagf"> <div class="sl-flex social-icons astro-kmkmnagf"> <a href="https://github.com/noisonnoiton" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">GitHub</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://noisonnoiton.github.io/blog/rss.xml" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">RSS</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M2.88 16.88a3 3 0 0 0 0 4.24 3 3 0 0 0 4.24 0 3 3 0 0 0-4.24-4.24Zm2.83 2.83a1 1 0 0 1-1.42-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42ZM5 12a1 1 0 0 0 0 2 5 5 0 0 1 5 5 1 1 0 0 0 2 0 7 7 0 0 0-7-7Zm0-4a1 1 0 0 0 0 2 9 9 0 0 1 9 9 1 1 0 0 0 2 0 11.08 11.08 0 0 0-3.22-7.78A11.08 11.08 0 0 0 5 8Zm10.61.39A15.11 15.11 0 0 0 5 4a1 1 0 0 0 0 2 13 13 0 0 1 13 13 1 1 0 0 0 2 0 15.11 15.11 0 0 0-4.39-10.61Z"/></svg></a> </div> <div class="astro-eboeziq4"> <a href="/blog/" class="astro-eboeziq4">noisonnoiton blog</a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">테마 선택</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="dark" class="astro-4yphtoen">어두운 테마</option><option value="light" class="astro-4yphtoen">밝은 테마</option><option value="auto" selected class="astro-4yphtoen">자동</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script> <script type="module">const r="starlight-theme",o=e=>e==="auto"||e==="dark"||e==="light"?e:"auto",c=()=>o(typeof localStorage<"u"&&localStorage.getItem(r));function n(e){typeof localStorage<"u"&&localStorage.setItem(r,e==="light"||e==="dark"?e:"")}const l=()=>matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";function t(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e==="auto"?l():e,n(e)}matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{c()==="auto"&&t("auto")});class s extends HTMLElement{constructor(){super(),t(c()),this.querySelector("select")?.addEventListener("change",a=>{a.currentTarget instanceof HTMLSelectElement&&t(o(a.currentTarget.value))})}}customElements.define("starlight-theme-select",s);</script> <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">언어 선택</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="/blog/tags/food/" class="astro-4yphtoen">한국어</option><option value="/en/blog/tags/food/" class="astro-4yphtoen">English</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label></starlight-lang-select><script type="module">class s extends HTMLElement{constructor(){super();const e=this.querySelector("select");e&&(e.addEventListener("change",t=>{t.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=t.currentTarget.value)}),window.addEventListener("pageshow",t=>{if(!t.persisted)return;const n=e.querySelector("option[selected]")?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}}customElements.define("starlight-lang-select",s);</script> </div> </div></header> <nav class="sidebar print:hidden astro-vrdttmbt" aria-label="메인"> <starlight-menu-button class="print:hidden astro-jif73yzw"> <button aria-expanded="false" aria-label="메뉴" aria-controls="starlight__sidebar" class="sl-flex md:sl-hidden astro-jif73yzw"> <svg aria-hidden="true" class="open-menu astro-jif73yzw astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg> <svg aria-hidden="true" class="close-menu astro-jif73yzw astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg> </button> </starlight-menu-button> <script type="module">class s extends HTMLElement{constructor(){super(),this.btn=this.querySelector("button"),this.btn.addEventListener("click",()=>this.toggleExpanded());const t=this.closest("nav");t&&t.addEventListener("keyup",e=>this.closeOnEscape(e))}setExpanded(t){this.setAttribute("aria-expanded",String(t)),document.body.toggleAttribute("data-mobile-menu-expanded",t)}toggleExpanded(){this.setExpanded(this.getAttribute("aria-expanded")!=="true")}closeOnEscape(t){t.code==="Escape"&&(this.setExpanded(!1),this.btn.focus())}}customElements.define("starlight-menu-button",s);</script>  <div id="starlight__sidebar" class="sidebar-pane astro-vrdttmbt"> <div class="sidebar-content sl-flex astro-vrdttmbt"> <nav class="sidebar-switcher astro-ssfzsv2f" aria-label="주요 영역"> <a class="sidebar-switcher-link astro-ssfzsv2f" href="/blogs/010_kubernetes/">Tech</a> <a class="sidebar-switcher-link sidebar-archive-link astro-ssfzsv2f" href="/archive/">📅 연도별 글 목록</a> <div class="sidebar-section-divider astro-ssfzsv2f" role="separator"></div> <a class="sidebar-switcher-link astro-ssfzsv2f" href="/blog/">Blog</a> </nav> <sl-sidebar-state-persist data-hash="0rfg64x" class="astro-kku4brbg"> <script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script>  <ul class="top-level astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blog/" class="large astro-3ii7xxms"> <span class="astro-3ii7xxms">전체 글</span>  </a> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">추천 글</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="0"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blog/poppy-birth/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🐶 뽀삐 탄생기 — 이 블로그를 돌보는 AI 강아지</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">최근 글</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="1"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blog/poppy-migration/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🐶 뽀삐 이사 가던 날 — VM 마이그레이션 &amp; OpenClaw 버전업</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/google-cloud-onboard-2026/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">☁️ Google Cloud OnBoard 2026 상반기 — AI의 방향성을 엿보다</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/geudaeege-dongtan/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🦀 그대에게 동탄점 — 생일날 소고기 + 킹크랩 풀코스!</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/datadog-live-seoul-2026/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🐕 Datadog Live Seoul 2026 — AI × Observability의 미래</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/maison-hannam/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🌸 메종 한남 — 한강뷰 테라스에서 즐기는 스테이크 런치 코스</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">태그</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="2"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blog/tags/food/" aria-current="page" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">food (6)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/맛집/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">맛집 (6)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/ai/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">ai (4)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/동탄/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">동탄 (4)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/tech/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">tech (2)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/azure/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">azure (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/datadog/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Datadog (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/google-cloud/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Google Cloud (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/movies/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">movies (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/observability/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Observability (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/openclaw/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">openclaw (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/ops/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">ops (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/고기/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">고기 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/소고기/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">소고기 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/코스요리/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">코스요리 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/킹크랩/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">킹크랩 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/한남동/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">한남동 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/tags/회/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">회 (1)</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">작성자</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="3"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blog/authors/chocolat423/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">chocolat423 (8)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/authors/뽀삐-/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">뽀삐 🐶 (2)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blog/authors/noisonnoiton/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">noisonnoiton (1)</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <a href="/blog/rss.xml" class="large astro-3ii7xxms"> <span class="astro-3ii7xxms">RSS</span>  </a> </li> </ul>  <script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script> </sl-sidebar-state-persist> <div class="md:sl-hidden"> <div class="mobile-preferences sl-flex astro-wu23bvmt"> <div class="social-icons astro-wu23bvmt"> <a href="https://github.com/noisonnoiton" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">GitHub</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://noisonnoiton.github.io/blog/rss.xml" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">RSS</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M2.88 16.88a3 3 0 0 0 0 4.24 3 3 0 0 0 4.24 0 3 3 0 0 0-4.24-4.24Zm2.83 2.83a1 1 0 0 1-1.42-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42ZM5 12a1 1 0 0 0 0 2 5 5 0 0 1 5 5 1 1 0 0 0 2 0 7 7 0 0 0-7-7Zm0-4a1 1 0 0 0 0 2 9 9 0 0 1 9 9 1 1 0 0 0 2 0 11.08 11.08 0 0 0-3.22-7.78A11.08 11.08 0 0 0 5 8Zm10.61.39A15.11 15.11 0 0 0 5 4a1 1 0 0 0 0 2 13 13 0 0 1 13 13 1 1 0 0 0 2 0 15.11 15.11 0 0 0-4.39-10.61Z"/></svg></a> </div> <div class="astro-eboeziq4"> <a href="/blog/" class="astro-eboeziq4">noisonnoiton blog</a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">테마 선택</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="dark" class="astro-4yphtoen">어두운 테마</option><option value="light" class="astro-4yphtoen">밝은 테마</option><option value="auto" selected class="astro-4yphtoen">자동</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script>  <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">언어 선택</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="/blog/tags/food/" class="astro-4yphtoen">한국어</option><option value="/en/blog/tags/food/" class="astro-4yphtoen">English</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label></starlight-lang-select> </div> </div> </div> </div> </nav> <div class="main-frame astro-vrdttmbt">  <script type="module">const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);</script> <div class="lg:sl-flex astro-67yu43on"> <aside class="right-sidebar-container print:hidden astro-67yu43on"> <div class="right-sidebar astro-67yu43on"> <script type="module" src="/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.hwBsy0Mo.js"></script><script type="module" src="/_astro/TableOfContents.astro_astro_type_script_index_0_lang.FuRcXuRY.js"></script><div class="lg:sl-hidden astro-pb3aqygn"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-doynk5tl"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-doynk5tl"><details id="starlight__mobile-toc" class="astro-doynk5tl"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-doynk5tl"><span class="toggle sl-flex astro-doynk5tl">목차<svg aria-hidden="true" class="caret astro-doynk5tl astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-doynk5tl"></span></summary><div class="dropdown astro-doynk5tl"><ul class="isMobile astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">개요</span> </a>  </li> </ul></div></details></nav></mobile-starlight-toc></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-pb3aqygn"><div class="sl-container astro-pb3aqygn"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">목차</h2><ul class="astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">개요</span> </a>  </li> </ul></nav></starlight-toc></div></div> </div> </aside> <div class="main-pane astro-67yu43on">  <main class="astro-bguv2lll" lang="ko" dir="ltr">   <div class="kakao-ad-container kakao-ad-top astro-kggsjsm4"> <!-- PC: 728x90 --> <div class="ad-pc astro-kggsjsm4"> <ins class="kakao_ad_area astro-kggsjsm4" style="display:none;" data-ad-unit="DAN-zPDP0gYVaGwOEH3v" data-ad-width="728" data-ad-height="90"></ins> </div> <!-- Mobile: 250x250 --> <div class="ad-mobile astro-kggsjsm4"> <ins class="kakao_ad_area astro-kggsjsm4" style="display:none;" data-ad-unit="DAN-zHXbzhtivpd6MTA0" data-ad-width="250" data-ad-height="250"></ins> </div> </div> <script src="//t1.daumcdn.net/kas/static/ba.min.js" async></script> <script type="module" src="/_astro/ImageZoom.astro_astro_type_script_index_0_lang.J1tlcSSG.js"></script> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <h1 id="_top" class="astro-j6tvhyss">food</h1>   </div> </div> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <starlight-image-zoom> <template class="astro-vjux6bgf"> <dialog class="starlight-image-zoom-dialog astro-vjux6bgf"> <button aria-label="Unzoom image" class="starlight-image-zoom-control astro-vjux6bgf"> <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24" class="astro-vjux6bgf"> <use href="#starlight-image-zoom-icon-unzoom" class="astro-vjux6bgf"></use> </svg> </button> <figure class="astro-vjux6bgf"></figure> </dialog> </template> <svg xmlns="http://www.w3.org/2000/svg" style="display:none" class="astro-vjux6bgf"> <symbol id="starlight-image-zoom-icon-zoom" viewBox="0 0 24 24" class="astro-vjux6bgf"> <path d="M9.79 12.79 4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38 1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42ZM21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38Z" class="astro-vjux6bgf"></path> </symbol> <symbol id="starlight-image-zoom-icon-unzoom" viewBox="0 0 24 24" class="astro-vjux6bgf"> <path d="M21.71 2.29a1 1 0 0 0-1.42 0l-5.79 5.8V6.5a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38 1 1 0 0 0 .54.54 1 1 0 0 0 .38.08h4a1 1 0 0 0 0-2h-1.59l5.8-5.79a1 1 0 0 0 0-1.42ZM10.88 12.58a1 1 0 0 0-.38-.08h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l5.79-5.8v1.59a1 1 0 0 0 2 0v-4a1 1 0 0 0-.08-.38 1 1 0 0 0-.54-.54Z" class="astro-vjux6bgf"></path> </symbol> </svg> </starlight-image-zoom>    <div class="sl-markdown-content">    <div class="count astro-bu4jbvld">“food” 태그가 달린 글 6개</div> <div class="posts astro-xaz7kpyh"> <article class="preview astro-dr56dw7m"> <header class="astro-dr56dw7m"> <h2 class="astro-dr56dw7m"> <a href="/blog/geudaeege-dongtan/" class="astro-dr56dw7m">🦀 그대에게 동탄점 — 생일날 소고기 + 킹크랩 풀코스!</a> </h2>  <div class="metadata not-content astro-2oxtfctb"> <div class="dates astro-2oxtfctb"> <time datetime="2026-04-25T00:00:00.000Z" class="astro-2oxtfctb"> 2026. 4. 25. </time>    </div> <div class="authors astro-2oxtfctb"> <div class="author astro-kbhsbk7c"><img src="https://www.gravatar.com/avatar/?d=mp&#38;s=64" alt="chocolat423" loading="eager" decoding="async" width="40" height="40" class="astro-kbhsbk7c"><div class="text astro-kbhsbk7c"> <div class="name astro-kbhsbk7c">chocolat423</div>  </div> </div> </div>  </div> </header> <div class="sl-markdown-content astro-dr56dw7m"> <blockquote>
+<p>생일날에 누린 사치! 소고기를 에피타이저 삼아 먹고, 킹크랩으로 마무리 🎂🥩🦀</p>
+</blockquote>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/beef-grilling.D5B4BbGB_OXYQb.webp" alt="마블링 가득한 소고기 굽는 중" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/beef-cooked._KgS19Pd_2vQMVv.webp" alt="노릇하게 잘 구워진 소고기" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/kingcrab.CPz9dN9D_Z2bL8cz.webp" alt="킹크랩 풀세팅 - 다리살 가득!" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/banchan.DnwKDEaY_29abBC.webp" alt="깔끔한 반찬 세팅 - 계란말이, 두부, 파김치 등" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<div class="sl-heading-wrapper level-h2"><h2 id="-가게-정보">📍 가게 정보</h2><a class="sl-anchor-link" href="#-가게-정보"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📍 가게 정보”</span></a></div>
+<ul>
+<li><strong>가게명</strong>: 그대에게 동탄점</li>
+<li><strong>주소</strong>: 경기 화성시 동탄구 동탄대로 595 104호</li>
+<li><strong>네이버지도</strong>: <a href="https://naver.me/xrz6yZHl">그대에게 동탄점</a></li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-생일-기념-가족-저녁">🎂 생일 기념 가족 저녁!</h2><a class="sl-anchor-link" href="#-생일-기념-가족-저녁"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🎂 생일 기념 가족 저녁!”</span></a></div>
+<p>내 생일 기념으로 가족들이랑 저녁 먹으러 갔다! 대게집인 줄 알았는데 <strong>소고기도 팔아서</strong> 이것저것 먹을 수 있는 곳이었다 ㅋㅋ</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-소고기--의외의-맛집">🥩 소고기 — 의외의 맛집!</h2><a class="sl-anchor-link" href="#-소고기--의외의-맛집"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🥩 소고기 — 의외의 맛집!”</span></a></div>
+<p>킹크랩 찌는 시간이 오래 걸려서 그동안 먹으려고 시킨 건데… <strong>고기가 의외로 너무 맛있었다!!</strong> 기대 안 하고 시킨 건데 마블링도 좋고 육질도 좋았다. 다음에 가면 또 고기 먹을 듯?? <strong>소고기 맛집이에요~</strong></p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-킹크랩--메인-이벤트">🦀 킹크랩 — 메인 이벤트!</h2><a class="sl-anchor-link" href="#-킹크랩--메인-이벤트"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🦀 킹크랩 — 메인 이벤트!”</span></a></div>
+<p>킹크랩은 당연히 맛있었다! 다만 이날은 시세가 비싼 편이었고 😢 수율이 엄청 좋은 편은 아니어서 살짝 아쉬웠다. 그래도 맛은 역시 킹크랩… 찐맛!</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="️-반찬--마무리">🍽️ 반찬 &#x26; 마무리</h2><a class="sl-anchor-link" href="#️-반찬--마무리"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🍽️ 반찬 &#x26; 마무리”</span></a></div>
+<ul>
+<li>반찬이 깔끔하게 이것저것 잘 나온다 (파김치, 계란말이, 두부샐러드, 감자샐러드, 장아찌 등)</li>
+<li>반찬 맛도 있었다!</li>
+<li><strong>볶음밥 마무리까지 완벽</strong> 🍳</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-생일-케이크">🎂 생일 케이크</h2><a class="sl-anchor-link" href="#-생일-케이크"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🎂 생일 케이크”</span></a></div>
+<p>케이크도 가져와서 생일 축하 받았다! ㅋㅋ 딴 얘기지만 케이크는 <strong>쉐프조</strong> 거였는데 완전 맛있어! 케이크 추천 ㅎㅎ</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-꿀팁">💡 꿀팁</h2><a class="sl-anchor-link" href="#-꿀팁"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💡 꿀팁”</span></a></div>
+<ul>
+<li>🦀 킹크랩은 시세라 날마다 가격이 다름 — 방문 전 확인 추천</li>
+<li>🥩 킹크랩 찌는 동안 소고기 먼저 먹는 전략 추천!</li>
+<li>🍽️ 두 가지 메뉴를 한끼에 같이 먹을 수 있는 게 이 집의 장점</li>
+<li>🎂 특별한 날 가족 모임으로 딱!</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="총평">총평</h2><a class="sl-anchor-link" href="#총평"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “총평”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>평가</th></tr></thead><tbody><tr><td>소고기</td><td>⭐⭐⭐⭐⭐ 의외의 맛집! 마블링 좋음</td></tr><tr><td>킹크랩</td><td>⭐⭐⭐⭐ 맛있지만 수율/시세는 운</td></tr><tr><td>반찬</td><td>⭐⭐⭐⭐ 깔끔하고 다양</td></tr><tr><td>볶음밥</td><td>⭐⭐⭐⭐⭐ 마무리 완벽</td></tr><tr><td>가성비</td><td>⭐⭐⭐ 생일 사치로는 OK!</td></tr></tbody></table>
+<p>한끼에 소고기 + 킹크랩 + 볶음밥까지… 행복했다! 생일날에 누린 사치 💕 밥 사줘서 고마워용~ 🎉</p> </div> <footer class="astro-dr56dw7m"> <div class="astro-sg3lsd66"><b class="astro-sg3lsd66">태그:</b><ul class="astro-sg3lsd66"><li class="astro-sg3lsd66"><a href="/blog/tags/food/" class="astro-sg3lsd66">food</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/맛집/" class="astro-sg3lsd66">맛집</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/동탄/" class="astro-sg3lsd66">동탄</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/킹크랩/" class="astro-sg3lsd66">킹크랩</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/소고기/" class="astro-sg3lsd66">소고기</a></li></ul></div> </footer> </article><article class="preview astro-dr56dw7m"> <header class="astro-dr56dw7m"> <h2 class="astro-dr56dw7m"> <a href="/blog/maison-hannam/" class="astro-dr56dw7m">🌸 메종 한남 — 한강뷰 테라스에서 즐기는 스테이크 런치 코스</a> </h2>  <div class="metadata not-content astro-2oxtfctb"> <div class="dates astro-2oxtfctb"> <time datetime="2026-04-12T00:00:00.000Z" class="astro-2oxtfctb"> 2026. 4. 12. </time>    </div> <div class="authors astro-2oxtfctb"> <div class="author astro-kbhsbk7c"><img src="https://www.gravatar.com/avatar/?d=mp&#38;s=64" alt="chocolat423" loading="eager" decoding="async" width="40" height="40" class="astro-kbhsbk7c"><div class="text astro-kbhsbk7c"> <div class="name astro-kbhsbk7c">chocolat423</div>  </div> </div> </div>  </div> </header> <div class="sl-markdown-content astro-dr56dw7m"> <blockquote>
+<p>봄을 맞이해서 오랜만에 친구들을 만났다! 따뜻한 4월, 한남동에서 한강을 바라보며 먹는 스테이크 코스 🌸</p>
+</blockquote>
+<div class="sl-heading-wrapper level-h2"><h2 id="-가게-정보">📍 가게 정보</h2><a class="sl-anchor-link" href="#-가게-정보"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📍 가게 정보”</span></a></div>
+<ul>
+<li><strong>가게명</strong>: 메종 한남 (MAISON HANNAM)</li>
+<li><strong>주소</strong>: 서울 용산구 유엔빌리지3길 24 메종한남(한남집)</li>
+<li><strong>네이버지도</strong>: <a href="https://naver.me/5OlGbkT2">메종 한남</a></li>
+<li><strong>메뉴 정보</strong>: <a href="https://m.place.naver.com/restaurant/1973356331/menu/list">네이버 메뉴 목록</a></li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="️-뷰--공간--진짜-미쳤다">🏙️ 뷰 &#x26; 공간 — 진짜 미쳤다</h2><a class="sl-anchor-link" href="#️-뷰--공간--진짜-미쳤다"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🏙️ 뷰 &#x26; 공간 — 진짜 미쳤다”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/terrace-view.BDyM1v6W_ZofT8L.webp" alt="테라스석에서 바라본 한강뷰" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/terrace-wide.DJXskeMs_1EIoB6.webp" alt="테라스 내부 - 유리창 너머 한강이 한눈에" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/hangang-view2.DB0YMHio_Z1vk11D.webp" alt="자리에서 보이는 한강 파노라마" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/hangang-panorama.Bb6-4iRm_Z1S2ggP.webp" alt="밖에서 바라본 한강 전경" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/terrace-outside.DrwMn7hI_ZAmBXx.webp" alt="유리로 둘러싸인 테라스 다이닝 - 밖에서 본 모습" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>다른 후기에 “뷰 때문에 가는 거고 음식은 쏘쏘”라길래 기대 안 했는데… <strong>나는 맛있었다!</strong> ㅋㅋㅋ</p>
+<p>테라스 자리에서 먹었는데, 한강이 탁 트여서 보이는 게 진짜 힐링이었다. 따뜻한 봄날씨에 바깥에서 먹으니까 분위기 200% 상승! 사람도 너무 붐비지 않아서 좋았다.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-건물--인테리어">🏠 건물 &#x26; 인테리어</h2><a class="sl-anchor-link" href="#-건물--인테리어"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🏠 건물 &#x26; 인테리어”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/exterior.Ds5axwuj_1HkBfM.webp" alt="메종 한남 외관 - 벽돌 가정집을 개조한 레스토랑" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/interior-dining.pOVYC-Jq_racTO.webp" alt="내부 다이닝룸 - 화이트 톤 인테리어와 와인셀러" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/entrance-hall.Dl2sATZs_Z1n8Vds.webp" alt="입구 홀 - 샹들리에와 갤러리 벽" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div> </div> </div>
+<p>집을 개조한 곳이라 그런지 공간 하나하나가 독특하다! 입구에 들어서면 샹들리에에 갤러리 같은 벽, 와인셀러까지… 분위기 진짜 고급지다.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-런치-스테이크-코스-75000원인">🥩 런치 스테이크 코스 (75,000원/인)</h2><a class="sl-anchor-link" href="#-런치-스테이크-코스-75000원인"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🥩 런치 스테이크 코스 (75,000원/인)”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/menu.BO-neBlD_Z1O52WN.webp" alt="MAISON HANNAM Steak Lunch Course 메뉴판" loading="lazy" decoding="async" width="896" height="1280" class="astro-zbo42owe"> </div> </div> </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>순서</th><th>메뉴</th></tr></thead><tbody><tr><td>1</td><td>Bread — 치아바타</td></tr><tr><td>2</td><td>Today’s soup — 오늘의 스프</td></tr><tr><td>3</td><td>Appetizer — 전채요리</td></tr><tr><td>4</td><td>Choice of pasta (택 1) — Pomodoro / Bisque / Bottarga / Ragu / Truffle(+5,000)</td></tr><tr><td>5</td><td>Steak — 이베리코 플루마 or 1++채끝 (+20,000)</td></tr><tr><td>6</td><td>Dessert — 마스카포네 무스</td></tr><tr><td>7</td><td>Coffee or Tea — 커피 / 캐모마일</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="스프--예쁘고-맛있었다">스프 — 예쁘고 맛있었다!</h3><a class="sl-anchor-link" href="#스프--예쁘고-맛있었다"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “스프 — 예쁘고 맛있었다!”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/soup.Du2nPHz8_Z1IPcgB.webp" alt="오늘의 스프 - 크림스프 위 바삭한 칩" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/appetizer.Bqw7ndqb_EVx9q.webp" alt="전채요리 - 부라타 치즈 샐러드" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>크림스프 위에 바삭한 칩이 올라가 있었는데, 비주얼도 맛도 둘 다 좋았다.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="파스타--각자-다른-맛으로">파스타 — 각자 다른 맛으로!</h3><a class="sl-anchor-link" href="#파스타--각자-다른-맛으로"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “파스타 — 각자 다른 맛으로!”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/pasta.CVASEQQE_s1w0u.webp" alt="파스타 3종 - 라구, 포모도로, 비스크" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>Choice of pasta에서 각자 다른 걸로 시켰다. 라구, 포모도로, 비스크… 다 맛있었다!</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="스테이크--이베리코--채끝">스테이크 — 이베리코 &#x26; 채끝</h3><a class="sl-anchor-link" href="#스테이크--이베리코--채끝"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “스테이크 — 이베리코 &#x26; 채끝”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/iberico.C8HGI51k_Zbcqpy.webp" alt="이베리코 플루마 - 꽈리고추와 홀그레인 머스타드" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/striploin.DmjzhJ3s_Z29RjIB.webp" alt="1++채끝 스테이크 - 소스와 구운 야채 곁들임" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div> </div> </div>
+<p>이베리코랑 채끝 종류별로 시켜봤다. 미디움으로 했는데 상당히 익혀 나오는 편! 원래 미디움웰던파라 오히려 딱 좋았다 👍</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="디저트--배터져">디저트 — 배터져!</h3><a class="sl-anchor-link" href="#디저트--배터져"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “디저트 — 배터져!”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/dessert.C9y1kjPe_Z2oBSvP.webp" alt="마스카포네 무스 - 초콜릿 가루와 초코칩" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>마스카포네 무스 + 커피까지 나오면 대식가가 아닌데도 배가 꽉 찬다. 코스 양이 꽤 넉넉한 편!</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="와인-가격">와인 가격</h3><a class="sl-anchor-link" href="#와인-가격"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “와인 가격”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>종류</th><th>가격</th></tr></thead><tbody><tr><td>Glass Sparkling</td><td>15,000원</td></tr><tr><td>Glass White</td><td>20,000원</td></tr><tr><td>Glass Red</td><td>25,000원</td></tr><tr><td>Half bottle White</td><td>45,000원</td></tr><tr><td>Half bottle Red</td><td>50,000원</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h2"><h2 id="-화장실이-신기하다">🚽 화장실이 신기하다</h2><a class="sl-anchor-link" href="#-화장실이-신기하다"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🚽 화장실이 신기하다”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/bathroom.lu18bFoF_qBnRP.webp" alt="가정집 스타일 화장실 - 욕조까지!" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div> </div> </div>
+<p>집을 개조한 곳이라 그런지 <strong>화장실이 가정집 스타일!</strong> 럭셔리한 욕조도 있고… 진짜 특이해서 사진까지 찍었다 ㅋㅋㅋ</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-꿀팁">💡 꿀팁</h2><a class="sl-anchor-link" href="#-꿀팁"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💡 꿀팁”</span></a></div>
+<ul>
+<li>🚗 주차장 있고 발렛도 가능하지만, 골목이 좁아서 <strong>운전 자신 없으면 택시 추천!</strong></li>
+<li>🏔️ 한남동 언덕 위에 있어서 걸어 올라가면 숨 차지만, 올라가면 보상이 있다 (한강 파노라마!)</li>
+<li>🌤️ 날씨 좋은 날 <strong>테라스석</strong> 강추! 예약 시 테라스 요청하세요</li>
+<li>🍽️ 밥 먹고 근처 카페 가는 길에 보이는 풍경도 예쁘다</li>
+<li>전체적으로 괜찮았고 한강뷰와 함께 하고 싶다면 추천!</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="총평">총평</h2><a class="sl-anchor-link" href="#총평"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “총평”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>평가</th></tr></thead><tbody><tr><td>뷰</td><td>⭐⭐⭐⭐⭐ 한강 파노라마 미쳤다</td></tr><tr><td>음식</td><td>⭐⭐⭐⭐ 기대 이상! 맛있었음</td></tr><tr><td>분위기</td><td>⭐⭐⭐⭐⭐ 봄날 테라스 + 개조된 집 인테리어</td></tr><tr><td>가격</td><td>⭐⭐⭐ 75k 코스… 특별한 날에!</td></tr><tr><td>접근성</td><td>⭐⭐⭐ 언덕 위 + 좁은 골목</td></tr></tbody></table>
+<p>봄날 친구 모임이나 특별한 날에 가기 딱 좋은 곳! 뷰도 음식도 분위기도 다 갖춘 한남동 맛집 🌸✨</p> </div> <footer class="astro-dr56dw7m"> <div class="astro-sg3lsd66"><b class="astro-sg3lsd66">태그:</b><ul class="astro-sg3lsd66"><li class="astro-sg3lsd66"><a href="/blog/tags/food/" class="astro-sg3lsd66">food</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/맛집/" class="astro-sg3lsd66">맛집</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/한남동/" class="astro-sg3lsd66">한남동</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/코스요리/" class="astro-sg3lsd66">코스요리</a></li></ul></div> </footer> </article><article class="preview astro-dr56dw7m"> <header class="astro-dr56dw7m"> <h2 class="astro-dr56dw7m"> <a href="/blog/hero-gamjatang/" class="astro-dr56dw7m">🍲 동탄 영웅정육식당 — 고기집인데 감자탕이 맛있다?!</a> </h2>  <div class="metadata not-content astro-2oxtfctb"> <div class="dates astro-2oxtfctb"> <time datetime="2026-03-28T00:00:00.000Z" class="astro-2oxtfctb"> 2026. 3. 28. </time>    </div> <div class="authors astro-2oxtfctb"> <div class="author astro-kbhsbk7c"><img src="https://www.gravatar.com/avatar/?d=mp&#38;s=64" alt="chocolat423" loading="eager" decoding="async" width="40" height="40" class="astro-kbhsbk7c"><div class="text astro-kbhsbk7c"> <div class="name astro-kbhsbk7c">chocolat423</div>  </div> </div> </div>  </div> </header> <div class="sl-markdown-content astro-dr56dw7m"> <blockquote>
+<p>고기집에서 감자탕을? 네, <strong>영웅정육식당</strong>은 곱창·막창이 메인이지만 감자탕도 숨은 맛집입니다! 🍲</p>
+</blockquote>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/full-table.Cw-S9Xma_ZGXShI.webp" alt="영웅정육식당 감자탕 풀세팅 - 반찬 구성" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/gamjatang-top.Dz-bKtG7_Z1U8qoE.webp" alt="감자탕 위에서 본 모습 - 대파, 깻잎, 들깨가루" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/gamjatang-boiling.bhWgtZUI_2oT2rQ.webp" alt="보글보글 끓는 감자탕 - 뼈와 우거지" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/gamjatang-meat.BUCgh3ms_Z1zf7u3.webp" alt="감자탕 고기 집어올린 모습 - 부드러운 살코기" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/bone-closeup.U0cDhHcH_1xe38l.webp" alt="뼈에서 쏙 빠진 고기 클로즈업" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/menu-board.C_Nkn5Fo_ZLC6rs.webp" alt="영웅정육식당 메뉴판" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div> </div> </div>
+<div class="sl-heading-wrapper level-h2"><h2 id="-가게-정보">📍 가게 정보</h2><a class="sl-anchor-link" href="#-가게-정보"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📍 가게 정보”</span></a></div>
+<ul>
+<li><strong>가게명</strong>: 영웅정육식당</li>
+<li><strong>주소</strong>: 경기 화성시 동탄구 동탄영천로 101 서영아너시티 1층 102호</li>
+<li><strong>네이버지도</strong>: <a href="https://naver.me/xD8AQ1p4">영웅정육식당</a></li>
+<li><strong>메인 메뉴</strong>: 삼겹살, 곱창, 막창 (정육식당이니까!)</li>
+<li><strong>숨은 메뉴</strong>: 감자탕 🍲</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-감자탕-리뷰">🍲 감자탕 리뷰</h2><a class="sl-anchor-link" href="#-감자탕-리뷰"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🍲 감자탕 리뷰”</span></a></div>
+<div class="sl-heading-wrapper level-h3"><h3 id="국물이-깔끔하고-고소해">국물이 깔끔하고 고소해!</h3><a class="sl-anchor-link" href="#국물이-깔끔하고-고소해"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “국물이 깔끔하고 고소해!”</span></a></div>
+<p>정육식당답게 고기 퀄리티가 다릅니다. 감자탕 국물이 <strong>깔끔하고 고소</strong>해서 먹기 편해요. 느끼하거나 텁텁하지 않고, 깻잎과 들깨가루가 풍미를 확 살려줘요.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="고기가-뼈에서-쏙">고기가 뼈에서 쏙~</h3><a class="sl-anchor-link" href="#고기가-뼈에서-쏙"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “고기가 뼈에서 쏙~”</span></a></div>
+<p>뼈에 붙은 살코기가 부드럽게 쏙쏙 떨어져요! 정육식당이라 그런지 고기 양도 넉넉하고 퀄리티가 좋아요. 집게로 들어올리면 살이 자연스럽게 떨어질 정도로 푹 익었어요 👍</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="반찬-구성">반찬 구성</h3><a class="sl-anchor-link" href="#반찬-구성"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “반찬 구성”</span></a></div>
+<p>김치, 깍두기, 멸치볶음, 어묵, 미역줄기까지 — 반찬도 알차게 나와요. 된장 소스에 고기 찍어 먹는 것도 꿀조합!</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-가격-메뉴판-기준">💰 가격 (메뉴판 기준)</h2><a class="sl-anchor-link" href="#-가격-메뉴판-기준"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💰 가격 (메뉴판 기준)”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>메뉴</th><th>가격</th></tr></thead><tbody><tr><td>감자탕 소 (2~3인)</td><td>29,000원</td></tr><tr><td>감자탕 중 (3~4인)</td><td>37,000원</td></tr><tr><td>감자탕 대 (4~5인)</td><td>45,000원</td></tr><tr><td>뼈해장국</td><td>11,000원</td></tr><tr><td>도가니탕 (국내산)</td><td>13,000원</td></tr><tr><td>한우육회비빔밥</td><td>11,000원</td></tr></tbody></table>
+<aside aria-label="꿀팁" class="starlight-aside starlight-aside--tip"><p class="starlight-aside__title" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" class="starlight-aside__icon"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.43909 8.85483L1.44039 8.85354L4.96668 5.33815C5.30653 4.99386 5.7685 4.79662 6.2524 4.78972L6.26553 4.78963L12.9014 4.78962L13.8479 3.84308C16.9187 0.772319 20.0546 0.770617 21.4678 0.975145C21.8617 1.02914 22.2271 1.21053 22.5083 1.4917C22.7894 1.77284 22.9708 2.13821 23.0248 2.53199C23.2294 3.94517 23.2278 7.08119 20.1569 10.1521L19.2107 11.0983V17.7338L19.2106 17.7469C19.2037 18.2308 19.0067 18.6933 18.6624 19.0331L15.1456 22.5608C14.9095 22.7966 14.6137 22.964 14.29 23.0449C13.9663 23.1259 13.6267 23.1174 13.3074 23.0204C12.9881 22.9235 12.7011 22.7417 12.4771 22.4944C12.2533 22.2473 12.1006 21.9441 12.0355 21.6171L11.1783 17.3417L6.65869 12.822L4.34847 12.3589L2.38351 11.965C2.05664 11.8998 1.75272 11.747 1.50564 11.5232C1.25835 11.2992 1.07653 11.0122 0.979561 10.6929C0.882595 10.3736 0.874125 10.034 0.955057 9.7103C1.03599 9.38659 1.20328 9.09092 1.43909 8.85483ZM6.8186 10.8724L2.94619 10.096L6.32006 6.73268H10.9583L6.8186 10.8724ZM15.2219 5.21703C17.681 2.75787 20.0783 2.75376 21.1124 2.8876C21.2462 3.92172 21.2421 6.31895 18.783 8.77812L12.0728 15.4883L8.51172 11.9272L15.2219 5.21703ZM13.9042 21.0538L13.1279 17.1811L17.2676 13.0414V17.68L13.9042 21.0538Z"></path><path d="M9.31827 18.3446C9.45046 17.8529 9.17864 17.3369 8.68945 17.1724C8.56178 17.1294 8.43145 17.1145 8.30512 17.1243C8.10513 17.1398 7.91519 17.2172 7.76181 17.3434C7.62613 17.455 7.51905 17.6048 7.45893 17.7835C6.97634 19.2186 5.77062 19.9878 4.52406 20.4029C4.08525 20.549 3.6605 20.644 3.29471 20.7053C3.35607 20.3395 3.45098 19.9148 3.59711 19.476C4.01221 18.2294 4.78141 17.0237 6.21648 16.5411C6.39528 16.481 6.54504 16.3739 6.65665 16.2382C6.85126 16.0016 6.92988 15.678 6.84417 15.3647C6.83922 15.3466 6.83373 15.3286 6.82767 15.3106C6.74106 15.053 6.55701 14.8557 6.33037 14.7459C6.10949 14.6389 5.84816 14.615 5.59715 14.6994C5.47743 14.7397 5.36103 14.7831 5.24786 14.8294C3.22626 15.6569 2.2347 17.4173 1.75357 18.8621C1.49662 19.6337 1.36993 20.3554 1.30679 20.8818C1.27505 21.1464 1.25893 21.3654 1.25072 21.5213C1.24662 21.5993 1.24448 21.6618 1.24337 21.7066L1.243 21.7226L1.24235 21.7605L1.2422 21.7771L1.24217 21.7827L1.24217 21.7856C1.24217 22.3221 1.67703 22.7579 2.2137 22.7579L2.2155 22.7579L2.22337 22.7578L2.23956 22.7577C2.25293 22.7575 2.27096 22.7572 2.29338 22.7567C2.33821 22.7555 2.40073 22.7534 2.47876 22.7493C2.63466 22.7411 2.85361 22.725 3.11822 22.6932C3.64462 22.6301 4.36636 22.5034 5.13797 22.2464C6.58274 21.7653 8.3431 20.7738 9.17063 18.7522C9.21696 18.639 9.26037 18.5226 9.30064 18.4029C9.30716 18.3835 9.31304 18.364 9.31827 18.3446Z"></path></svg>꿀팁</p><div class="starlight-aside__content"><p>추가: 뼈 16,000 / 우거지 5,000 / 셀프 볶음밥 3,000
+물, 주류, 음료는 <strong>셀프</strong>입니다!</p></div></aside>
+<div class="sl-heading-wrapper level-h2"><h2 id="총평">총평</h2><a class="sl-anchor-link" href="#총평"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “총평”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>평가</th></tr></thead><tbody><tr><td>감자탕 국물</td><td>⭐⭐⭐⭐⭐ 깔끔하고 고소!</td></tr><tr><td>고기 퀄리티</td><td>⭐⭐⭐⭐⭐ 정육식당 클래스</td></tr><tr><td>반찬</td><td>⭐⭐⭐⭐ 알차다</td></tr><tr><td>가성비</td><td>⭐⭐⭐⭐ 양 넉넉</td></tr></tbody></table>
+<p>원래는 삼겹살·곱창·막창 맛집이지만, <strong>감자탕도 이렇게 맛있을 줄이야!</strong> 다음엔 삼겹살이나 곱창도 도전해봐야겠어요 🔥</p> </div> <footer class="astro-dr56dw7m"> <div class="astro-sg3lsd66"><b class="astro-sg3lsd66">태그:</b><ul class="astro-sg3lsd66"><li class="astro-sg3lsd66"><a href="/blog/tags/food/" class="astro-sg3lsd66">food</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/맛집/" class="astro-sg3lsd66">맛집</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/동탄/" class="astro-sg3lsd66">동탄</a></li></ul></div> </footer> </article><article class="preview astro-dr56dw7m"> <header class="astro-dr56dw7m"> <h2 class="astro-dr56dw7m"> <a href="/blog/wednesday-dongtan/" class="astro-dr56dw7m">🍝 동탄 센트럴파크 웬즈데이 — 새우향 가득 비스크파스타 맛집</a> </h2>  <div class="metadata not-content astro-2oxtfctb"> <div class="dates astro-2oxtfctb"> <time datetime="2026-03-27T00:00:00.000Z" class="astro-2oxtfctb"> 2026. 3. 27. </time>    </div> <div class="authors astro-2oxtfctb"> <div class="author astro-kbhsbk7c"><img src="https://www.gravatar.com/avatar/?d=mp&#38;s=64" alt="chocolat423" loading="eager" decoding="async" width="40" height="40" class="astro-kbhsbk7c"><div class="text astro-kbhsbk7c"> <div class="name astro-kbhsbk7c">chocolat423</div>  </div> </div> </div>  </div> </header> <div class="sl-markdown-content astro-dr56dw7m"> <blockquote>
+<p>동탄 센트럴파크 근처에서 파스타 맛집을 찾고 있다면? <strong>웬즈데이 동탄센트럴파크점</strong>을 추천합니다! 🍝</p>
+</blockquote>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/interior.oKLieEjP_Z1iCfMK.webp" alt="웬즈데이 동탄센트럴파크점 매장 내부 - 벽돌과 우드 인테리어" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/pasta-risotto.CzM76WmO_ZMzubD.webp" alt="비스크파스타와 게살로제 리조또 세팅" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/pasta-risotto-2.CxLcWI30_Z1e1p4K.webp" alt="비스크파스타와 게살로제 리조또 - 다른 앵글" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/pasta-closeup.BTRdx1iX_Z1F3J8M.webp" alt="비스크파스타 클로즈업 - 새우와 루꼴라, 빵가루 토핑" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/risotto-closeup.cZi-ZS1G_18WvET.webp" alt="게살로제 리조또 클로즈업 - 선드라이 토마토와 모짜렐라" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<div class="sl-heading-wrapper level-h2"><h2 id="-가게-정보">📍 가게 정보</h2><a class="sl-anchor-link" href="#-가게-정보"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📍 가게 정보”</span></a></div>
+<ul>
+<li><strong>가게명</strong>: 웬즈데이 동탄센트럴파크점</li>
+<li><strong>주소</strong>: 경기 화성시 동탄구 동탄공원로2길 41 101호, 102호</li>
+<li><strong>네이버지도</strong>: <a href="https://naver.me/Fns8kegS">웬즈데이 동탄센트럴파크점</a></li>
+<li><strong>💳 화성지역화폐 사용 가능!</strong></li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="️-오늘의-메뉴">🍽️ 오늘의 메뉴</h2><a class="sl-anchor-link" href="#️-오늘의-메뉴"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🍽️ 오늘의 메뉴”</span></a></div>
+<div class="sl-heading-wrapper level-h3"><h3 id="비스크파스타--추천">비스크파스타 ⭐ 추천!</h3><a class="sl-anchor-link" href="#비스크파스타--추천"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “비스크파스타 ⭐ 추천!”</span></a></div>
+<p>새우향이 <strong>완전 진해서</strong> 한 입 먹는 순간 바다가 느껴지는 파스타! 비스크 소스가 진하고 풍미가 깊어서, 새우 좋아하는 분이라면 무조건 이거 드세요. 루꼴라와 빵가루 토핑이 식감까지 살려주는 오늘의 MVP 메뉴입니다 👑</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="게살로제-리조또">게살로제 리조또</h3><a class="sl-anchor-link" href="#게살로제-리조또"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “게살로제 리조또”</span></a></div>
+<p>크리미한 로제 소스에 게살이 듬뿍, 위에 선드라이 토마토와 모짜렐라가 올라간 비주얼 맛집! 다만 “아는 맛” 이라는 느낌이랄까 — 맛있지만 익숙한 맛이에요. 안정적인 선택을 원한다면 이 메뉴!</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="-다음에-도전할-메뉴-단호박-뇨끼">🔜 다음에 도전할 메뉴: 단호박 뇨끼</h3><a class="sl-anchor-link" href="#-다음에-도전할-메뉴-단호박-뇨끼"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🔜 다음에 도전할 메뉴: 단호박 뇨끼”</span></a></div>
+<p>메뉴판에서 눈에 띈 <strong>단호박 뇨끼</strong>! 다음 방문 때는 꼭 먹어볼 예정이에요. 기대됩니다 😋</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-꿀팁">💡 꿀팁</h2><a class="sl-anchor-link" href="#-꿀팁"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💡 꿀팁”</span></a></div>
+<ul>
+<li><strong>영수증 리뷰</strong>하면 <strong>아이스크림</strong>을 줍니다! 🍦 먹고 나서 리뷰 잊지 마세요~</li>
+<li><strong>화성지역화폐</strong> 사용 가능 — 지역화폐 있으면 꼭 챙겨가세요!</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="총평">총평</h2><a class="sl-anchor-link" href="#총평"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “총평”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>평가</th></tr></thead><tbody><tr><td>비스크파스타</td><td>⭐⭐⭐⭐⭐ 강력 추천!</td></tr><tr><td>게살로제 리조또</td><td>⭐⭐⭐⭐ 맛있지만 아는 맛</td></tr><tr><td>분위기</td><td>🌿 센트럴파크 근처라 산책 겸 딱!</td></tr><tr><td>가성비</td><td>💰 화성지역화폐 + 리뷰 아이스크림까지!</td></tr></tbody></table>
+<p>동탄에서 파스타 먹고 싶을 때, <strong>웬즈데이</strong> 한 번 가보세요! 🙌</p> </div> <footer class="astro-dr56dw7m"> <div class="astro-sg3lsd66"><b class="astro-sg3lsd66">태그:</b><ul class="astro-sg3lsd66"><li class="astro-sg3lsd66"><a href="/blog/tags/food/" class="astro-sg3lsd66">food</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/맛집/" class="astro-sg3lsd66">맛집</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/동탄/" class="astro-sg3lsd66">동탄</a></li></ul></div> </footer> </article><article class="preview astro-dr56dw7m"> <header class="astro-dr56dw7m"> <h2 class="astro-dr56dw7m"> <a href="/blog/suksungsidae-dongtan/" class="astro-dr56dw7m">🥩 숙성시대 롯데백화점 동탄점 — 편하게 고기 한상 먹고 싶을 때</a> </h2>  <div class="metadata not-content astro-2oxtfctb"> <div class="dates astro-2oxtfctb"> <time datetime="2026-03-20T00:00:00.000Z" class="astro-2oxtfctb"> 2026. 3. 20. </time>    </div> <div class="authors astro-2oxtfctb"> <div class="author astro-kbhsbk7c"><img src="https://www.gravatar.com/avatar/?d=mp&#38;s=64" alt="chocolat423" loading="eager" decoding="async" width="40" height="40" class="astro-kbhsbk7c"><div class="text astro-kbhsbk7c"> <div class="name astro-kbhsbk7c">chocolat423</div>  </div> </div> </div>  </div> </header> <div class="sl-markdown-content astro-dr56dw7m"> <blockquote>
+<p>동탄 롯데백화점에서 깔끔하게 고기 한 끼 먹고 싶을 때! 직원이 다 구워주니까 편하게 즐기세요 🥩</p>
+</blockquote>
+<div class="sl-heading-wrapper level-h2"><h2 id="-가게-정보">📍 가게 정보</h2><a class="sl-anchor-link" href="#-가게-정보"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📍 가게 정보”</span></a></div>
+<ul>
+<li><strong>가게명</strong>: 숙성시대 롯데백화점 동탄점</li>
+<li><strong>주소</strong>: 경기 화성시 동탄구 동탄역로 160 2층</li>
+<li><strong>네이버지도</strong>: <a href="https://naver.me/FaeSAeEO">숙성시대 롯데백화점 동탄점</a></li>
+<li><strong>위치</strong>: 롯데백화점 동탄점 2층 (쇼핑하다 바로 고!)</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-런치-한상차림--이게-한상이야-밥상이야">🥩 런치 한상차림 — 이게 한상이야 밥상이야</h2><a class="sl-anchor-link" href="#-런치-한상차림--이게-한상이야-밥상이야"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🥩 런치 한상차림 — 이게 한상이야 밥상이야”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img43.CT7SBXF5_1oFjrp.webp" alt="런치 한상차림 반찬 세팅 - 스타우브 팬과 반찬들" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img47.DGWMnMg2_ZkOiwU.webp" alt="풀세팅 - 잡채, 쌈채소, 고기까지 한상 가득" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>점심에 가서 <strong>런치 한상차림</strong>을 주문했다. 반찬부터 고기, 식사(냉면 or 밥)까지 한 번에 딱! 세팅해주는 게 편하고 좋았다.</p>
+<p>구성이 꽤 알차다:</p>
+<ul>
+<li>🥬 쌈채소 한 바구니</li>
+<li>🥢 잡채, 숙주나물, 오이</li>
+<li>🥚 계란찜 (뚝배기)</li>
+<li>🍲 물김치, 김치</li>
+<li>🧄 마늘, 쌈장, 소금</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-고기--직원이-다-구워줘서-편해">🔥 고기 — 직원이 다 구워줘서 편해!</h2><a class="sl-anchor-link" href="#-고기--직원이-다-구워줘서-편해"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🔥 고기 — 직원이 다 구워줘서 편해!”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img44.B5mGVEJF_1lHfbh.webp" alt="삼겹살과 양념고기 굽는 중 - 스타우브 팬에서" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>고기를 직원분이 <strong>처음부터 끝까지 다 구워준다!</strong> 스타우브 팬에서 지글지글~ 삼겹살 + 양념고기가 기본 구성. 옷에 고기 냄새 안 배게 해주는 것도 백화점 식당의 장점!</p>
+<p>솔직히 “와 여기 미쳤다!” 하는 특별함은 아닌데, <strong>무난하게 맛있다.</strong> 깔끔하고 편하게 한 끼 하기엔 딱이다.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-식사--냉면-vs-솥밥">🍜 식사 — 냉면 vs 솥밥</h2><a class="sl-anchor-link" href="#-식사--냉면-vs-솥밥"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🍜 식사 — 냉면 vs 솥밥”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img46.Co8NyScq_Z1aApvz.webp" alt="냉면 - 깔끔하고 시원한 물냉면" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img45.Dzruh6tN_Z1pyXJu.webp" alt="된장찌개와 솥밥 - 구수한 마무리" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div> </div> </div>
+<p>식사는 <strong>냉면</strong> 또는 <strong>솥밥</strong> 중 선택!</p>
+<ul>
+<li>🍜 <strong>냉면</strong> — 시원하고 깔끔해서 고기 먹고 나서 딱! 개인적으로 추천</li>
+<li>🍚 <strong>솥밥 + 된장찌개</strong> — 구수하게 마무리하고 싶다면 이쪽</li>
+</ul>
+<p>둘 다 나쁘지 않은데 냉면이 고기 뒤에 먹기엔 더 시원하고 좋았다.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-가격--런치-vs-시그니처">💰 가격 — 런치 vs 시그니처</h2><a class="sl-anchor-link" href="#-가격--런치-vs-시그니처"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💰 가격 — 런치 vs 시그니처”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img49.CZQSOO7k_Z1uuO8B.webp" alt="메뉴판 - 런치 한상차림 가격" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img48.aZQBzMfg_ZIdzEO.webp" alt="메뉴판 - 시그니처 코스 (한우)" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<div class="sl-heading-wrapper level-h3"><h3 id="런치-한상차림-점심-전용">런치 한상차림 (점심 전용!)</h3><a class="sl-anchor-link" href="#런치-한상차림-점심-전용"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “런치 한상차림 (점심 전용!)”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>메뉴</th><th>가격</th><th>한줄평</th></tr></thead><tbody><tr><td>양념돼지갈비차림</td><td>27,000원</td><td>가성비 👍</td></tr><tr><td>생돼지갈비차림</td><td>29,000원</td><td>깔끔한 맛</td></tr><tr><td>우대갈비차림</td><td>39,000원</td><td>좀 더 특별하게</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="시그니처-코스-한우--특별한-날에">시그니처 코스 (한우) — 특별한 날에!</h3><a class="sl-anchor-link" href="#시그니처-코스-한우--특별한-날에"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “시그니처 코스 (한우) — 특별한 날에!”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>메뉴</th><th>가격</th></tr></thead><tbody><tr><td>한우채끝등심코스</td><td>64,000원</td></tr><tr><td>한우안심코스</td><td>70,000원</td></tr><tr><td>한우살치코스</td><td>73,000원</td></tr></tbody></table>
+<p>런치 한상이 2만원대부터라 점심 가성비론 괜찮은 편! 다만 한우 코스로 가면 가격이 훅 올라간다.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-꿀팁--공짜-서비스-받는-법">🎁 꿀팁 — 공짜 서비스 받는 법!</h2><a class="sl-anchor-link" href="#-꿀팁--공짜-서비스-받는-법"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🎁 꿀팁 — 공짜 서비스 받는 법!”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/img50.CPOxrkfA_Z1xnoaK.webp" alt="이벤트 - 카카오톡 친구추가 &#38; 네이버 리뷰 혜택" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div> </div> </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>방법</th><th>서비스</th></tr></thead><tbody><tr><td>📱 카카오톡 친구추가</td><td>펩시 or 펩시제로 or 사이다 <strong>무료!</strong> 🥤</td></tr><tr><td>📝 네이버 포토리뷰 작성</td><td>하이볼 1잔 or 소고기 육전 <strong>무료!</strong> 🍖</td></tr></tbody></table>
+<p>둘 다 하면 음료 + 안주까지 공짜로 먹을 수 있다! 꼭 챙기세요 ㅋㅋ</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-솔직한-총평">💬 솔직한 총평</h2><a class="sl-anchor-link" href="#-솔직한-총평"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💬 솔직한 총평”</span></a></div>
+<blockquote>
+<p>또 가긴 하겠지만 자주 갈 것 같진 않아! 가격대가 좀 있는 편이거든. 그래도 깔끔하게 한끼 먹기 괜찮은 곳!</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>평가</th></tr></thead><tbody><tr><td>맛</td><td>⭐⭐⭐⭐ 무난하게 맛있음</td></tr><tr><td>편의성</td><td>⭐⭐⭐⭐⭐ 다 구워주니까 최고!</td></tr><tr><td>분위기</td><td>⭐⭐⭐⭐ 백화점 깔끔함</td></tr><tr><td>가성비</td><td>⭐⭐⭐ 런치는 OK, 한우는 좀…</td></tr><tr><td>재방문</td><td>🤔 가끔 한 번씩? 쇼핑 왔을 때!</td></tr></tbody></table>
+<p>쇼핑하다가 “고기 먹고 싶다!” 할 때, 편하게 한 끼 하기 좋은 곳이에요! 🥩🛍️</p> </div> <footer class="astro-dr56dw7m"> <div class="astro-sg3lsd66"><b class="astro-sg3lsd66">태그:</b><ul class="astro-sg3lsd66"><li class="astro-sg3lsd66"><a href="/blog/tags/food/" class="astro-sg3lsd66">food</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/맛집/" class="astro-sg3lsd66">맛집</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/동탄/" class="astro-sg3lsd66">동탄</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/고기/" class="astro-sg3lsd66">고기</a></li></ul></div> </footer> </article><article class="preview astro-dr56dw7m"> <header class="astro-dr56dw7m"> <h2 class="astro-dr56dw7m"> <a href="/blog/sashimi-day/" class="astro-dr56dw7m">🐟 회먹고싶은날에 — 2인이 먹기 딱 좋은 모듬회 소자 맛집</a> </h2>  <div class="metadata not-content astro-2oxtfctb"> <div class="dates astro-2oxtfctb"> <time datetime="2026-03-15T00:00:00.000Z" class="astro-2oxtfctb"> 2026. 3. 15. </time>    </div> <div class="authors astro-2oxtfctb"> <div class="author astro-kbhsbk7c"><img src="https://www.gravatar.com/avatar/?d=mp&#38;s=64" alt="chocolat423" loading="eager" decoding="async" width="40" height="40" class="astro-kbhsbk7c"><div class="text astro-kbhsbk7c"> <div class="name astro-kbhsbk7c">chocolat423</div>  </div> </div> </div>  </div> </header> <div class="sl-markdown-content astro-dr56dw7m"> <blockquote>
+<p>회 먹고 싶은데 둘이서 양이 애매하다? <strong>회먹고싶은날에</strong>는 모듬회 소자가 2인에게 딱이에요! 🐟</p>
+</blockquote>
+<div class="sl-heading-wrapper level-h2"><h2 id="-가게-정보">📍 가게 정보</h2><a class="sl-anchor-link" href="#-가게-정보"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “📍 가게 정보”</span></a></div>
+<ul>
+<li><strong>가게명</strong>: 회먹고싶은날에</li>
+<li><strong>네이버지도</strong>: <a href="https://naver.me/F93pEdoG">회먹고싶은날에</a></li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-모듬회--소자로-충분해">🍣 모듬회 — 소자로 충분해!</h2><a class="sl-anchor-link" href="#-모듬회--소자로-충분해"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🍣 모듬회 — 소자로 충분해!”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/sashimi-closeup.BkywQ1Rg_uf6xz.webp" alt="모듬회 소자 클로즈업 - 대나무발 위 싱싱한 회" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div><div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/full-table.Ck2aFyck_F5JiW.webp" alt="풀세팅 - 모듬회, 콘치즈, 계란찜, 각종 반찬" loading="lazy" decoding="async" width="1280" height="960" class="astro-zbo42owe"> </div> </div> </div>
+<p>회 좋아하는데 둘이서 먹기엔 양이 늘 애매한 분들 공감하시죠? 여기는 <strong>모듬회 소자</strong>를 시켜도 2인이 배부르게 먹을 수 있어요. 대나무발 위에 깔끔하게 올라온 회가 투명하니 싱싱! 초장, 간장, 와사비 다 준비되어 있고 쌈채소도 한 바구니 넉넉히 나와요.</p>
+<p>자주 가는 단골집이 된 이유가 있다 ✨</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-분위기--참이슬과-함께">🍻 분위기 — 참이슬과 함께!</h2><a class="sl-anchor-link" href="#-분위기--참이슬과-함께"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🍻 분위기 — 참이슬과 함께!”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/table-angle.EcaLnXSw_Z1NKY6i.webp" alt="테이블 다른 앵글 - 참이슬과 함께 한상 가득" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div> </div> </div>
+<p>소주 한잔하면서 회 먹기 딱 좋은 분위기! 테이블도 넉넉하고, 반찬이 가득 차면 마치 한상차림 같은 느낌이다.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-사이드가-알차다">🐟 사이드가 알차다!</h2><a class="sl-anchor-link" href="#-사이드가-알차다"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🐟 사이드가 알차다!”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/grilled-fish.Dv_JV6Ng_1nISmN.webp" alt="고등어구이 - 통째로 구운 바삭한 비주얼" loading="lazy" decoding="async" width="960" height="1280" class="astro-zbo42owe"> </div> </div> </div>
+<p>회만 먹는 곳이 아니다! 사이드가 진짜 알차:</p>
+<ul>
+<li><strong>콘치즈</strong> 🧀 — 철판에 나오는 뜨끈한 콘치즈, 회 중간에 입맛 전환용으로 딱!</li>
+<li><strong>계란찜</strong> 🍳 — 뚝배기에 폭신폭신하게 나와요</li>
+<li><strong>고등어구이</strong> 🐟 — 통째로 구워서 바삭! 짭조름한 맛이 소주 안주로 최고</li>
+<li><strong>각종 반찬</strong> — 절임류, 젓갈 등 깔끔하게 나와요</li>
+</ul>
+<div class="sl-heading-wrapper level-h3"><h3 id="-매운탕은-꼭-추가하세요">🔥 매운탕은 꼭! 추가하세요!</h3><a class="sl-anchor-link" href="#-매운탕은-꼭-추가하세요"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “🔥 매운탕은 꼭! 추가하세요!”</span></a></div>
+<p>매운탕은 별도로 추가 주문하는 메뉴인데 (5,000원), <strong>이거 안 시키면 손해!</strong> 먹느라 바빠서 사진을 못 찍을 정도로 맛있다 😋 시원하고 깊은 국물이 회 마무리로 완벽. 이 가격에 이 맛이면 무조건 추가!</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="-메뉴--가격">💰 메뉴 &#x26; 가격</h2><a class="sl-anchor-link" href="#-메뉴--가격"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💰 메뉴 &#x26; 가격”</span></a></div>
+<div class="photo-gallery astro-zbo42owe"> <div class="photo-gallery-track astro-zbo42owe"> <div class="photo-gallery-item astro-zbo42owe"> <img src="/_astro/menu.Bnb-cteb_1QBzyC.webp" alt="회먹고싶은날에 메뉴판" loading="lazy" decoding="async" width="1206" height="659" class="astro-zbo42owe"> </div> </div> </div>
+<div class="sl-heading-wrapper level-h3"><h3 id="모듬회">모듬회</h3><a class="sl-anchor-link" href="#모듬회"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “모듬회”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>사이즈</th><th>가격</th><th>추천 인원</th></tr></thead><tbody><tr><td>소</td><td>35,000원</td><td>👫 2인 딱!</td></tr><tr><td>중</td><td>45,000원</td><td>3인</td></tr><tr><td>대</td><td>55,000원</td><td>3~4인</td></tr><tr><td>특대</td><td>65,000원</td><td>4인+</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="활어회">활어회</h3><a class="sl-anchor-link" href="#활어회"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “활어회”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>메뉴</th><th>가격</th></tr></thead><tbody><tr><td>도미</td><td>70,000원~</td></tr><tr><td>농어</td><td>75,000원~</td></tr><tr><td>광어</td><td>35,000 / 50,000 / 65,000원</td></tr><tr><td>우럭</td><td>40,000 / 50,000 / 65,000원</td></tr><tr><td>도다리막회</td><td>40,000 / 50,000 / 60,000원</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="사이드-메뉴">사이드 메뉴</h3><a class="sl-anchor-link" href="#사이드-메뉴"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “사이드 메뉴”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>메뉴</th><th>가격</th><th>한줄평</th></tr></thead><tbody><tr><td>🔥 <strong>매운탕</strong></td><td><strong>5,000원</strong></td><td><strong>필수 추가! 가성비 미쳤다</strong></td></tr><tr><td>해물라면</td><td>15,000원</td><td>해산물 가득</td></tr><tr><td>가리비버터술찜</td><td>20,000원</td><td>술안주로 👍</td></tr><tr><td>우니크림파스타</td><td>20,000원</td><td>성게알 파스타!</td></tr><tr><td>소라찜</td><td>25,000원</td><td>쫄깃</td></tr><tr><td>새우튀김</td><td>15,000원</td><td>바삭</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="해산물">해산물</h3><a class="sl-anchor-link" href="#해산물"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “해산물”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>메뉴</th><th>가격</th></tr></thead><tbody><tr><td>돌멍게</td><td>35,000원</td></tr><tr><td>멍게</td><td>15,000원</td></tr><tr><td>해삼</td><td>20,000원</td></tr><tr><td>산낙지</td><td>25,000원</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="주류-세트-">주류 세트 🍶</h3><a class="sl-anchor-link" href="#주류-세트-"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “주류 세트 🍶”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>세트</th><th>가격</th><th>구성</th></tr></thead><tbody><tr><td>화요25세트</td><td>34,000원</td><td>토닉워터2 + 레몬슬라이스</td></tr><tr><td>일품진로세트</td><td>34,000원</td><td>토닉워터2 + 레몬슬라이스</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h2"><h2 id="-꿀팁">💡 꿀팁</h2><a class="sl-anchor-link" href="#-꿀팁"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “💡 꿀팁”</span></a></div>
+<ul>
+<li>🐟 둘이서 가면 <strong>모듬회 소자 + 매운탕 추가</strong> 조합 추천! (40,000원에 행복)</li>
+<li>🐟 고등어구이 추가하면 더 풍성해져요</li>
+<li>🍶 참이슬이랑 찰떡궁합</li>
+<li>💡 우니크림파스타(20k)도 호기심에 한번 시켜볼 만!</li>
+<li>⏰ 주말 저녁은 대기 있을 수 있으니 예약 추천</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="총평">총평</h2><a class="sl-anchor-link" href="#총평"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore>섹션 제목: “총평”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>항목</th><th>평가</th></tr></thead><tbody><tr><td>모듬회</td><td>⭐⭐⭐⭐⭐ 싱싱하고 양 적절!</td></tr><tr><td>매운탕</td><td>⭐⭐⭐⭐⭐ 5천원에 이 맛?! 필수 추가!</td></tr><tr><td>사이드</td><td>⭐⭐⭐⭐⭐ 콘치즈+계란찜+고등어구이</td></tr><tr><td>2인 적합도</td><td>⭐⭐⭐⭐⭐ 소자로 충분!</td></tr><tr><td>재방문 의사</td><td>⭐⭐⭐⭐⭐ 이미 단골 😎</td></tr></tbody></table>
+<p>회 먹고 싶은 날엔, <strong>회먹고싶은날에</strong> 가세요! 이름이 곧 진리 🐟✨</p> </div> <footer class="astro-dr56dw7m"> <div class="astro-sg3lsd66"><b class="astro-sg3lsd66">태그:</b><ul class="astro-sg3lsd66"><li class="astro-sg3lsd66"><a href="/blog/tags/food/" class="astro-sg3lsd66">food</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/맛집/" class="astro-sg3lsd66">맛집</a></li><li class="astro-sg3lsd66"><a href="/blog/tags/회/" class="astro-sg3lsd66">회</a></li></ul></div> </footer> </article> </div>    </div> <footer class="sl-flex astro-3yyafb3n"> <div class="meta sl-flex astro-3yyafb3n">   </div> <div class="pagination-links print:hidden astro-u2l5gyhi" dir="ltr">   </div>  </footer> <!-- Giscus 댓글 --> <div class="giscus-container astro-sz7xmlte"> <script src="https://giscus.app/client.js" data-repo="noisonnoiton/noisonnoiton.github.io" data-repo-id="R_kgDOGjaniQ" data-category="Announcements" data-category-id="DIC_kwDOGjanic4C4fBW" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="en" data-loading="lazy" crossorigin="anonymous" async>
+  </script> </div> <!-- 카카오 애드핏 --> <div class="kakao-ad-footer astro-sz7xmlte"> <!-- PC: 728x90 --> <div class="ad-pc astro-sz7xmlte"> <ins class="kakao_ad_area astro-sz7xmlte" style="display:none;" data-ad-unit="DAN-zPDP0gYVaGwOEH3v" data-ad-width="728" data-ad-height="90"></ins> </div> <!-- Mobile: 250x250 --> <div class="ad-mobile astro-sz7xmlte"> <ins class="kakao_ad_area astro-sz7xmlte" style="display:none;" data-ad-unit="DAN-zHXbzhtivpd6MTA0" data-ad-width="250" data-ad-height="250"></ins> </div> </div> <script src="//t1.daumcdn.net/kas/static/ba.min.js" async></script> </div> </div>  </main> </div> </div> </div> </div> </body></html>

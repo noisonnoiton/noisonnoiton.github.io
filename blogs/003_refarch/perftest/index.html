@@ -1,0 +1,1148 @@
+<!DOCTYPE html><html lang="ko" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-bguv2lll"> <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Redis 성능 측정 | noisonnoiton</title><link rel="canonical" href="https://noisonnoiton.github.io/blogs/003_refarch/perftest/"/><link rel="alternate" hreflang="ko" href="https://noisonnoiton.github.io/blogs/003_refarch/perftest/"/><link rel="alternate" hreflang="en" href="https://noisonnoiton.github.io/en/blogs/003_refarch/perftest/"/><link rel="sitemap" href="/sitemap-index.xml"/><link rel="alternate" type="application/rss+xml" title="noisonnoiton RSS" href="/rss.xml"/><script async src="https://www.googletagmanager.com/gtag/js?id=G-0BHX9CF6JP"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-0BHX9CF6JP');</script><link href="https://noisonnoiton.github.io/blog/rss.xml" rel="alternate" title="noisonnoiton blog" type="application/rss+xml"/><link rel="shortcut icon" href="/favicon.png" type="image/png"/><meta name="generator" content="Astro v6.1.1"/><meta name="generator" content="Starlight v0.38.2"/><meta property="og:title" content="Redis 성능 측정"/><meta property="og:url" content="https://noisonnoiton.github.io/blogs/003_refarch/perftest/"/><meta property="og:locale" content="ko"/><meta property="og:description" content="Redis 성능 측정 방법과 테스트 시 확인해야 할 지표를 정리한 글"/><meta name="description" content="Redis 성능 측정 방법과 테스트 시 확인해야 할 지표를 정리한 글"/><meta name="google-site-verification" content="5Cf8lzznSYAmH9JYOQxyE3AsnKWj_ZeCZ8P8jxnP3L4"/><meta name="naver-site-verification" content="d3c1f1b07eacea0cd9a3c3c03468e5c8bafe6393"/><meta property="og:type" content="website"/><meta property="og:site_name" content="noisonnoiton"/><meta name="twitter:card" content="summary_large_image"/><meta name="author" content="noisonnoiton"/> <script>
+(function() {
+  var ALL_LOCALES = [
+    { code: 'ko', label: '🇰🇷 한국어', prefix: '' },
+    { code: 'en', label: '🇺🇸 English', prefix: '/en' },
+    { code: 'fr', label: '🇫🇷 Français', prefix: '/fr' },
+  ];
+  var STORAGE_KEY = '***';
+  var ROOT = ALL_LOCALES[0];
+
+  function availableLocales(bare) {
+    if (bare === '/') return ALL_LOCALES;
+    return ALL_LOCALES.filter(function(locale) { return locale.code !== 'fr'; });
+  }
+
+  function detectCurrent() {
+    var p = window.location.pathname;
+    for (var i = 1; i < ALL_LOCALES.length; i++) {
+      if (p === ALL_LOCALES[i].prefix || p.startsWith(ALL_LOCALES[i].prefix + '/')) return ALL_LOCALES[i];
+    }
+    return ROOT;
+  }
+
+  function stripLocale(path) {
+    for (var i = 1; i < ALL_LOCALES.length; i++) {
+      if (path === ALL_LOCALES[i].prefix) return '/';
+      if (path.startsWith(ALL_LOCALES[i].prefix + '/')) return path.slice(ALL_LOCALES[i].prefix.length);
+    }
+    return path;
+  }
+
+  function buildPath(locale, bare) {
+    if (locale.prefix === '') return bare;
+    return locale.prefix + (bare === '/' ? '/' : bare);
+  }
+
+  function autoRedirect() {
+    var pref = localStorage.getItem(STORAGE_KEY);
+    if (!pref) return;
+    var current = detectCurrent();
+    if (current.code === pref) return;
+    var bare = stripLocale(window.location.pathname);
+    var locales = availableLocales(bare);
+    var target = locales.find(function(l) { return l.code === pref; });
+    if (!target) return;
+    var dest = buildPath(target, bare);
+    fetch(dest, { method: 'HEAD' }).then(function(r) {
+      if (r.ok) window.location.replace(dest);
+    }).catch(function() {});
+  }
+
+  function createSelector() {
+    var header = document.querySelector('header.header');
+    if (!header || document.getElementById('locale-selector')) return;
+
+    var current = detectCurrent();
+    var bare = stripLocale(window.location.pathname);
+    var locales = availableLocales(bare);
+    document.querySelectorAll('starlight-lang-select').forEach(function(el) {
+      // Keep the custom selector next to Search; remove Starlight's duplicate.
+      el.style.display = 'none';
+    });
+
+    var wrap = document.createElement('div');
+    wrap.id = 'locale-selector';
+    wrap.style.cssText = 'position:relative;display:inline-flex;align-items:center;z-index:100;';
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = current.label;
+    btn.setAttribute('aria-label', 'Select language');
+    btn.style.cssText = [
+      'display:inline-flex;align-items:center;gap:0.25rem',
+      'padding:0.25rem 0.55rem',
+      'border:1px solid var(--sl-color-gray-5)',
+      'border-radius:1rem',
+      'font-size:0.78rem;font-weight:500',
+      'color:var(--sl-color-text)',
+      'background:transparent',
+      'cursor:pointer',
+      'white-space:nowrap',
+      'transition:background 0.15s',
+    ].join(';');
+    btn.addEventListener('mouseenter', function() { btn.style.background = 'var(--sl-color-gray-6)'; });
+    btn.addEventListener('mouseleave', function() { btn.style.background = 'transparent'; });
+
+    var menu = document.createElement('div');
+    menu.style.cssText = [
+      'display:none;position:absolute;top:calc(100% + 4px);right:0',
+      'background:var(--sl-color-bg-nav)',
+      'border:1px solid var(--sl-color-gray-5)',
+      'border-radius:0.5rem',
+      'padding:0.25rem 0',
+      'box-shadow:0 4px 12px rgba(0,0,0,0.15)',
+      'min-width:130px',
+      'z-index:200',
+    ].join(';');
+
+    locales.forEach(function(loc) {
+      var item = document.createElement('a');
+      item.textContent = loc.label;
+      item.href = buildPath(loc, bare);
+      item.style.cssText = [
+        'display:block;padding:0.4rem 0.75rem',
+        'font-size:0.8rem;color:var(--sl-color-text)',
+        'text-decoration:none;white-space:nowrap',
+        'transition:background 0.1s',
+      ].join(';');
+
+      if (loc.code === current.code) {
+        item.style.fontWeight = '700';
+        item.style.background = 'var(--sl-color-gray-6)';
+      }
+
+      item.addEventListener('mouseenter', function() { item.style.background = 'var(--sl-color-gray-6)'; });
+      item.addEventListener('mouseleave', function() {
+        item.style.background = loc.code === current.code ? 'var(--sl-color-gray-6)' : 'transparent';
+      });
+
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.setItem(STORAGE_KEY, loc.code);
+        if (loc.code === current.code) { menu.style.display = 'none'; return; }
+        var dest = buildPath(loc, bare);
+        fetch(dest, { method: 'HEAD' }).then(function(r) {
+          if (r.ok) {
+            window.location.href = dest;
+          } else {
+            window.location.href = loc.prefix || '/';
+          }
+        }).catch(function() {
+          window.location.href = loc.prefix || '/';
+        });
+      });
+
+      menu.appendChild(item);
+    });
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function() { menu.style.display = 'none'; });
+
+    wrap.appendChild(btn);
+    wrap.appendChild(menu);
+
+    var search = header.querySelector('site-search') || header.querySelector('.search-toggle');
+    if (search) {
+      search.parentElement.insertBefore(wrap, search);
+    } else {
+      header.appendChild(wrap);
+    }
+  }
+
+  function init() {
+    autoRedirect();
+    createSelector();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', function() {
+    var old = document.getElementById('locale-selector');
+    if (old) old.remove();
+    createSelector();
+  });
+})();
+</script><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/_astro/print.DNXP8c50.css" media="print"><style>.archive-total:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-size:var(--sl-text-sm);margin-block:0 1rem}.archive-years:where(.astro-bdepfles){display:flex;flex-wrap:wrap;gap:.5rem;margin-block-end:2.5rem;position:sticky;top:0;z-index:1;background:var(--sl-color-bg);padding-block:.6rem}.archive-year-chip:where(.astro-bdepfles){border:1px solid var(--sl-color-gray-5);border-radius:999px;padding:.25rem .85rem;text-decoration:none;color:var(--sl-color-white);font-size:var(--sl-text-sm);white-space:nowrap}.archive-year-chip:where(.astro-bdepfles):hover{background:var(--sl-color-gray-6);border-color:var(--sl-color-accent)}.archive-year-count:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-weight:400;font-size:.85em}.archive-section:where(.astro-bdepfles){margin-block-end:2.5rem}.archive-section:where(.astro-bdepfles) h2:where(.astro-bdepfles){border-block-end:1px solid var(--sl-color-gray-5);padding-block-end:.35rem;margin-block-end:1rem;scroll-margin-block-start:6rem}.archive-month:where(.astro-bdepfles){margin-block-end:1.25rem}.archive-month:where(.astro-bdepfles) h3:where(.astro-bdepfles){font-size:var(--sl-text-base);color:var(--sl-color-gray-2);margin-block:0 .5rem}.archive-month:where(.astro-bdepfles) ul:where(.astro-bdepfles){list-style:none;padding:0;margin:0}.archive-month:where(.astro-bdepfles) li:where(.astro-bdepfles){display:flex;gap:.75rem;align-items:baseline;padding-block:.3rem}.archive-month:where(.astro-bdepfles) time:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-size:var(--sl-text-xs);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:2.75rem;text-align:right}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles){color:var(--sl-color-gray-1);text-decoration:none}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles):hover{color:var(--sl-color-text-accent);text-decoration:underline}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles):visited{color:var(--sl-color-gray-3)}@media(max-width:42rem){.archive-month:where(.astro-bdepfles) li:where(.astro-bdepfles){flex-direction:row;gap:.6rem}.archive-month:where(.astro-bdepfles) time:where(.astro-bdepfles){min-width:2.25rem}}
+.count:where(.astro-bu4jbvld){font-size:var(--sl-text-xl);font-weight:600}
+[data-has-toc] :is(.right-sidebar-panel,mobile-starlight-toc){display:none}[data-has-toc] .main-frame{padding-top:var(--sl-nav-height)}.preview:where(.astro-dr56dw7m){display:flex;flex-direction:column;gap:1.5rem}h2:where(.astro-dr56dw7m){margin-bottom:1.5rem}h2:where(.astro-dr56dw7m) a:where(.astro-dr56dw7m){text-decoration:none}.posts:where(.astro-xaz7kpyh){display:flex;flex-direction:column;gap:3rem}
+</style>
+<link rel="stylesheet" href="/_astro/middleware.DPGkAFlG.css">
+<link rel="stylesheet" href="/_astro/tag-page@_@astro.DavP-_5P.css">
+<link rel="stylesheet" href="/_astro/tags-index@_@astro.-NwLVRix.css">
+<style>.content-panel:first-of-type{display:none}.content-panel:nth-of-type(2){border-top:none}
+</style>
+<link rel="stylesheet" href="/_astro/Code.3GXCdK6h.css"><script type="module" src="/_astro/page.BIhdncjw.js"></script></head> <body class="astro-bguv2lll"> <a href="#_top" class="astro-7q3lir66">콘텐츠로 이동</a> <div class="page sl-flex astro-vrdttmbt"> <header class="header astro-vrdttmbt"><div class="header astro-kmkmnagf"> <div class="title-wrapper sl-flex astro-kmkmnagf"> <a href="/" class="site-title sl-flex astro-m46x6ez3">  <img class="astro-m46x6ez3" alt="춘식이" src="/_astro/choonsik.CaiAjGH-.png" width="1200" height="1200">  <span class="astro-m46x6ez3" translate="no"> noisonnoiton </span> </a> </div> <div class="sl-flex print:hidden astro-kmkmnagf"> <site-search class="astro-kmkmnagf astro-v37mnknz" data-translations="{&#34;placeholder&#34;:&#34;검색&#34;}"> <button data-open-modal disabled aria-label="검색" aria-keyshortcuts="Control+K" class="astro-v37mnknz"> <svg aria-hidden="true" class="astro-v37mnknz astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg> <span class="sl-hidden md:sl-block astro-v37mnknz" aria-hidden="true">검색</span> <kbd class="sl-hidden md:sl-flex astro-v37mnknz" style="display: none;"> <kbd class="astro-v37mnknz">Ctrl</kbd><kbd class="astro-v37mnknz">K</kbd> </kbd> </button> <dialog style="padding:0" aria-label="검색" class="astro-v37mnknz"> <div class="dialog-frame sl-flex astro-v37mnknz">  <button data-close-modal class="sl-flex md:sl-hidden astro-v37mnknz"> 취소 </button> <div class="search-container astro-v37mnknz"> <div id="starlight__search" class="astro-v37mnknz"></div> </div> </div> </dialog> </site-search>  <script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.BdDgbKxW.js"></script>  </div> <div class="sl-hidden md:sl-flex print:hidden right-group astro-kmkmnagf"> <div class="sl-flex social-icons astro-kmkmnagf"> <a href="https://github.com/noisonnoiton" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">GitHub</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://noisonnoiton.github.io/blog/rss.xml" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">RSS</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M2.88 16.88a3 3 0 0 0 0 4.24 3 3 0 0 0 4.24 0 3 3 0 0 0-4.24-4.24Zm2.83 2.83a1 1 0 0 1-1.42-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42ZM5 12a1 1 0 0 0 0 2 5 5 0 0 1 5 5 1 1 0 0 0 2 0 7 7 0 0 0-7-7Zm0-4a1 1 0 0 0 0 2 9 9 0 0 1 9 9 1 1 0 0 0 2 0 11.08 11.08 0 0 0-3.22-7.78A11.08 11.08 0 0 0 5 8Zm10.61.39A15.11 15.11 0 0 0 5 4a1 1 0 0 0 0 2 13 13 0 0 1 13 13 1 1 0 0 0 2 0 15.11 15.11 0 0 0-4.39-10.61Z"/></svg></a> </div> <div class="astro-eboeziq4"> <a href="/blog/" class="astro-eboeziq4">noisonnoiton blog</a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">테마 선택</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="dark" class="astro-4yphtoen">어두운 테마</option><option value="light" class="astro-4yphtoen">밝은 테마</option><option value="auto" selected class="astro-4yphtoen">자동</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script> <script type="module">const r="starlight-theme",o=e=>e==="auto"||e==="dark"||e==="light"?e:"auto",c=()=>o(typeof localStorage<"u"&&localStorage.getItem(r));function n(e){typeof localStorage<"u"&&localStorage.setItem(r,e==="light"||e==="dark"?e:"")}const l=()=>matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";function t(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e==="auto"?l():e,n(e)}matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{c()==="auto"&&t("auto")});class s extends HTMLElement{constructor(){super(),t(c()),this.querySelector("select")?.addEventListener("change",a=>{a.currentTarget instanceof HTMLSelectElement&&t(o(a.currentTarget.value))})}}customElements.define("starlight-theme-select",s);</script> <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">언어 선택</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="/blogs/003_refarch/perftest/" class="astro-4yphtoen">한국어</option><option value="/en/blogs/003_refarch/perftest/" class="astro-4yphtoen">English</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label></starlight-lang-select><script type="module">class s extends HTMLElement{constructor(){super();const e=this.querySelector("select");e&&(e.addEventListener("change",t=>{t.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=t.currentTarget.value)}),window.addEventListener("pageshow",t=>{if(!t.persisted)return;const n=e.querySelector("option[selected]")?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}}customElements.define("starlight-lang-select",s);</script> </div> </div></header> <nav class="sidebar print:hidden astro-vrdttmbt" aria-label="메인"> <starlight-menu-button class="print:hidden astro-jif73yzw"> <button aria-expanded="false" aria-label="메뉴" aria-controls="starlight__sidebar" class="sl-flex md:sl-hidden astro-jif73yzw"> <svg aria-hidden="true" class="open-menu astro-jif73yzw astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg> <svg aria-hidden="true" class="close-menu astro-jif73yzw astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg> </button> </starlight-menu-button> <script type="module">class s extends HTMLElement{constructor(){super(),this.btn=this.querySelector("button"),this.btn.addEventListener("click",()=>this.toggleExpanded());const t=this.closest("nav");t&&t.addEventListener("keyup",e=>this.closeOnEscape(e))}setExpanded(t){this.setAttribute("aria-expanded",String(t)),document.body.toggleAttribute("data-mobile-menu-expanded",t)}toggleExpanded(){this.setExpanded(this.getAttribute("aria-expanded")!=="true")}closeOnEscape(t){t.code==="Escape"&&(this.setExpanded(!1),this.btn.focus())}}customElements.define("starlight-menu-button",s);</script>  <div id="starlight__sidebar" class="sidebar-pane astro-vrdttmbt"> <div class="sidebar-content sl-flex astro-vrdttmbt"> <nav class="sidebar-switcher astro-ssfzsv2f" aria-label="주요 영역"> <a class="sidebar-switcher-link astro-ssfzsv2f" href="/blogs/010_kubernetes/">Tech</a> <a class="sidebar-switcher-link sidebar-archive-link astro-ssfzsv2f" href="/archive/">📅 연도별 글 목록</a> <div class="sidebar-section-divider astro-ssfzsv2f" role="separator"></div> <a class="sidebar-switcher-link astro-ssfzsv2f" href="/blog/">Blog</a> </nav> <sl-sidebar-state-persist data-hash="1t9sixh" class="astro-kku4brbg"> <script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script>  <ul class="top-level astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blog/" class="large sl-blog-mobile-link astro-3ii7xxms" class="sl-blog-mobile-link"> <span class="astro-3ii7xxms">noisonnoiton blog</span>  </a> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">☸️ Kubernetes</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="0"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Docker / Registry</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="1"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/docker-insecure-registry/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">docker push HTTPS 문제 (insecure registry)</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Gateway API</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="2"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gateway-api-overview/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">K8s Native Gateway API</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/envoy-gateway-setup/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Envoy Gateway 구성</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/envoy-gateway-routing/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">HTTPRoute 검증</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">🔄 GitOps</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="3"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/gitopsintro/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">GitOps 소개</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/fluxintro/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">FluxCD Intro</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/fluxcdv2/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">FluxCD v2</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/flaggerintro/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Flagger Intro</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/flaggerdeploy/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Flagger Deploy</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/argocdintro/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">ArgoCD Intro</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/argocddeploy/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">ArgoCD Deploy</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/gitops-task-automation/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Argo Workflow CI/CD 자동화</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/gitops-platform-api-design/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">GitOps Platform API 설계</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/010_kubernetes/gitops/gitops-repository-structure/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">GitOps Repository 구조 설계</span>  </a> </li> </ul> </details> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">☁️ Cloud Native App</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="4"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/004_cna/nestjs-backend-architecture/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">NestJS Backend 아키텍처</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/nodejs-orm-comparison/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Node.js ORM 비교 (TypeORM/Sequelize/Prisma)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/nestjs-redis-patterns/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">NestJS Redis 패턴 (Cache/Queue)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/web-push-notification/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">NestJS Web Push Notification</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/nestjs-upstream-downstream/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">NestJS Upstream/Downstream 설계</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">🤖 AI &amp; ML</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="5"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Kubeflow</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="6"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-gitops-aks/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Kubeflow GitOps (AKS)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Kubeflow 컴포넌트 맵</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/namespace/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Namespace</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/cert-manager/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Cert Manager</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/istio/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Istio</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/oauth2-proxy/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">oauth2-proxy</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/dex/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Dex</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/kubeflow-istio-resources/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Kubeflow Istio Resources</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/kubeflow-roles/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Kubeflow Roles</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/dashboard/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Dashboard</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/user-profile/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">User Profile</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/knative/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Knative</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/kserve/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">KServe</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/hub-model-registry/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Hub (Model Registry)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/pipelines/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Pipelines</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/notebooks/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Notebooks</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/katib/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Katib</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/kubeflow-components/trainer/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Trainer</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/jupyterhub-platform/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">JupyterHub Platform (2026-07-26)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/jupyterhub-on-shared-mysql/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">공용 MySQL 위의 JupyterHub</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/mlflow-platform/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">MLflow Platform</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">ModelOps Platform (GitOps)</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="7"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/005_ml/modelops-gitops/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/modelops-gitops/architecture/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">GitOps 아키텍처</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/modelops-gitops/authentication/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Authentication Boundaries</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/modelops-gitops/multi-tenancy/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Multi-tenancy</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/modelops-gitops/shared-services/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Shared Data Services</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/modelops-gitops/seaweedfs-csi-static-volumes/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">SeaweedFS CSI Static Volume</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/modelops-gitops/ingress-observability/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Ingress and Observability</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/modelops-gitops/imperative-steps/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Imperative Steps Outside Declaration</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Agent Builder</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="8"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/008_ai_agent/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/008_ai_agent/n8n-poc/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">n8n-poc 설계와 구현</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/008_ai_agent/backstage/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Backstage 통합</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Jupyter</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="9"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/005_ml/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/jupyterintro/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Jupyter Intro</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/jupyterserver/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Jupyter Server</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/jupyterhub/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">JupyterHub (2021-05-30)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/jupyterproxy/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Jupyter Proxy</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Inference</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="10"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/005_ml/inferenceintro/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Inference Intro</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/inferencetriton/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Triton</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/inferencekfserving/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">KFServing</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">🧑‍💻 AI 기반 개발</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="11"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/005_ml/ai_driven_development/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/ai_driven_development/agile-delivery-foundations/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Agile Delivery and AI Role Boundaries</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/ai_driven_development/requirements-to-artifacts/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">요구사항을 AI-ready Artifact로 변환하기</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/ai_driven_development/prd-to-user-stories/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">PRD와 UI Artifact에서 검증 가능한 User Story 만들기</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/ai_driven_development/coding-agent-context-engineering/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Coding Agent를 위한 Context Package 설계</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/ai_driven_development/user-story-test-scenarios/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">User Story에서 Test Scenario와 Test Code까지</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/005_ml/ai_driven_development/ai-assisted-pull-requests/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">AI-assisted PR Note와 Code Review</span>  </a> </li> </ul> </details> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">🎓 MCT</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="12"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/011_mct/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/011_mct/lecture-materials/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">강의자료 모음</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/011_mct/az-305-renewal-26/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">AZ-305 갱신 후기와 문제 풀이 26선</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">⚙️ Platform Engineering</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="13"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Cloud Platform 기반 설계</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="14"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-baseline-design/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Landing Zone &amp; 비용</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-network-kubernetes-foundation/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Network &amp; Kubernetes</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-registry-access-governance/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Registry &amp; Access Governance</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Infra Provisioning</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="15"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-infra-provisioning-pipeline/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Terraform Foundation</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-infra-commentops-pipeline/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">CommentOps Pipeline</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-infra-azure-resource-patterns/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Azure Resource Pattern</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-infra-quality-terragrunt/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">IaC Quality &amp; Terragrunt</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">DevOps Tool Chain</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="16"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-devops-tool-chain/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Git &amp; Release Governance</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-github-actions-runner-platform/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">GitHub Actions Runner</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-argocd-gitops-delivery/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Argo CD GitOps Delivery</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">CI/CD Pipeline</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="17"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-cicd-pipeline/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Pipeline Architecture</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-cicd-ci-workflow/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">CI Workflow &amp; Build Cache</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-cicd-cd-signing-smoke-test/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">CD, Signing &amp; Smoke Test</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-cicd-test-automation/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Test Automation</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Observability (LGTM)</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="18"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-observability-lgtm/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">통합 Architecture</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-observability-log-pipeline/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Log Pipeline</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-observability-metric-pipeline/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Metric Pipeline</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-observability-trace-pipeline/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Trace Pipeline</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-observability-dashboards/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Grafana Dashboard</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Supply Chain Security</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="19"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-supply-chain-security/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Secret &amp; Key Management</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-container-vulnerability-management/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Image Vulnerability</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-sbom-image-signing/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">SBOM &amp; Image Signing</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-cspm-governance/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">CSPM</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-cert-manager-tls-automation/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">TLS Certificate Automation</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Kubernetes Operations</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="20"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-k8s-operations/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Utility Operations</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-k8s-performance-testing/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Performance Testing</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/013_platform_engineering/platform-k8s-backup-recovery/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Backup &amp; Recovery</span>  </a> </li> </ul> </details> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">🏗️ Ref. Architecture</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="21"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">DevOps &amp; Platform Ops</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="22"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/gitops-argocd-overview/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">GitOps와 ArgoCD 개요</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/monitoring-threshold-design/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">VM/Load Balancer 모니터링 임계치 설계하기</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/self-hosted-runner-vmss-vs-aks/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Self-hosted Runner: VMSS vs AKS(ARC)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/image-build-local-vs-multistage/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">이미지 빌드 전략: Local Build vs Multi-stage</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/vmss-fleet-deployment/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">VMSS Fleet에 배포하기: Deploy-time Discovery와 Image 전략</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/registry-image-cache-strategy/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Container Registry 기반 이미지 캐시 전략</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/terraform-environment-provisioning/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Terraform 환경별 프로비저닝 전략</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/git-branching-strategy/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Git 브랜치 전략</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Integration Platform</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="23"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/integration-platform-runtime/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Runtime Role Separation</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/metadata-and-contracts/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Metadata와 Contract</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/delegator-rest-transaction-mapping/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">REST Transaction Mapping</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/spring-batch-basics/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Spring Batch Basics</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/delegator-interface-types/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Delegator Interface Type</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/kubernetes-java-client-basics/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Kubernetes Java Client Basics</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/kubernetes-job-scheduler/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Kubernetes Job Scheduler</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/distributed-integration-tracing/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Distributed Integration Trace</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/fluent-bit-log-pipeline/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Fluent Bit Log Pipeline</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/opensearch-trace-query-api/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">OpenSearch Trace Query API</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/integration-alerting-and-metrics/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Integration Alerting과 Metrics</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/interface-error-alert-pipeline/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Interface Error Alert Pipeline</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Platform Delivery on Kubernetes</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="24"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/platform-gitops-bootstrap/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">GitOps Bootstrap Handoff</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/two-tier-argocd-boundaries/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Two-Tier Argo CD Boundaries</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/workload-identity-csi-secrets/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Workload Identity와 CSI Secret</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/gitops-observability-pipeline/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Observability Pipeline</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">OpenSearch on Kubernetes</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="25"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/opensearch-hot-cold-storage/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Hot–Cold Storage와 Index Lifecycle</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/opensearch-tls-rbac/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">TLS와 Least-Privilege RBAC</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/opensearch-cluster-monitoring/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Cluster Monitoring과 Incident Response</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">API &amp; Integration</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="26"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/modernapi/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Modern API</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/camel/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Apache Camel</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/legacy/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Legacy Interface</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/trusted-client-ip-behind-proxies/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Reverse Proxies and Trusted Client IP</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Auth &amp; Registry</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="27"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/keycloak/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Keycloak</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/harbor/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Harbor</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Redis</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="28"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/perftest/" aria-current="page" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">성능 측정</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/003_refarch/hatest/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">고가용성</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Multi-Cloud</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="29"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/007_multicloud/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/007_multicloud/diagram/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Diagram</span>  </a> </li> </ul> </details> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">🍃 App Development</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="30"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Cloud Native</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="31"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/004_cna/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Introduction</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/container/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Container</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/k8s/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Kubernetes</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/restapi/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">REST API</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Spring Boot</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="32"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/004_cna/springboot/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Introduction</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/springboot/bean/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Bean</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/springboot/env/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">App. 환경설정</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/springboot/ide/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">IDE Configuration</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/springboot/mybatis/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">MyBatis</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/springboot/rest-client/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Restful API Client</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/004_cna/springboot/restapi/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Restful API</span>  </a> </li> </ul> </details> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">🌐 OSS</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="33"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/blogs/009_oss/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Overview</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/009_oss/openstack-skyline-contribution/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">OpenStack Skyline Console</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/blogs/009_oss/kubeflow-community-distribution-kiali-prometheus-fix/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Kubeflow community-distribution</span>  </a> </li> </ul> </details> </li> </ul>  <script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script> </sl-sidebar-state-persist> <div class="md:sl-hidden"> <div class="mobile-preferences sl-flex astro-wu23bvmt"> <div class="social-icons astro-wu23bvmt"> <a href="https://github.com/noisonnoiton" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">GitHub</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://noisonnoiton.github.io/blog/rss.xml" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">RSS</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M2.88 16.88a3 3 0 0 0 0 4.24 3 3 0 0 0 4.24 0 3 3 0 0 0-4.24-4.24Zm2.83 2.83a1 1 0 0 1-1.42-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42ZM5 12a1 1 0 0 0 0 2 5 5 0 0 1 5 5 1 1 0 0 0 2 0 7 7 0 0 0-7-7Zm0-4a1 1 0 0 0 0 2 9 9 0 0 1 9 9 1 1 0 0 0 2 0 11.08 11.08 0 0 0-3.22-7.78A11.08 11.08 0 0 0 5 8Zm10.61.39A15.11 15.11 0 0 0 5 4a1 1 0 0 0 0 2 13 13 0 0 1 13 13 1 1 0 0 0 2 0 15.11 15.11 0 0 0-4.39-10.61Z"/></svg></a> </div> <div class="astro-eboeziq4"> <a href="/blog/" class="astro-eboeziq4">noisonnoiton blog</a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">테마 선택</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="dark" class="astro-4yphtoen">어두운 테마</option><option value="light" class="astro-4yphtoen">밝은 테마</option><option value="auto" selected class="astro-4yphtoen">자동</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script>  <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">언어 선택</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="/blogs/003_refarch/perftest/" class="astro-4yphtoen">한국어</option><option value="/en/blogs/003_refarch/perftest/" class="astro-4yphtoen">English</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label></starlight-lang-select> </div> </div> </div> </div> </nav> <div class="main-frame astro-vrdttmbt">  <script type="module">const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);</script> <div class="lg:sl-flex astro-67yu43on"> <aside class="right-sidebar-container print:hidden astro-67yu43on"> <div class="right-sidebar astro-67yu43on"> <script type="module" src="/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.hwBsy0Mo.js"></script><script type="module" src="/_astro/TableOfContents.astro_astro_type_script_index_0_lang.FuRcXuRY.js"></script><div class="lg:sl-hidden astro-pb3aqygn"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-doynk5tl"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-doynk5tl"><details id="starlight__mobile-toc" class="astro-doynk5tl"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-doynk5tl"><span class="toggle sl-flex astro-doynk5tl">목차<svg aria-hidden="true" class="caret astro-doynk5tl astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-doynk5tl"></span></summary><div class="dropdown astro-doynk5tl"><ul class="isMobile astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">개요</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#prerequisite" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Prerequisite</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#redis-benchmark" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Redis-Benchmark</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#ngrinder" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">nGrinder</span> </a> <ul class="isMobile astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#environment" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Environment</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#redis-get" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Redis GET</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#redis-set" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Redis SET</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#aof-everysec-vs-always" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">AOF everysec vs always</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#추가-테스트" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">추가 테스트</span> </a>  </li> </ul> </li> </ul></div></details></nav></mobile-starlight-toc></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-pb3aqygn"><div class="sl-container astro-pb3aqygn"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">목차</h2><ul class="astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">개요</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#prerequisite" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Prerequisite</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#redis-benchmark" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Redis-Benchmark</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#ngrinder" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">nGrinder</span> </a> <ul class="astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#environment" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Environment</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#redis-get" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Redis GET</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#redis-set" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Redis SET</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#aof-everysec-vs-always" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">AOF everysec vs always</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#추가-테스트" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">추가 테스트</span> </a>  </li> </ul> </li> </ul></nav></starlight-toc></div></div> </div> </aside> <div class="main-pane astro-67yu43on">  <main data-pagefind-body class="astro-bguv2lll" lang="ko" dir="ltr">   <div class="kakao-ad-container kakao-ad-top astro-kggsjsm4"> <!-- PC: 728x90 --> <div class="ad-pc astro-kggsjsm4"> <ins class="kakao_ad_area astro-kggsjsm4" style="display:none;" data-ad-unit="DAN-zPDP0gYVaGwOEH3v" data-ad-width="728" data-ad-height="90"></ins> </div> <!-- Mobile: 250x250 --> <div class="ad-mobile astro-kggsjsm4"> <ins class="kakao_ad_area astro-kggsjsm4" style="display:none;" data-ad-unit="DAN-zHXbzhtivpd6MTA0" data-ad-width="250" data-ad-height="250"></ins> </div> </div> <script src="//t1.daumcdn.net/kas/static/ba.min.js" async></script> <script type="module" src="/_astro/ImageZoom.astro_astro_type_script_index_0_lang.J1tlcSSG.js"></script> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <h1 id="_top" class="astro-j6tvhyss">Redis 성능 측정</h1>  <div class="post-meta not-content astro-guvttfii"> <time class="post-date astro-guvttfii" datetime="2021-04-07">
+📅 2021-04-07 </time> <a href="https://github.com/noisonnoiton" class="post-author astro-guvttfii"> <img src="https://avatars.githubusercontent.com/u/39892319?v=4" alt="noisonnoiton" class="author-avatar astro-guvttfii" width="24" height="24" loading="eager"> <span class="author-name astro-guvttfii">noisonnoiton</span> </a> </div> </div> </div> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <starlight-image-zoom> <template class="astro-vjux6bgf"> <dialog class="starlight-image-zoom-dialog astro-vjux6bgf"> <button aria-label="Unzoom image" class="starlight-image-zoom-control astro-vjux6bgf"> <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24" class="astro-vjux6bgf"> <use href="#starlight-image-zoom-icon-unzoom" class="astro-vjux6bgf"></use> </svg> </button> <figure class="astro-vjux6bgf"></figure> </dialog> </template> <svg xmlns="http://www.w3.org/2000/svg" style="display:none" class="astro-vjux6bgf"> <symbol id="starlight-image-zoom-icon-zoom" viewBox="0 0 24 24" class="astro-vjux6bgf"> <path d="M9.79 12.79 4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38 1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42ZM21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38Z" class="astro-vjux6bgf"></path> </symbol> <symbol id="starlight-image-zoom-icon-unzoom" viewBox="0 0 24 24" class="astro-vjux6bgf"> <path d="M21.71 2.29a1 1 0 0 0-1.42 0l-5.79 5.8V6.5a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38 1 1 0 0 0 .54.54 1 1 0 0 0 .38.08h4a1 1 0 0 0 0-2h-1.59l5.8-5.79a1 1 0 0 0 0-1.42ZM10.88 12.58a1 1 0 0 0-.38-.08h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l5.79-5.8v1.59a1 1 0 0 0 2 0v-4a1 1 0 0 0-.08-.38 1 1 0 0 0-.54-.54Z" class="astro-vjux6bgf"></path> </symbol> </svg> </starlight-image-zoom>    <div class="sl-markdown-content">  <div class="sl-heading-wrapper level-h2"><h2 id="prerequisite">Prerequisite</h2><a class="sl-anchor-link" href="#prerequisite"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “Prerequisite”</span></a></div>
+<ul>
+<li>Deploy nGrider Controller on EKS
+<a href="https://github.com/kloudbank/session-k8s/tree/main/dev/ngrinder/controller">https://github.com/kloudbank/session-k8s/tree/main/dev/ngrinder/controller</a></li>
+<li>Deploy nGrider Agent on EKS
+<a href="https://github.com/kloudbank/session-k8s/tree/main/dev/ngrinder/agent">https://github.com/kloudbank/session-k8s/tree/main/dev/ngrinder/agent</a></li>
+</ul>
+<div class="expressive-code"><link rel="stylesheet" href="/_astro/ec.v4551.css"><script type="module" src="/_astro/ec.0vx5m.js"></script><figure class="frame is-terminal not-content"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#82AAFF;--1:#3B61B0">$</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">git</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">clone</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">https://github.com/kloudbank/session-k8s.git</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#82AAFF;--1:#3B61B0">$</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">cd</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">session-k8s</span></div></div><div class="ec-line"><div class="code"><span style="--0:#82AAFF;--1:#3B61B0">$</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">kubectl</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">apply</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">-k</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">./dev/ngrinder/controller</span></div></div><div class="ec-line"><div class="code"><span style="--0:#82AAFF;--1:#3B61B0">$</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">kubectl</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">apply</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">-k</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#ECC48D;--1:#3B61B0">./dev/ngrinder/agent</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="$ git clone https://github.com/kloudbank/session-k8s.git$ cd session-k8s$ kubectl apply -k ./dev/ngrinder/controller$ kubectl apply -k ./dev/ngrinder/agent"><div></div></button></div></figure></div>
+<ul>
+<li>Prometheus, Grafana 를 통한 EKS Cluster Monitoring
+<a href="http://k8s-grafana-grafana-6380e9e544-711314603.ap-northeast-2.elb.amazonaws.com/?orgId=1">http://k8s-grafana-grafana-6380e9e544-711314603.ap-northeast-2.elb.amazonaws.com/?orgId=1</a></li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="redis-benchmark">Redis-Benchmark</h2><a class="sl-anchor-link" href="#redis-benchmark"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “Redis-Benchmark”</span></a></div>
+<p>Redis 자체적으로 제공하는 RedisCluster 및 Sentinel 장비에 대한 성능 측정 도구</p>
+<ul>
+<li>aof:no</li>
+</ul>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">SET: 27932.96 requests per second, p50=0.783 msec</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">GET: 27948.57 requests per second, p50=0.775 msec</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">LPUSH: 27987.69 requests per second, p50=0.775 msec</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">LPOP: 28538.81 requests per second, p50=0.775 msec</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="SET: 27932.96 requests per second, p50=0.783 msecGET: 27948.57 requests per second, p50=0.775 msecLPUSH: 27987.69 requests per second, p50=0.775 msecLPOP: 28538.81 requests per second, p50=0.775 msec"><div></div></button></div></figure></div>
+<ul>
+<li>aof:yes, aofsync:everysec</li>
+</ul>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">SET: 33579.59 requests per second, p50=0.375 msec</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">GET: 31289.11 requests per second, p50=0.399 msec</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">LPUSH: 33355.57 requests per second, p50=0.375 msec</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">LPOP: 33590.86 requests per second, p50=0.375 msec</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="SET: 33579.59 requests per second, p50=0.375 msecGET: 31289.11 requests per second, p50=0.399 msecLPUSH: 33355.57 requests per second, p50=0.375 msecLPOP: 33590.86 requests per second, p50=0.375 msec"><div></div></button></div></figure></div>
+<ul>
+<li>aof:yes, aofsync:always</li>
+</ul>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">SET: 9087.60 requests per second, p50=5.655 msec</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">GET: 31908.10 requests per second, p50=0.391 msec</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">LPUSH: 8882.57 requests per second, p50=5.759 msec</span></div></div><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">LPOP: 9192.87 requests per second, p50=5.599 msec</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="SET: 9087.60 requests per second, p50=5.655 msecGET: 31908.10 requests per second, p50=0.391 msecLPUSH: 8882.57 requests per second, p50=5.759 msecLPOP: 9192.87 requests per second, p50=5.599 msec"><div></div></button></div></figure></div>
+<div class="sl-heading-wrapper level-h2"><h2 id="ngrinder">nGrinder</h2><a class="sl-anchor-link" href="#ngrinder"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “nGrinder”</span></a></div>
+<p>Naver에서 개발하였으며, 스크립트 생성 / 테스트 실행 / 모니터링 및 결과 보고서 생성기를 동시에 실행할 수 있는 스트레스 테스트 도구임
+<a href="http://naver.github.io/ngrinder/">http://naver.github.io/ngrinder/</a></p>
+<div class="sl-heading-wrapper level-h3"><h3 id="environment">Environment</h3><a class="sl-anchor-link" href="#environment"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “Environment”</span></a></div>
+<ul>
+<li>Test Architecture</li>
+</ul>
+<figure class="plantuml-diagram">
+  <starlight-image-zoom-zoomable><img src="data:image/png;base64,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" alt="PlantUML Diagram" class="plantuml-img"><button aria-label="Zoom image: PlantUML Diagram" class="starlight-image-zoom-control"><svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24"><use href="#starlight-image-zoom-icon-zoom"></use></svg></button></starlight-image-zoom-zoomable>
+</figure>
+<ul>
+<li>TPS 3000 이상의 성능이 나오는 적정 환경에서 수행</li>
+<li>nGrinder Agent 2ea</li>
+<li>EBS Volume iops 3000</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Container</th><th>CPU</th><th>Memory</th></tr></thead><tbody><tr><td>Spring Boot</td><td>0.5 / 4</td><td>4Gi</td></tr><tr><td>nGrinder</td><td>0.5 / 2</td><td>4Gi</td></tr><tr><td>MariaDB</td><td>0.5 / 1.0</td><td>1Gi</td></tr><tr><td>Redis</td><td>0.3 / 0.5</td><td>0.5Gi</td></tr></tbody></table>
+<ul>
+<li>nGrinder Management Console에서 Test Result 조회 가능
+<a href="http://k8s-sessiond-ngrinder-aa75db0c27-1345478526.ap-northeast-2.elb.amazonaws.com/">http://k8s-sessiond-ngrinder-aa75db0c27-1345478526.ap-northeast-2.elb.amazonaws.com/</a></li>
+</ul>
+<p><starlight-image-zoom-zoomable><img  loading="lazy" decoding="async"  width="1220" height="773" src="/_astro/ngrinder-test-result.B7RdNwHa_Z1spzpE.webp" ><button aria-label="Zoom image" class="starlight-image-zoom-control"><svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24"><use href="#starlight-image-zoom-icon-zoom"></use></svg></button></starlight-image-zoom-zoomable></p>
+<div class="sl-heading-wrapper level-h3"><h3 id="redis-get">Redis GET</h3><a class="sl-anchor-link" href="#redis-get"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “Redis GET”</span></a></div>
+<ul>
+<li>MariaDB departments 테이블 cache result를 가져오는 Spring Boot API 호출 (기본 10rows)</li>
+</ul>
+<div class="sl-heading-wrapper level-h4"><h4 id="get-method-call-result">GET Method Call Result</h4><a class="sl-anchor-link" href="#get-method-call-result"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “GET Method Call Result”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Condition</th><th></th><th></th><th>TPS<br><small>(max cpu)</small></th><th></th><th></th><th></th></tr></thead><tbody><tr><td><strong>vUser</strong></td><td><strong>rows</strong></td><td><strong>repl.</strong></td><td><strong>mariadb</strong></td><td><strong>redis</strong></td><td><strong>redis AOF<br>everysec</strong></td><td><strong>redis AOF<br>always</strong></td></tr><tr><td>1000</td><td>10</td><td>1</td><td>2600 (380m)</td><td>3630 (90m)</td><td>3600  (90m)</td><td>3650 (90m)</td></tr><tr><td>2000</td><td>10</td><td>1</td><td>2600 (400m)</td><td>2860 (70m)</td><td>3000  (80m)</td><td>3090 (80m)</td></tr><tr><td>3000</td><td>10</td><td>1</td><td>2210 (350m)</td><td>2310 (60m)</td><td>2440  (60m)</td><td>2370 (60m)</td></tr><tr><td>3000</td><td>10</td><td>2</td><td>3270 (480m)</td><td>3310 (90m)</td><td>3230  (120m)</td><td>3300 (80m)</td></tr><tr><td>1000</td><td>1000</td><td>1</td><td>180  (110m)</td><td>1620 (130m)</td><td>1560  (80m)</td><td>1580 (80m)</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h5"><h5 id="1-mariadb-select-test">1. Mariadb Select Test</h5><a class="sl-anchor-link" href="#1-mariadb-select-test"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “1. Mariadb Select Test”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>vUser</th><th>rows</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Err.</th><th>Comment</th></tr></thead><tbody><tr><td>1000</td><td>10</td><td>2min</td><td>1</td><td><strong>2600</strong></td><td>0.0%</td><td></td></tr><tr><td>2000</td><td>10</td><td>2min</td><td>1</td><td>2600</td><td>0.0%</td><td></td></tr><tr><td>3000</td><td>10</td><td>2min</td><td>1</td><td>2210</td><td>0.1%</td><td>성능 저하 구간으로 판단</td></tr><tr><td>3000</td><td>10</td><td>5min</td><td>2</td><td>3270</td><td>0.0%</td><td>pod 증설, <em>2210 -> 3270</em></td></tr><tr><td>1000</td><td>1000</td><td>2min</td><td>1</td><td><strong>180</strong></td><td>0.0%</td><td>rows 증가, <em>2600 -> 180</em></td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h5"><h5 id="2-redis-get-test">2. Redis GET Test</h5><a class="sl-anchor-link" href="#2-redis-get-test"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “2. Redis GET Test”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>vUser</th><th>rows</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Err.</th><th>Comment</th></tr></thead><tbody><tr><td>1000</td><td>10</td><td>2min</td><td>1</td><td><strong>3630</strong></td><td>0.0%</td><td></td></tr><tr><td>2000</td><td>10</td><td>2min</td><td>1</td><td>2860</td><td>0.0%</td><td></td></tr><tr><td>3000</td><td>10</td><td>2min</td><td>1</td><td>2310</td><td>0.9%</td><td>성능 저하 구간으로 판단</td></tr><tr><td>3000</td><td>10</td><td>5min</td><td>2</td><td>3310</td><td>0.0%</td><td>pod 증설, <em>2310 -> 3320</em></td></tr><tr><td>1000</td><td>1000</td><td>2min</td><td>1</td><td><strong>1620</strong></td><td>0.0%</td><td>rows 증가, <em>3630 -> 1620</em></td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h5"><h5 id="3-aof-redis-get-test-fsync-everysec">3. AOF Redis GET Test (fsync: everysec)</h5><a class="sl-anchor-link" href="#3-aof-redis-get-test-fsync-everysec"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “3. AOF Redis GET Test (fsync: everysec)”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>vUser</th><th>rows</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Err.</th><th>Comment</th></tr></thead><tbody><tr><td>1000</td><td>10</td><td>2min</td><td>1</td><td><strong>3600</strong></td><td>0.0%</td><td></td></tr><tr><td>2000</td><td>10</td><td>2min</td><td>1</td><td>3000</td><td>0.0%</td><td></td></tr><tr><td>3000</td><td>10</td><td>2min</td><td>1</td><td>2440</td><td>0.1%</td><td>성능 저하 구간으로 판단</td></tr><tr><td>3000</td><td>10</td><td>5min</td><td>2</td><td>3230</td><td>0.0%</td><td>pod 증설, <em>2440 -> 3230</em></td></tr><tr><td>1000</td><td>1000</td><td>2min</td><td>1</td><td><strong>1560</strong></td><td>0.0%</td><td>rows 증가, <em>3600 -> 1560</em></td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h5"><h5 id="4-aof-redis-get-test-fsync-always">4. AOF Redis GET Test (fsync: always)</h5><a class="sl-anchor-link" href="#4-aof-redis-get-test-fsync-always"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “4. AOF Redis GET Test (fsync: always)”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>vUser</th><th>rows</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Err.</th><th>Comment</th></tr></thead><tbody><tr><td>1000</td><td>10</td><td>2min</td><td>1</td><td><strong>3650</strong></td><td>0.0%</td><td></td></tr><tr><td>2000</td><td>10</td><td>2min</td><td>1</td><td>3090</td><td>0.0%</td><td></td></tr><tr><td>3000</td><td>10</td><td>2min</td><td>1</td><td>2370</td><td>0.1%</td><td>성능 저하 구간으로 판단</td></tr><tr><td>3000</td><td>10</td><td>5min</td><td>2</td><td>3300</td><td>0.0%</td><td>pod 증설, <em>2370 -> 3300</em></td></tr><tr><td>1000</td><td>1000</td><td>2min</td><td>1</td><td><strong>1580</strong></td><td>0.0%</td><td>rows 증가, <em>3650 -> 1580</em></td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="redis-set">Redis SET</h3><a class="sl-anchor-link" href="#redis-set"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “Redis SET”</span></a></div>
+<ul>
+<li>MariaDB departments 테이블의 1 row와 동일한 규격의 Data를 Redis에 SET하는 API를 호출</li>
+</ul>
+<div class="sl-heading-wrapper level-h4"><h4 id="post-method-call-result">POST Method Call Result</h4><a class="sl-anchor-link" href="#post-method-call-result"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “POST Method Call Result”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Condition</th><th></th><th>TPS<br><small>(max cpu)</small></th><th></th><th></th><th></th></tr></thead><tbody><tr><td><strong>vUser</strong></td><td><strong>repl.</strong></td><td><strong>mariadb</strong></td><td><strong>redis</strong></td><td><strong>redis AOF<br>everysec</strong></td><td><strong>redis AOF<br>always</strong></td></tr><tr><td>1000</td><td>1</td><td>1550 (980m)</td><td><strong>3170 (150m)</strong></td><td>2410 (150m)</td><td>2300 (70m)</td></tr><tr><td>2000</td><td>1</td><td>1530 (980m)</td><td><strong>3270 (160m)</strong></td><td>2310 (130m)</td><td>2200 (100m)</td></tr><tr><td>3000</td><td>1</td><td>1370 (970m)</td><td><strong>2840 (160m)</strong></td><td>2100 (130m)</td><td>1900 (90)</td></tr><tr><td>3000</td><td>2</td><td>1940 (970m)</td><td><strong>3350 (220m)</strong></td><td>3260 (270m)</td><td>3140 (180m)</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h5"><h5 id="1-mariadb-insert-test">1. Mariadb Insert Test</h5><a class="sl-anchor-link" href="#1-mariadb-insert-test"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “1. Mariadb Insert Test”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>vUser</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Err.</th><th>Comment</th></tr></thead><tbody><tr><td>1000</td><td>2min</td><td>1</td><td><strong>1550</strong></td><td>0.0%</td><td></td></tr><tr><td>2000</td><td>2min</td><td>1</td><td>1530</td><td>0.0%</td><td></td></tr><tr><td>3000</td><td>2min</td><td>1</td><td>1370</td><td>1.0%</td><td>성능 저하 구간으로 판단</td></tr><tr><td>4000</td><td>2min</td><td>1</td><td>1350</td><td>1.2%</td><td></td></tr><tr><td>3000</td><td>5min</td><td>2</td><td><strong>1940</strong></td><td>0.1%</td><td>Pod 증설, <em>1370 -> 1940</em></td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h5"><h5 id="2-redis-set-test">2. Redis SET Test</h5><a class="sl-anchor-link" href="#2-redis-set-test"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “2. Redis SET Test”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>vUser</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Err.</th><th>Comment</th></tr></thead><tbody><tr><td>1000</td><td>2min</td><td>1</td><td><strong>3170</strong></td><td>0.0%</td><td></td></tr><tr><td>2000</td><td>2min</td><td>1</td><td>3270</td><td>0.0%</td><td></td></tr><tr><td>3000</td><td>2min</td><td>1</td><td>2840</td><td>0.1%</td><td>성능 저하 구간으로 판단</td></tr><tr><td>4000</td><td>2min</td><td>1</td><td>2500</td><td>1.3%</td><td></td></tr><tr><td>3000</td><td>2min</td><td>2</td><td>2300</td><td>0.1%</td><td>성능 저하 구간에서 replicas=2<br>pod 여러 개일 경우, 부하 초기에 분산 지연</td></tr><tr><td>3000</td><td>5min</td><td>2</td><td><strong>3350</strong></td><td>0.0%</td><td>Pod 증설, <em>2840 -> 3350</em></td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h5"><h5 id="3-aof-redis-set-test-fsync-everysec">3. AOF Redis SET Test (fsync: everysec)</h5><a class="sl-anchor-link" href="#3-aof-redis-set-test-fsync-everysec"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “3. AOF Redis SET Test (fsync: everysec)”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>vUser</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Err.</th><th>Comment</th></tr></thead><tbody><tr><td>1000</td><td>2min</td><td>1</td><td><strong>2400</strong></td><td>0.0%</td><td></td></tr><tr><td>2000</td><td>2min</td><td>1</td><td>2310</td><td>0.1%</td><td></td></tr><tr><td>3000</td><td>2min</td><td>1</td><td>2100</td><td>0.1%</td><td>성능 저하 구간으로 판단</td></tr><tr><td>4000</td><td>2min</td><td>1</td><td>2700</td><td>1.3%</td><td>Error 발생 시, TPS 측정이 다소 부정확한 것으로 보임</td></tr><tr><td>6000</td><td>2min</td><td>1</td><td>2700</td><td>2.6%</td><td>Error 발생 시, TPS 측정이 다소 부정확한 것으로 보임</td></tr><tr><td>3000</td><td>5min</td><td>2</td><td><strong>3260</strong></td><td>0.0%</td><td>Pod 증설, <em>2100 -> 3260</em></td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h5"><h5 id="4-aof-redis-set-test-fsync-always">4. AOF Redis SET Test (fsync: always)</h5><a class="sl-anchor-link" href="#4-aof-redis-set-test-fsync-always"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “4. AOF Redis SET Test (fsync: always)”</span></a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>vUser</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Err.</th><th>Comment</th></tr></thead><tbody><tr><td>1000</td><td>2min</td><td>1</td><td><strong>2300</strong></td><td>0.0%</td><td></td></tr><tr><td>2000</td><td>2min</td><td>1</td><td>2200</td><td>0.0%</td><td></td></tr><tr><td>3000</td><td>2min</td><td>1</td><td>1900</td><td>0.2%</td><td>성능 저하 구간으로 판단</td></tr><tr><td>4000</td><td>2min</td><td>1</td><td>2300</td><td>1.4%</td><td>Error 발생 시, TPS 측정이 다소 부정확한 것으로 보임</td></tr><tr><td>6000</td><td>2min</td><td>2</td><td>2300</td><td>9.9%</td><td>Error 발생 시, TPS 측정이 다소 부정확한 것으로 보임</td></tr><tr><td>3000</td><td>5min</td><td>2</td><td><strong>3140</strong></td><td>0.0%</td><td>Pod 증설, <em>1900 -> 3140</em></td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="aof-everysec-vs-always">AOF everysec vs always</h3><a class="sl-anchor-link" href="#aof-everysec-vs-always"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “AOF everysec vs always”</span></a></div>
+<ul>
+<li>Redis Persistence 설명 참고
+<a href="http://redisgate.kr/redis/configuration/persistence.php">http://redisgate.kr/redis/configuration/persistence.php</a></li>
+<li>위의 benchmark 및 nGrinder 부하 테스트 결과,
+Redis Instance의 Resource가 안정적으로 유지되는 상태에서는, 데이터 저장 시에도 성능에서는 큰 차이를 보이지 않음
+<ul>
+<li><u><em>저장 시의 성능 차이를 확인하기 위하여, 극단적인 부하 테스트 수행</em></u></li>
+</ul>
+</li>
+</ul>
+<div class="sl-heading-wrapper level-h4"><h4 id="부하-테스트">부하 테스트</h4><a class="sl-anchor-link" href="#부하-테스트"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “부하 테스트”</span></a></div>
+<ul>
+<li>Environment
+<ul>
+<li>cpu 100% 사용되도록 Resource 최소화</li>
+<li>기존 SET Data 1row의 Size 100 증가</li>
+<li>데이터 저장을 위해 많은 메모리를 사용할 수 있도록 증가</li>
+<li><em><strong>EBS Volume iops 3000 -> 100</strong></em></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Container</th><th>appendfsync</th><th>CPU</th><th>Memory</th></tr></thead><tbody><tr><td>redis-cache-aof</td><td>everysec</td><td>0.1 / 0.1</td><td>4Gi</td></tr><tr><td>redis-cache-always</td><td>always</td><td>0.1 / 0.1</td><td>4Gi</td></tr></tbody></table>
+<ul>
+<li>
+<p>Memory Usage</p>
+<ul>
+<li>everysec 으로 설정된 redis가 약 두배 가량의 memory를 더 점유함<br>
+<starlight-image-zoom-zoomable><img  loading="lazy" decoding="async"  width="1136" height="713" src="/_astro/redis-memory-202103111642.DCPJ2cGU_IpWP4.webp" ><button aria-label="Zoom image" class="starlight-image-zoom-control"><svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24"><use href="#starlight-image-zoom-icon-zoom"></use></svg></button></starlight-image-zoom-zoomable></li>
+</ul>
+</li>
+<li>
+<p>AOF Redis SET Test</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>vUser</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Memory(max)</th><th>Err.</th><th>Comment</th></tr></thead><tbody><tr><td>1000</td><td>10min</td><td>1</td><td><strong>999</strong></td><td>1747Mi</td><td>0.0%</td><td></td></tr><tr><td>1000</td><td>10min</td><td>1</td><td>618</td><td>1028Mi</td><td>2.0%</td><td>Error 다수 발생<br>(7,228 / 359,730)</td></tr></tbody></table>
+<ul>
+<li>Bench Mark vs 적정 환경 테스트 vs 부하 테스트 결과 비교
+<ul>
+<li>Network을 통하지 않은 Redis Benchmark Test 에서는 everysec 의 write 성능이 우수</li>
+<li>Spring Boot API 등 Container간 Network을 통한 성능 측정에서는 큰 차이가 없음을 확인</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Persitence</th><th>appendfsync</th><th>TPS (B/M)</th><th>TPS (적정)</th><th>TPS (부하)</th></tr></thead><tbody><tr><td>Redis AOF</td><td>everysec</td><td><strong>33579</strong></td><td>2400</td><td>999</td></tr><tr><td>Redis AOF</td><td>always</td><td>9087</td><td>2300</td><td>618</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="추가-테스트">추가 테스트</h3><a class="sl-anchor-link" href="#추가-테스트"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “추가 테스트”</span></a></div>
+<ul>
+<li>nGrinder 성능 측정 중, Redis Instance Kill</li>
+</ul>
+<div class="sl-heading-wrapper level-h4"><h4 id="test-result">Test Result</h4><a class="sl-anchor-link" href="#test-result"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “Test Result”</span></a></div>
+<ul>
+<li>TPS 안정분포되는 1:40초에 Redis kill 후, Pod Self Healing 강제</li>
+<li>Kill 시점, Spring Boot “java.io.IOException: Connection reset by peer” 발생
+| <em><strong>적정 성능 측정 시에는, 특이사항 없음</strong></em></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Container</th><th>fsync</th><th>vUser</th><th>Threshold</th><th>Replicas</th><th>TPS</th><th>Err</th></tr></thead><tbody><tr><td>Redis</td><td>off</td><td>1000</td><td>3min</td><td>1</td><td>2700</td><td>0.1%</td></tr><tr><td>Redis</td><td>everysec</td><td>1000</td><td>3min</td><td>1</td><td>2700</td><td>0.1%</td></tr><tr><td>Redis</td><td>always</td><td>1000</td><td>3min</td><td>1</td><td>2600</td><td>0.1%</td></tr></tbody></table>
+<ul>
+<li>
+<p>Redis appendonly off, conatiner cpu usage 참고
+: 10초 이내에 self healing instance 생성되어 데이터 처리
+<starlight-image-zoom-zoomable><img  loading="lazy" decoding="async"  width="1139" height="710" src="/_astro/redis-cache-kill-cpu.BvNA5jpQ_2jL86e.webp" ><button aria-label="Zoom image" class="starlight-image-zoom-control"><svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24"><use href="#starlight-image-zoom-icon-zoom"></use></svg></button></starlight-image-zoom-zoomable></p>
+</li>
+<li>
+<p>Redis appendonly off, TPS 참고
+: 10초 이내에 안정적인 TPS 수준으로 회복
+<starlight-image-zoom-zoomable><img  loading="lazy" decoding="async"  width="980" height="334" src="/_astro/redis-cache-kill-tps.CawHN-Sj_1fJGTH.webp" ><button aria-label="Zoom image" class="starlight-image-zoom-control"><svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24"><use href="#starlight-image-zoom-icon-zoom"></use></svg></button></starlight-image-zoom-zoomable></p>
+</li>
+</ul>
+<div class="sl-heading-wrapper level-h5"><h5 id="backup-ebs-volume-mount-실패했을-경우-self-healing-지연되는-경우">Backup> EBS Volume Mount 실패했을 경우, Self-Healing 지연되는 경우</h5><a class="sl-anchor-link" href="#backup-ebs-volume-mount-실패했을-경우-self-healing-지연되는-경우"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “Backup> EBS Volume Mount 실패했을 경우, Self-Healing 지연되는 경우”</span></a></div>
+<ul>
+<li>현재 EBS gp3 type volume의 경우, Multi Attach가 불가능하여, deploy node가 변경되는 경우 곧바로 Volume Attach가 되지 않는 경우 발생</li>
+</ul>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">Events:</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">Type     Reason                  Age   From                     Message</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">----     ------                  ----  ----                     -------</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">Normal   Scheduled               21s   default-scheduler        Successfully assigned app-dev/redis-cache-always-7d6db7c847-hjh7j to ip-10-0-0-10.example.compute.internal</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">Warning  FailedAttachVolume      22s   attachdetach-controller  Multi-Attach error for volume "pvc-00000000-0000-0000-0000-000000000000" Volume is already used by pod(s) redis-cache-always-7d6db7c847-9l54t</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">  </span></span><span style="--0:#d6deeb;--1:#403f53">Normal   SuccessfulAttachVolume  6s    attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-00000000-0000-0000-0000-000000000000"</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="Events:  Type     Reason                  Age   From                     Message  ----     ------                  ----  ----                     -------  Normal   Scheduled               21s   default-scheduler        Successfully assigned app-dev/redis-cache-always-7d6db7c847-hjh7j to ip-10-0-0-10.example.compute.internal  Warning  FailedAttachVolume      22s   attachdetach-controller  Multi-Attach error for volume &#x22;pvc-00000000-0000-0000-0000-000000000000&#x22; Volume is already used by pod(s) redis-cache-always-7d6db7c847-9l54t  Normal   SuccessfulAttachVolume  6s    attachdetach-controller  AttachVolume.Attach succeeded for volume &#x22;pvc-00000000-0000-0000-0000-000000000000&#x22;"><div></div></button></div></figure></div>  </div> <footer class="sl-flex astro-3yyafb3n"> <div class="meta sl-flex astro-3yyafb3n">   </div> <div class="pagination-links print:hidden astro-u2l5gyhi" dir="ltr"> <a href="/blogs/003_refarch/harbor/" rel="prev" class="astro-u2l5gyhi"> <svg aria-hidden="true" class="astro-u2l5gyhi astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17 11H9.41l3.3-3.29a1.004 1.004 0 1 0-1.42-1.42l-5 5a1 1 0 0 0-.21.33 1 1 0 0 0 0 .76 1 1 0 0 0 .21.33l5 5a1.002 1.002 0 0 0 1.639-.325 1 1 0 0 0-.219-1.095L9.41 13H17a1 1 0 0 0 0-2Z"/></svg> <span class="astro-u2l5gyhi"> 이전 페이지 <br class="astro-u2l5gyhi"> <span class="link-title astro-u2l5gyhi">Harbor</span> </span> </a> <a href="/blogs/003_refarch/hatest/" rel="next" class="astro-u2l5gyhi"> <svg aria-hidden="true" class="astro-u2l5gyhi astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17.92 11.62a1.001 1.001 0 0 0-.21-.33l-5-5a1.003 1.003 0 1 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1.002 1.002 0 0 0 .325 1.639 1 1 0 0 0 1.095-.219l5-5a1 1 0 0 0 .21-.33 1 1 0 0 0 0-.76Z"/></svg> <span class="astro-u2l5gyhi"> 다음 페이지 <br class="astro-u2l5gyhi"> <span class="link-title astro-u2l5gyhi">고가용성</span> </span> </a> </div>  </footer> <!-- Giscus 댓글 --> <div class="giscus-container astro-sz7xmlte"> <script src="https://giscus.app/client.js" data-repo="noisonnoiton/noisonnoiton.github.io" data-repo-id="R_kgDOGjaniQ" data-category="Announcements" data-category-id="DIC_kwDOGjanic4C4fBW" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="en" data-loading="lazy" crossorigin="anonymous" async>
+  </script> </div> <!-- 카카오 애드핏 --> <div class="kakao-ad-footer astro-sz7xmlte"> <!-- PC: 728x90 --> <div class="ad-pc astro-sz7xmlte"> <ins class="kakao_ad_area astro-sz7xmlte" style="display:none;" data-ad-unit="DAN-zPDP0gYVaGwOEH3v" data-ad-width="728" data-ad-height="90"></ins> </div> <!-- Mobile: 250x250 --> <div class="ad-mobile astro-sz7xmlte"> <ins class="kakao_ad_area astro-sz7xmlte" style="display:none;" data-ad-unit="DAN-zHXbzhtivpd6MTA0" data-ad-width="250" data-ad-height="250"></ins> </div> </div> <script src="//t1.daumcdn.net/kas/static/ba.min.js" async></script> </div> </div>  </main> </div> </div> </div> </div> </body></html>

@@ -1,0 +1,1044 @@
+<!DOCTYPE html><html lang="en" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-bguv2lll"> <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>noisonnoiton | noisonnoiton</title><link rel="canonical" href="https://noisonnoiton.github.io/en/blog/authors/noisonnoiton/"/><link rel="alternate" hreflang="ko" href="https://noisonnoiton.github.io/blog/authors/noisonnoiton/"/><link rel="alternate" hreflang="en" href="https://noisonnoiton.github.io/en/blog/authors/noisonnoiton/"/><link rel="sitemap" href="/sitemap-index.xml"/><link rel="alternate" type="application/rss+xml" title="noisonnoiton RSS" href="/rss.xml"/><script async src="https://www.googletagmanager.com/gtag/js?id=G-0BHX9CF6JP"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-0BHX9CF6JP');</script><link href="https://noisonnoiton.github.io/blog/rss.xml" rel="alternate" title="noisonnoiton blog" type="application/rss+xml"/><link rel="shortcut icon" href="/favicon.png" type="image/png"/><meta name="generator" content="Astro v6.1.1"/><meta name="generator" content="Starlight v0.38.2"/><meta property="og:title" content="noisonnoiton"/><meta property="og:url" content="https://noisonnoiton.github.io/en/blog/authors/noisonnoiton/"/><meta property="og:locale" content="en"/><meta name="google-site-verification" content="5Cf8lzznSYAmH9JYOQxyE3AsnKWj_ZeCZ8P8jxnP3L4"/><meta name="naver-site-verification" content="d3c1f1b07eacea0cd9a3c3c03468e5c8bafe6393"/><meta property="og:type" content="website"/><meta property="og:site_name" content="noisonnoiton"/><meta name="twitter:card" content="summary_large_image"/><meta name="author" content="noisonnoiton"/> <script>
+(function() {
+  var ALL_LOCALES = [
+    { code: 'ko', label: '🇰🇷 한국어', prefix: '' },
+    { code: 'en', label: '🇺🇸 English', prefix: '/en' },
+    { code: 'fr', label: '🇫🇷 Français', prefix: '/fr' },
+  ];
+  var STORAGE_KEY = '***';
+  var ROOT = ALL_LOCALES[0];
+
+  function availableLocales(bare) {
+    if (bare === '/') return ALL_LOCALES;
+    return ALL_LOCALES.filter(function(locale) { return locale.code !== 'fr'; });
+  }
+
+  function detectCurrent() {
+    var p = window.location.pathname;
+    for (var i = 1; i < ALL_LOCALES.length; i++) {
+      if (p === ALL_LOCALES[i].prefix || p.startsWith(ALL_LOCALES[i].prefix + '/')) return ALL_LOCALES[i];
+    }
+    return ROOT;
+  }
+
+  function stripLocale(path) {
+    for (var i = 1; i < ALL_LOCALES.length; i++) {
+      if (path === ALL_LOCALES[i].prefix) return '/';
+      if (path.startsWith(ALL_LOCALES[i].prefix + '/')) return path.slice(ALL_LOCALES[i].prefix.length);
+    }
+    return path;
+  }
+
+  function buildPath(locale, bare) {
+    if (locale.prefix === '') return bare;
+    return locale.prefix + (bare === '/' ? '/' : bare);
+  }
+
+  function autoRedirect() {
+    var pref = localStorage.getItem(STORAGE_KEY);
+    if (!pref) return;
+    var current = detectCurrent();
+    if (current.code === pref) return;
+    var bare = stripLocale(window.location.pathname);
+    var locales = availableLocales(bare);
+    var target = locales.find(function(l) { return l.code === pref; });
+    if (!target) return;
+    var dest = buildPath(target, bare);
+    fetch(dest, { method: 'HEAD' }).then(function(r) {
+      if (r.ok) window.location.replace(dest);
+    }).catch(function() {});
+  }
+
+  function createSelector() {
+    var header = document.querySelector('header.header');
+    if (!header || document.getElementById('locale-selector')) return;
+
+    var current = detectCurrent();
+    var bare = stripLocale(window.location.pathname);
+    var locales = availableLocales(bare);
+    document.querySelectorAll('starlight-lang-select').forEach(function(el) {
+      // Keep the custom selector next to Search; remove Starlight's duplicate.
+      el.style.display = 'none';
+    });
+
+    var wrap = document.createElement('div');
+    wrap.id = 'locale-selector';
+    wrap.style.cssText = 'position:relative;display:inline-flex;align-items:center;z-index:100;';
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = current.label;
+    btn.setAttribute('aria-label', 'Select language');
+    btn.style.cssText = [
+      'display:inline-flex;align-items:center;gap:0.25rem',
+      'padding:0.25rem 0.55rem',
+      'border:1px solid var(--sl-color-gray-5)',
+      'border-radius:1rem',
+      'font-size:0.78rem;font-weight:500',
+      'color:var(--sl-color-text)',
+      'background:transparent',
+      'cursor:pointer',
+      'white-space:nowrap',
+      'transition:background 0.15s',
+    ].join(';');
+    btn.addEventListener('mouseenter', function() { btn.style.background = 'var(--sl-color-gray-6)'; });
+    btn.addEventListener('mouseleave', function() { btn.style.background = 'transparent'; });
+
+    var menu = document.createElement('div');
+    menu.style.cssText = [
+      'display:none;position:absolute;top:calc(100% + 4px);right:0',
+      'background:var(--sl-color-bg-nav)',
+      'border:1px solid var(--sl-color-gray-5)',
+      'border-radius:0.5rem',
+      'padding:0.25rem 0',
+      'box-shadow:0 4px 12px rgba(0,0,0,0.15)',
+      'min-width:130px',
+      'z-index:200',
+    ].join(';');
+
+    locales.forEach(function(loc) {
+      var item = document.createElement('a');
+      item.textContent = loc.label;
+      item.href = buildPath(loc, bare);
+      item.style.cssText = [
+        'display:block;padding:0.4rem 0.75rem',
+        'font-size:0.8rem;color:var(--sl-color-text)',
+        'text-decoration:none;white-space:nowrap',
+        'transition:background 0.1s',
+      ].join(';');
+
+      if (loc.code === current.code) {
+        item.style.fontWeight = '700';
+        item.style.background = 'var(--sl-color-gray-6)';
+      }
+
+      item.addEventListener('mouseenter', function() { item.style.background = 'var(--sl-color-gray-6)'; });
+      item.addEventListener('mouseleave', function() {
+        item.style.background = loc.code === current.code ? 'var(--sl-color-gray-6)' : 'transparent';
+      });
+
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.setItem(STORAGE_KEY, loc.code);
+        if (loc.code === current.code) { menu.style.display = 'none'; return; }
+        var dest = buildPath(loc, bare);
+        fetch(dest, { method: 'HEAD' }).then(function(r) {
+          if (r.ok) {
+            window.location.href = dest;
+          } else {
+            window.location.href = loc.prefix || '/';
+          }
+        }).catch(function() {
+          window.location.href = loc.prefix || '/';
+        });
+      });
+
+      menu.appendChild(item);
+    });
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function() { menu.style.display = 'none'; });
+
+    wrap.appendChild(btn);
+    wrap.appendChild(menu);
+
+    var search = header.querySelector('site-search') || header.querySelector('.search-toggle');
+    if (search) {
+      search.parentElement.insertBefore(wrap, search);
+    } else {
+      header.appendChild(wrap);
+    }
+  }
+
+  function init() {
+    autoRedirect();
+    createSelector();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', function() {
+    var old = document.getElementById('locale-selector');
+    if (old) old.remove();
+    createSelector();
+  });
+})();
+</script><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/_astro/print.DNXP8c50.css" media="print"><style>.count:where(.astro-bu4jbvld){font-size:var(--sl-text-xl);font-weight:600}
+[data-has-toc] :is(.right-sidebar-panel,mobile-starlight-toc){display:none}[data-has-toc] .main-frame{padding-top:var(--sl-nav-height)}.preview:where(.astro-dr56dw7m){display:flex;flex-direction:column;gap:1.5rem}h2:where(.astro-dr56dw7m){margin-bottom:1.5rem}h2:where(.astro-dr56dw7m) a:where(.astro-dr56dw7m){text-decoration:none}.posts:where(.astro-xaz7kpyh){display:flex;flex-direction:column;gap:3rem}
+</style>
+<link rel="stylesheet" href="/_astro/middleware.DPGkAFlG.css">
+<style>.archive-total:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-size:var(--sl-text-sm);margin-block:0 1rem}.archive-years:where(.astro-bdepfles){display:flex;flex-wrap:wrap;gap:.5rem;margin-block-end:2.5rem;position:sticky;top:0;z-index:1;background:var(--sl-color-bg);padding-block:.6rem}.archive-year-chip:where(.astro-bdepfles){border:1px solid var(--sl-color-gray-5);border-radius:999px;padding:.25rem .85rem;text-decoration:none;color:var(--sl-color-white);font-size:var(--sl-text-sm);white-space:nowrap}.archive-year-chip:where(.astro-bdepfles):hover{background:var(--sl-color-gray-6);border-color:var(--sl-color-accent)}.archive-year-count:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-weight:400;font-size:.85em}.archive-section:where(.astro-bdepfles){margin-block-end:2.5rem}.archive-section:where(.astro-bdepfles) h2:where(.astro-bdepfles){border-block-end:1px solid var(--sl-color-gray-5);padding-block-end:.35rem;margin-block-end:1rem;scroll-margin-block-start:6rem}.archive-month:where(.astro-bdepfles){margin-block-end:1.25rem}.archive-month:where(.astro-bdepfles) h3:where(.astro-bdepfles){font-size:var(--sl-text-base);color:var(--sl-color-gray-2);margin-block:0 .5rem}.archive-month:where(.astro-bdepfles) ul:where(.astro-bdepfles){list-style:none;padding:0;margin:0}.archive-month:where(.astro-bdepfles) li:where(.astro-bdepfles){display:flex;gap:.75rem;align-items:baseline;padding-block:.3rem}.archive-month:where(.astro-bdepfles) time:where(.astro-bdepfles){color:var(--sl-color-gray-3);font-size:var(--sl-text-xs);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:2.75rem;text-align:right}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles){color:var(--sl-color-gray-1);text-decoration:none}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles):hover{color:var(--sl-color-text-accent);text-decoration:underline}.archive-month:where(.astro-bdepfles) a:where(.astro-bdepfles):visited{color:var(--sl-color-gray-3)}@media(max-width:42rem){.archive-month:where(.astro-bdepfles) li:where(.astro-bdepfles){flex-direction:row;gap:.6rem}.archive-month:where(.astro-bdepfles) time:where(.astro-bdepfles){min-width:2.25rem}}
+</style>
+<link rel="stylesheet" href="/_astro/tag-page@_@astro.DavP-_5P.css">
+<link rel="stylesheet" href="/_astro/tags-index@_@astro.-NwLVRix.css">
+<style>.content-panel:first-of-type{display:none}.content-panel:nth-of-type(2){border-top:none}
+</style>
+<link rel="stylesheet" href="/_astro/Code.3GXCdK6h.css"><script type="module" src="/_astro/page.BIhdncjw.js"></script></head> <body class="astro-bguv2lll"> <a href="#_top" class="astro-7q3lir66">Skip to content</a> <div class="page sl-flex astro-vrdttmbt"> <header class="header astro-vrdttmbt"><div class="header astro-kmkmnagf"> <div class="title-wrapper sl-flex astro-kmkmnagf"> <a href="/en" class="site-title sl-flex astro-m46x6ez3">  <img class="astro-m46x6ez3" alt="춘식이" src="/_astro/choonsik.CaiAjGH-.png" width="1200" height="1200">  <span class="astro-m46x6ez3" translate="no"> noisonnoiton </span> </a> </div> <div class="sl-flex print:hidden astro-kmkmnagf"> <site-search class="astro-kmkmnagf astro-v37mnknz" data-translations="{&#34;placeholder&#34;:&#34;Search&#34;}"> <button data-open-modal disabled aria-label="Search" aria-keyshortcuts="Control+K" class="astro-v37mnknz"> <svg aria-hidden="true" class="astro-v37mnknz astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg> <span class="sl-hidden md:sl-block astro-v37mnknz" aria-hidden="true">Search</span> <kbd class="sl-hidden md:sl-flex astro-v37mnknz" style="display: none;"> <kbd class="astro-v37mnknz">Ctrl</kbd><kbd class="astro-v37mnknz">K</kbd> </kbd> </button> <dialog style="padding:0" aria-label="Search" class="astro-v37mnknz"> <div class="dialog-frame sl-flex astro-v37mnknz">  <button data-close-modal class="sl-flex md:sl-hidden astro-v37mnknz"> Cancel </button> <div class="search-container astro-v37mnknz"> <div id="starlight__search" class="astro-v37mnknz"></div> </div> </div> </dialog> </site-search>  <script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.BdDgbKxW.js"></script>  </div> <div class="sl-hidden md:sl-flex print:hidden right-group astro-kmkmnagf"> <div class="sl-flex social-icons astro-kmkmnagf"> <a href="https://github.com/noisonnoiton" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">GitHub</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://noisonnoiton.github.io/blog/rss.xml" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">RSS</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M2.88 16.88a3 3 0 0 0 0 4.24 3 3 0 0 0 4.24 0 3 3 0 0 0-4.24-4.24Zm2.83 2.83a1 1 0 0 1-1.42-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42ZM5 12a1 1 0 0 0 0 2 5 5 0 0 1 5 5 1 1 0 0 0 2 0 7 7 0 0 0-7-7Zm0-4a1 1 0 0 0 0 2 9 9 0 0 1 9 9 1 1 0 0 0 2 0 11.08 11.08 0 0 0-3.22-7.78A11.08 11.08 0 0 0 5 8Zm10.61.39A15.11 15.11 0 0 0 5 4a1 1 0 0 0 0 2 13 13 0 0 1 13 13 1 1 0 0 0 2 0 15.11 15.11 0 0 0-4.39-10.61Z"/></svg></a> </div> <div class="astro-eboeziq4"> <a href="/en/blog/" class="astro-eboeziq4">noisonnoiton blog</a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">Select theme</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="dark" class="astro-4yphtoen">Dark</option><option value="light" class="astro-4yphtoen">Light</option><option value="auto" selected class="astro-4yphtoen">Auto</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script> <script type="module">const r="starlight-theme",o=e=>e==="auto"||e==="dark"||e==="light"?e:"auto",c=()=>o(typeof localStorage<"u"&&localStorage.getItem(r));function n(e){typeof localStorage<"u"&&localStorage.setItem(r,e==="light"||e==="dark"?e:"")}const l=()=>matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";function t(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e==="auto"?l():e,n(e)}matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{c()==="auto"&&t("auto")});class s extends HTMLElement{constructor(){super(),t(c()),this.querySelector("select")?.addEventListener("change",a=>{a.currentTarget instanceof HTMLSelectElement&&t(o(a.currentTarget.value))})}}customElements.define("starlight-theme-select",s);</script> <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">Select language</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="/blog/authors/noisonnoiton/" class="astro-4yphtoen">한국어</option><option value="/en/blog/authors/noisonnoiton/" selected class="astro-4yphtoen">English</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label></starlight-lang-select><script type="module">class s extends HTMLElement{constructor(){super();const e=this.querySelector("select");e&&(e.addEventListener("change",t=>{t.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=t.currentTarget.value)}),window.addEventListener("pageshow",t=>{if(!t.persisted)return;const n=e.querySelector("option[selected]")?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}}customElements.define("starlight-lang-select",s);</script> </div> </div></header> <nav class="sidebar print:hidden astro-vrdttmbt" aria-label="Main"> <starlight-menu-button class="print:hidden astro-jif73yzw"> <button aria-expanded="false" aria-label="Menu" aria-controls="starlight__sidebar" class="sl-flex md:sl-hidden astro-jif73yzw"> <svg aria-hidden="true" class="open-menu astro-jif73yzw astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg> <svg aria-hidden="true" class="close-menu astro-jif73yzw astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg> </button> </starlight-menu-button> <script type="module">class s extends HTMLElement{constructor(){super(),this.btn=this.querySelector("button"),this.btn.addEventListener("click",()=>this.toggleExpanded());const t=this.closest("nav");t&&t.addEventListener("keyup",e=>this.closeOnEscape(e))}setExpanded(t){this.setAttribute("aria-expanded",String(t)),document.body.toggleAttribute("data-mobile-menu-expanded",t)}toggleExpanded(){this.setExpanded(this.getAttribute("aria-expanded")!=="true")}closeOnEscape(t){t.code==="Escape"&&(this.setExpanded(!1),this.btn.focus())}}customElements.define("starlight-menu-button",s);</script>  <div id="starlight__sidebar" class="sidebar-pane astro-vrdttmbt"> <div class="sidebar-content sl-flex astro-vrdttmbt"> <nav class="sidebar-switcher astro-ssfzsv2f" aria-label="Primary sections"> <a class="sidebar-switcher-link astro-ssfzsv2f" href="/en/blogs/010_kubernetes/">Tech</a> <a class="sidebar-switcher-link sidebar-archive-link astro-ssfzsv2f" href="/en/archive/">📅 Archive (by year)</a> <div class="sidebar-section-divider astro-ssfzsv2f" role="separator"></div> <a class="sidebar-switcher-link astro-ssfzsv2f" href="/en/blog/">Blog</a> </nav> <sl-sidebar-state-persist data-hash="13c5j21" class="astro-kku4brbg"> <script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script>  <ul class="top-level astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/" class="large astro-3ii7xxms"> <span class="astro-3ii7xxms">All posts</span>  </a> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Featured posts</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="0"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/poppy-birth/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🐶 뽀삐 탄생기 — 이 블로그를 돌보는 AI 강아지</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Recent posts</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="1"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/poppy-migration/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🐶 뽀삐 이사 가던 날 — VM 마이그레이션 &amp; OpenClaw 버전업</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/google-cloud-onboard-2026/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">☁️ Google Cloud OnBoard 2026 상반기 — AI의 방향성을 엿보다</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/geudaeege-dongtan/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🦀 그대에게 동탄점 — 생일날 소고기 + 킹크랩 풀코스!</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/datadog-live-seoul-2026/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🐕 Datadog Live Seoul 2026 — AI × Observability의 미래</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/maison-hannam/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">🌸 메종 한남 — 한강뷰 테라스에서 즐기는 스테이크 런치 코스</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Tags</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="2"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/tags/food/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">food (6)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/맛집/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">맛집 (6)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/ai/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">ai (4)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/동탄/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">동탄 (4)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/tech/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">tech (2)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/azure/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">azure (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/datadog/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Datadog (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/google-cloud/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Google Cloud (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/movies/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">movies (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/observability/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">Observability (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/openclaw/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">openclaw (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/ops/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">ops (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/고기/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">고기 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/소고기/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">소고기 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/코스요리/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">코스요리 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/킹크랩/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">킹크랩 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/한남동/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">한남동 (1)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/tags/회/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">회 (1)</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <details open class="astro-3ii7xxms"> <summary class="astro-3ii7xxms"> <span class="group-label astro-3ii7xxms"> <span class="large astro-3ii7xxms">Authors</span>  </span> <svg aria-hidden="true" class="caret astro-3ii7xxms astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg> </summary> <sl-sidebar-restore data-index="3"></sl-sidebar-restore> <ul class="astro-3ii7xxms"> <li class="astro-3ii7xxms"> <a href="/en/blog/authors/chocolat423/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">chocolat423 (8)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/authors/뽀삐-/" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">뽀삐 🐶 (2)</span>  </a> </li><li class="astro-3ii7xxms"> <a href="/en/blog/authors/noisonnoiton/" aria-current="page" class="astro-3ii7xxms"> <span class="astro-3ii7xxms">noisonnoiton (1)</span>  </a> </li> </ul> </details> </li><li class="astro-3ii7xxms"> <a href="/en/blog/rss.xml" class="large astro-3ii7xxms"> <span class="astro-3ii7xxms">RSS</span>  </a> </li> </ul>  <script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script> </sl-sidebar-state-persist> <div class="md:sl-hidden"> <div class="mobile-preferences sl-flex astro-wu23bvmt"> <div class="social-icons astro-wu23bvmt"> <a href="https://github.com/noisonnoiton" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">GitHub</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a><a href="https://noisonnoiton.github.io/blog/rss.xml" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">RSS</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M2.88 16.88a3 3 0 0 0 0 4.24 3 3 0 0 0 4.24 0 3 3 0 0 0-4.24-4.24Zm2.83 2.83a1 1 0 0 1-1.42-1.42 1 1 0 0 1 1.42 0 1 1 0 0 1 0 1.42ZM5 12a1 1 0 0 0 0 2 5 5 0 0 1 5 5 1 1 0 0 0 2 0 7 7 0 0 0-7-7Zm0-4a1 1 0 0 0 0 2 9 9 0 0 1 9 9 1 1 0 0 0 2 0 11.08 11.08 0 0 0-3.22-7.78A11.08 11.08 0 0 0 5 8Zm10.61.39A15.11 15.11 0 0 0 5 4a1 1 0 0 0 0 2 13 13 0 0 1 13 13 1 1 0 0 0 2 0 15.11 15.11 0 0 0-4.39-10.61Z"/></svg></a> </div> <div class="astro-eboeziq4"> <a href="/en/blog/" class="astro-eboeziq4">noisonnoiton blog</a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">Select theme</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="dark" class="astro-4yphtoen">Dark</option><option value="light" class="astro-4yphtoen">Light</option><option value="auto" selected class="astro-4yphtoen">Auto</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-theme-select>  <script>
+	StarlightThemeProvider.updatePickers();
+</script>  <starlight-lang-select><label style="--sl-select-width: 7em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">Select language</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path fill-rule="evenodd" d="M8.516 3a.94.94 0 0 0-.941.94v1.15H2.94a.94.94 0 1 0 0 1.882h7.362a7.422 7.422 0 0 1-1.787 3.958 7.42 7.42 0 0 1-1.422-2.425.94.94 0 1 0-1.774.627 9.303 9.303 0 0 0 1.785 3.043 7.422 7.422 0 0 1-4.164 1.278.94.94 0 1 0 0 1.881 9.303 9.303 0 0 0 5.575-1.855 9.303 9.303 0 0 0 4.11 1.74l-.763 1.525a.968.968 0 0 0-.016.034l-1.385 2.77a.94.94 0 1 0 1.683.841l1.133-2.267h5.806l1.134 2.267a.94.94 0 0 0 1.683-.841l-1.385-2.769a.95.95 0 0 0-.018-.036l-3.476-6.951a.94.94 0 0 0-1.682 0l-1.82 3.639a7.423 7.423 0 0 1-3.593-1.256 9.303 9.303 0 0 0 2.27-5.203h1.894a.94.94 0 0 0 0-1.881H9.456V3.94A.94.94 0 0 0 8.516 3Zm6.426 11.794a1.068 1.068 0 0 1-.02.039l-.703 1.407h3.924l-1.962-3.924-1.24 2.478Z" clip-rule="evenodd"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="/blog/authors/noisonnoiton/" class="astro-4yphtoen">한국어</option><option value="/en/blog/authors/noisonnoiton/" selected class="astro-4yphtoen">English</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label></starlight-lang-select> </div> </div> </div> </div> </nav> <div class="main-frame astro-vrdttmbt">  <script type="module">const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);</script> <div class="lg:sl-flex astro-67yu43on"> <aside class="right-sidebar-container print:hidden astro-67yu43on"> <div class="right-sidebar astro-67yu43on"> <script type="module" src="/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.hwBsy0Mo.js"></script><script type="module" src="/_astro/TableOfContents.astro_astro_type_script_index_0_lang.FuRcXuRY.js"></script><div class="lg:sl-hidden astro-pb3aqygn"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-doynk5tl"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-doynk5tl"><details id="starlight__mobile-toc" class="astro-doynk5tl"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-doynk5tl"><span class="toggle sl-flex astro-doynk5tl">On this page<svg aria-hidden="true" class="caret astro-doynk5tl astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-doynk5tl"></span></summary><div class="dropdown astro-doynk5tl"><ul class="isMobile astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Overview</span> </a>  </li> </ul></div></details></nav></mobile-starlight-toc></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-pb3aqygn"><div class="sl-container astro-pb3aqygn"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Overview</span> </a>  </li> </ul></nav></starlight-toc></div></div> </div> </aside> <div class="main-pane astro-67yu43on">  <main class="astro-bguv2lll" lang="en" dir="ltr">   <div class="kakao-ad-container kakao-ad-top astro-kggsjsm4"> <!-- PC: 728x90 --> <div class="ad-pc astro-kggsjsm4"> <ins class="kakao_ad_area astro-kggsjsm4" style="display:none;" data-ad-unit="DAN-zPDP0gYVaGwOEH3v" data-ad-width="728" data-ad-height="90"></ins> </div> <!-- Mobile: 250x250 --> <div class="ad-mobile astro-kggsjsm4"> <ins class="kakao_ad_area astro-kggsjsm4" style="display:none;" data-ad-unit="DAN-zHXbzhtivpd6MTA0" data-ad-width="250" data-ad-height="250"></ins> </div> </div> <script src="//t1.daumcdn.net/kas/static/ba.min.js" async></script> <script type="module" src="/_astro/ImageZoom.astro_astro_type_script_index_0_lang.J1tlcSSG.js"></script> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <h1 id="_top" class="astro-j6tvhyss">noisonnoiton</h1>   </div> </div> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <starlight-image-zoom> <template class="astro-vjux6bgf"> <dialog class="starlight-image-zoom-dialog astro-vjux6bgf"> <button aria-label="Unzoom image" class="starlight-image-zoom-control astro-vjux6bgf"> <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24" class="astro-vjux6bgf"> <use href="#starlight-image-zoom-icon-unzoom" class="astro-vjux6bgf"></use> </svg> </button> <figure class="astro-vjux6bgf"></figure> </dialog> </template> <svg xmlns="http://www.w3.org/2000/svg" style="display:none" class="astro-vjux6bgf"> <symbol id="starlight-image-zoom-icon-zoom" viewBox="0 0 24 24" class="astro-vjux6bgf"> <path d="M9.79 12.79 4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38 1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42ZM21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38Z" class="astro-vjux6bgf"></path> </symbol> <symbol id="starlight-image-zoom-icon-unzoom" viewBox="0 0 24 24" class="astro-vjux6bgf"> <path d="M21.71 2.29a1 1 0 0 0-1.42 0l-5.79 5.8V6.5a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38 1 1 0 0 0 .54.54 1 1 0 0 0 .38.08h4a1 1 0 0 0 0-2h-1.59l5.8-5.79a1 1 0 0 0 0-1.42ZM10.88 12.58a1 1 0 0 0-.38-.08h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l5.79-5.8v1.59a1 1 0 0 0 2 0v-4a1 1 0 0 0-.08-.38 1 1 0 0 0-.54-.54Z" class="astro-vjux6bgf"></path> </symbol> </svg> </starlight-image-zoom>    <div class="sl-markdown-content">    <div class="count astro-bu4jbvld">1 post by noisonnoiton</div> <div class="posts astro-xaz7kpyh"> <article class="preview astro-dr56dw7m"> <header class="astro-dr56dw7m"> <h2 class="astro-dr56dw7m"> <a href="/en/blog/watcha-ratings/" class="astro-dr56dw7m">🎬 내 영화 평가 목록</a> </h2>  <div class="metadata not-content astro-2oxtfctb"> <div class="dates astro-2oxtfctb"> <time datetime="2026-03-15T00:00:00.000Z" class="astro-2oxtfctb"> Mar 15, 2026 </time>    </div> <div class="authors astro-2oxtfctb"> <a href="https://github.com/noisonnoiton" class="author astro-kbhsbk7c"><img src="https://avatars.githubusercontent.com/u/39892319?v=4" alt="noisonnoiton" loading="eager" decoding="async" width="40" height="40" class="astro-kbhsbk7c"><div class="text astro-kbhsbk7c"> <div class="name astro-kbhsbk7c">noisonnoiton</div>  </div> </a> </div>  </div> </header> <div class="sl-markdown-content astro-dr56dw7m"> <blockquote>
+<p>왓챠피디아에서 평가한 영화 <strong>760편</strong></p>
+</blockquote>
+<div class="sl-heading-wrapper level-h2"><h2 id="-5-49편">⭐⭐⭐⭐⭐ ★5 (49편)</h2><a class="sl-anchor-link" href="#-5-49편"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “⭐⭐⭐⭐⭐ ★5 (49편)”</span></a></div>
+<ul>
+<li>파고</li>
+<li>서부 전선 이상 없다</li>
+<li>헤어질 결심</li>
+<li>에브리씽 에브리웨어 올 앳 원스+</li>
+<li>위플래쉬</li>
+<li>원스 어폰 어 타임… 인 할리우드</li>
+<li>버드맨</li>
+<li>겟 아웃</li>
+<li>위플래쉬</li>
+<li>곡성(哭聲)</li>
+<li>정무문</li>
+<li>파주</li>
+<li>하녀</li>
+<li>혹성 탈출</li>
+<li>황금광 시대</li>
+<li>스피드</li>
+<li>사랑의 블랙홀</li>
+<li>박쥐</li>
+<li>19곰 테드</li>
+<li>밀리언 달러 베이비</li>
+<li>봄날은 간다</li>
+<li>드래그 미 투 헬</li>
+<li>미스 리틀 선샤인</li>
+<li>니모를 찾아서</li>
+<li>몬스터 주식회사</li>
+<li>번지 점프를 하다</li>
+<li>007 스카이폴</li>
+<li>미션 임파서블 3</li>
+<li>엑스맨: 퍼스트 클래스</li>
+<li>너는 내 운명</li>
+<li>짝패</li>
+<li>돼지의 왕</li>
+<li>그래비티</li>
+<li>우리에게 내일은 없다</li>
+<li>스타트렉 다크니스</li>
+<li>블랙 스완</li>
+<li>다우트</li>
+<li>브로큰 플라워</li>
+<li>바스터즈: 거친 녀석들</li>
+<li>화양연화 리마스터링</li>
+<li>대학살의 신</li>
+<li>멜랑콜리아</li>
+<li>베를린 천사의 시</li>
+<li>피아노</li>
+<li>양들의 침묵</li>
+<li>대부 2</li>
+<li>인크레더블</li>
+<li>이터널 선샤인</li>
+<li>올드보이</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-45-30편">⭐⭐⭐⭐½ ★4.5 (30편)</h2><a class="sl-anchor-link" href="#-45-30편"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “⭐⭐⭐⭐½ ★4.5 (30편)”</span></a></div>
+<ul>
+<li>킬링 디어</li>
+<li>살인마 잭의 집</li>
+<li>더 웨일</li>
+<li>초록물고기</li>
+<li>어 퓨 굿 맨</li>
+<li>그린 북</li>
+<li>스파이더맨: 노 웨이 홈</li>
+<li>듄</li>
+<li>스틸 앨리스</li>
+<li>서치</li>
+<li>캡틴 아메리카: 시빌 워</li>
+<li>기생충</li>
+<li>춤추는 대수사선 The Movie 1</li>
+<li>더 랍스터</li>
+<li>버닝</li>
+<li>어벤져스: 인피니티 워</li>
+<li>블랙 팬서</li>
+<li>아가씨</li>
+<li>미션 임파서블: 폴아웃</li>
+<li>셰이프 오브 워터: 사랑의 모양</li>
+<li>인터스텔라</li>
+<li>어스</li>
+<li>혹성탈출: 종의 전쟁</li>
+<li>가디언즈 오브 갤럭시</li>
+<li>노예 12년</li>
+<li>컨택트</li>
+<li>달라스 바이어스 클럽</li>
+<li>스파이더맨: 홈커밍</li>
+<li>제리 맥과이어</li>
+<li>월-E</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-4-357편">⭐⭐⭐⭐ ★4 (357편)</h2><a class="sl-anchor-link" href="#-4-357편"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “⭐⭐⭐⭐ ★4 (357편)”</span></a></div>
+<ul>
+<li>주홍글씨</li>
+<li>블랙 팬서: 와칸다 포에버</li>
+<li>커피와 담배</li>
+<li>바빌론</li>
+<li>메기</li>
+<li>이보다 더 좋을 순 없다</li>
+<li>거울 속으로</li>
+<li>패밀리 맨</li>
+<li>아이즈 와이드 셧</li>
+<li>악인전</li>
+<li>레버넌트: 죽음에서 돌아온 자</li>
+<li>베이비 드라이버</li>
+<li>유전</li>
+<li>애드 아스트라</li>
+<li>조커</li>
+<li>테넷</li>
+<li>더 페이버릿: 여왕의 여자</li>
+<li>돈 룩 업</li>
+<li>벌새</li>
+<li>미성년</li>
+<li>빽 투 더 퓨쳐 2</li>
+<li>덩케르크</li>
+<li>스파이</li>
+<li>빽 투 더 퓨쳐</li>
+<li>앤트맨</li>
+<li>라이온 킹</li>
+<li>스파이더맨: 파 프롬 홈</li>
+<li>가디언즈 오브 갤럭시 VOL. 2</li>
+<li>잭 리처</li>
+<li>23 아이덴티티</li>
+<li>닥터 스트레인지</li>
+<li>킹스맨: 시크릿 에이전트</li>
+<li>정글북</li>
+<li>토르: 라그나로크</li>
+<li>그것</li>
+<li>용서받지 못한 자</li>
+<li>오블리비언</li>
+<li>주토피아</li>
+<li>라라랜드</li>
+<li>데드풀 2</li>
+<li>마션</li>
+<li>그랜드 부다페스트 호텔</li>
+<li>슈퍼 에이트</li>
+<li>데드풀</li>
+<li>신비한 동물사전</li>
+<li>나를 찾아줘</li>
+<li>용형호제</li>
+<li>인사이드 아웃</li>
+<li>캡틴 마블</li>
+<li>레디 플레이어 원</li>
+<li>미녀와 야수</li>
+<li>클로버필드 10번지</li>
+<li>헤이트풀 8</li>
+<li>인크레더블 2</li>
+<li>어벤져스: 엔드게임</li>
+<li>콘 에어</li>
+<li>혹성탈출: 반격의 서막</li>
+<li>아나스타샤</li>
+<li>해피 엔드</li>
+<li>커피와 담배</li>
+<li>빌리 엘리어트</li>
+<li>님포매니악 볼륨1</li>
+<li>님포매니악 볼륨2</li>
+<li>천녀유혼</li>
+<li>노틀담의 꼽추</li>
+<li>죽어야 사는 여자</li>
+<li>바람난 가족</li>
+<li>첨밀밀</li>
+<li>스토커</li>
+<li>엑스맨: 데이즈 오브 퓨처 패스트</li>
+<li>세크리터리</li>
+<li>어비스</li>
+<li>의뢰인</li>
+<li>언브레이커블</li>
+<li>이완 맥그리거의 인질</li>
+<li>화성 침공</li>
+<li>파리에서의 마지막 탱고</li>
+<li>콜래트럴</li>
+<li>소공녀</li>
+<li>컨페션</li>
+<li>웨일 라이더</li>
+<li>실버라이닝 플레이북</li>
+<li>쉘 위 댄스</li>
+<li>여고괴담</li>
+<li>한공주</li>
+<li>캡틴 아메리카: 윈터 솔져</li>
+<li>러브 스토리</li>
+<li>아기공룡 둘리: 얼음별 대모험 리마스터링</li>
+<li>여섯 개의 시선</li>
+<li>나 홀로 집에 2 - 뉴욕을 헤매다</li>
+<li>택시</li>
+<li>날 미치게 하는 남자</li>
+<li>주먹이 운다</li>
+<li>팀 버튼의 크리스마스 악몽</li>
+<li>개미</li>
+<li>히트</li>
+<li>셰익스피어 인 러브</li>
+<li>메리에겐 뭔가 특별한 것이 있다</li>
+<li>쓰리, 몬스터</li>
+<li>렛 미 인</li>
+<li>포카혼타스</li>
+<li>라이온 킹 2</li>
+<li>야수와 미녀</li>
+<li>천녀유혼</li>
+<li>해피 피트</li>
+<li>이집트 왕자</li>
+<li>밀레니엄: 여자를 증오한 남자들</li>
+<li>한니발</li>
+<li>싱글즈</li>
+<li>코요테 어글리</li>
+<li>꼬마 유령 캐스퍼</li>
+<li>스튜어트 리틀</li>
+<li>미녀 삼총사 2 - 맥시멈 스피드</li>
+<li>체인질링</li>
+<li>여고괴담 두번째 이야기</li>
+<li>그때 그사람들</li>
+<li>영웅</li>
+<li>은교</li>
+<li>딥 임팩트</li>
+<li>작전명 발키리</li>
+<li>반칙왕</li>
+<li>배틀로얄</li>
+<li>미녀 삼총사</li>
+<li>구타유발자들</li>
+<li>박수칠 때 떠나라</li>
+<li>인정사정 볼 것 없다</li>
+<li>크로니클</li>
+<li>벅스 라이프</li>
+<li>품행 제로</li>
+<li>브리짓 존스의 일기</li>
+<li>킬러들의 수다</li>
+<li>브루스 올마이티</li>
+<li>인디펜던스 데이</li>
+<li>007 카지노 로얄</li>
+<li>은하수를 여행하는 히치하이커를 위한 안내서</li>
+<li>디 아더스</li>
+<li>나의 PS 파트너</li>
+<li>베를린</li>
+<li>더 록</li>
+<li>첫 키스만 50번째</li>
+<li>파라노말 액티비티</li>
+<li>집으로…</li>
+<li>엑스맨</li>
+<li>나 홀로 집에</li>
+<li>엑스맨 2</li>
+<li>영화는 영화다</li>
+<li>투모로우</li>
+<li>러브픽션</li>
+<li>광식이 동생 광태</li>
+<li>우주전쟁</li>
+<li>말죽거리 잔혹사</li>
+<li>슈렉</li>
+<li>원티드</li>
+<li>소림축구</li>
+<li>내가 살인범이다</li>
+<li>말아톤</li>
+<li>해리포터와 아즈카반의 죄수</li>
+<li>허트 로커</li>
+<li>매트릭스 2 - 리로디드</li>
+<li>마이너리티 리포트</li>
+<li>미스트</li>
+<li>쉬리</li>
+<li>스파이더맨 2</li>
+<li>데스티네이션</li>
+<li>스파이더맨</li>
+<li>캐리비안의 해적 - 블랙 펄의 저주</li>
+<li>진주만</li>
+<li>광해, 왕이 된 남자</li>
+<li>내 아내의 모든 것</li>
+<li>쏘우</li>
+<li>가위손</li>
+<li>세븐 데이즈</li>
+<li>달콤, 살벌한 연인</li>
+<li>캐리비안의 해적 - 망자의 함</li>
+<li>화차</li>
+<li>반지의 제왕: 두 개의 탑</li>
+<li>라이언 일병 구하기</li>
+<li>알 포인트</li>
+<li>미스터 &#x26; 미세스 스미스</li>
+<li>클래식</li>
+<li>쥬만지</li>
+<li>나니아 연대기 - 사자, 마녀 그리고 옷장</li>
+<li>킹콩</li>
+<li>맘마미아!</li>
+<li>큐브</li>
+<li>폰 부스</li>
+<li>웰컴 투 동막골</li>
+<li>찰리와 초콜릿 공장</li>
+<li>해리포터와 혼혈왕자</li>
+<li>시라노; 연애조작단</li>
+<li>알라딘</li>
+<li>몽상가들</li>
+<li>범죄의 재구성</li>
+<li>페이스 오프</li>
+<li>늑대 개</li>
+<li>안티크라이스트</li>
+<li>아는 여자</li>
+<li>캐치 미 이프 유 캔</li>
+<li>스타워즈 에피소드 2: 클론의 습격</li>
+<li>제8요일</li>
+<li>리멤버 타이탄</li>
+<li>8명의 여인들</li>
+<li>록키 호러 픽쳐 쇼</li>
+<li>박하사탕</li>
+<li>어바웃 어 보이</li>
+<li>뮬란</li>
+<li>피아니스트</li>
+<li>배트맨 비긴즈</li>
+<li>뱀파이어와의 인터뷰</li>
+<li>물랑 루즈</li>
+<li>8월의 크리스마스</li>
+<li>황혼에서 새벽까지</li>
+<li>배트맨</li>
+<li>세렌디피티</li>
+<li>매트릭스 3: 레볼루션</li>
+<li>퀼스</li>
+<li>폭풍 속으로</li>
+<li>다크 시티</li>
+<li>터미네이터</li>
+<li>갱스 오브 뉴욕</li>
+<li>칠드런 오브 맨</li>
+<li>라 비 앙 로즈</li>
+<li>벤허</li>
+<li>반지의 제왕: 반지 원정대</li>
+<li>해리가 샐리를 만났을 때</li>
+<li>반지의 제왕: 왕의 귀환</li>
+<li>글루미 선데이</li>
+<li>이티</li>
+<li>에이리언</li>
+<li>오아시스</li>
+<li>시네마 천국</li>
+<li>지구를 지켜라!</li>
+<li>사마리아</li>
+<li>네 멋대로 해라</li>
+<li>드라큐라</li>
+<li>라따뚜이</li>
+<li>올모스트 페이머스</li>
+<li>8월의 크리스마스</li>
+<li>롤라 런</li>
+<li>복수는 나의 것</li>
+<li>타인의 삶</li>
+<li>동방불패</li>
+<li>글래디에이터</li>
+<li>머니볼</li>
+<li>매디슨 카운티의 다리</li>
+<li>아이덴티티</li>
+<li>메멘토</li>
+<li>시간을 달리는 소녀</li>
+<li>씬 시티</li>
+<li>아멜리에</li>
+<li>추격자</li>
+<li>쥬라기 공원</li>
+<li>자전거 도둑</li>
+<li>밴디트</li>
+<li>아이 엠 샘</li>
+<li>도그빌</li>
+<li>중경삼림 리마스터링</li>
+<li>무간도</li>
+<li>와호장룡</li>
+<li>프라이멀 피어</li>
+<li>럭키 넘버 슬레븐</li>
+<li>변검</li>
+<li>센과 치히로의 행방불명</li>
+<li>여인의 향기</li>
+<li>렛 미 인</li>
+<li>봄 여름 가을 겨울 그리고 봄</li>
+<li>볼링 포 콜럼바인</li>
+<li>메트로폴리스</li>
+<li>델마와 루이스</li>
+<li>사이드웨이</li>
+<li>미스틱 리버</li>
+<li>가을의 전설</li>
+<li>콘택트</li>
+<li>파이란</li>
+<li>수면의 과학</li>
+<li>예언자</li>
+<li>내 친구의 집은 어디인가</li>
+<li>조제, 호랑이 그리고 물고기들</li>
+<li>스타워즈 에피소드 3: 시스의 복수</li>
+<li>친절한 금자씨</li>
+<li>죠스</li>
+<li>사운드 오브 뮤직</li>
+<li>바운드</li>
+<li>달세계 여행</li>
+<li>존 말코비치 되기</li>
+<li>시계태엽 오렌지</li>
+<li>크래쉬</li>
+<li>21 그램</li>
+<li>라이프 오브 파이</li>
+<li>새</li>
+<li>2001 스페이스 오디세이</li>
+<li>선셋 대로</li>
+<li>졸업</li>
+<li>킬 빌 2</li>
+<li>퍼시픽 림</li>
+<li>8과 1/2</li>
+<li>종횡사해</li>
+<li>인 디 에어</li>
+<li>프로메테우스</li>
+<li>바그다드 카페 리마스터링</li>
+<li>400번의 구타</li>
+<li>사랑은 비를 타고</li>
+<li>인생은 아름다워</li>
+<li>굿 윌 헌팅</li>
+<li>타이타닉</li>
+<li>마더</li>
+<li>피아니스트</li>
+<li>노팅 힐</li>
+<li>달콤한 인생</li>
+<li>디스트릭트 9</li>
+<li>아포칼립토</li>
+<li>혹성탈출: 진화의 시작</li>
+<li>최종병기 활</li>
+<li>스틸 라이프</li>
+<li>브로크백 마운틴</li>
+<li>색, 계</li>
+<li>더 레슬러</li>
+<li>피에타</li>
+<li>양철북</li>
+<li>판의 미로 - 오필리아와 세 개의 열쇠</li>
+<li>LA 컨피덴셜</li>
+<li>토이 스토리</li>
+<li>라이온 킹</li>
+<li>업</li>
+<li>레퀴엠</li>
+<li>아메리칸 뷰티</li>
+<li>매트릭스</li>
+<li>장고: 분노의 추적자</li>
+<li>샤이닝</li>
+<li>다크 나이트</li>
+<li>펄프 픽션</li>
+<li>대부</li>
+<li>쇼생크 탈출</li>
+<li>똥파리</li>
+<li>하울의 움직이는 성</li>
+<li>디파티드</li>
+<li>사랑과 영혼</li>
+<li>슬럼독 밀리어네어</li>
+<li>미드나잇 인 파리</li>
+<li>클로버필드</li>
+<li>스타트렉: 더 비기닝</li>
+<li>노인을 위한 나라는 없다</li>
+<li>킬 빌</li>
+<li>테이큰</li>
+<li>쿵푸 허슬</li>
+<li>토이 스토리 3</li>
+<li>장화, 홍련</li>
+<li>괴물</li>
+<li>러브레터</li>
+<li>오션스 일레븐</li>
+<li>레옹</li>
+<li>공동경비구역 JSA</li>
+<li>인셉션</li>
+<li>범죄와의 전쟁 : 나쁜놈들 전성시대</li>
+<li>식스 센스</li>
+<li>에이 아이</li>
+<li>가타카</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-35-91편">⭐⭐⭐½ ★3.5 (91편)</h2><a class="sl-anchor-link" href="#-35-91편"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “⭐⭐⭐½ ★3.5 (91편)”</span></a></div>
+<ul>
+<li>8월의 크리스마스</li>
+<li>쏘우</li>
+<li>이층의 악당</li>
+<li>M</li>
+<li>시동</li>
+<li>글래스</li>
+<li>살인자의 기억법: 새로운 기억</li>
+<li>이터널스</li>
+<li>너의 결혼식</li>
+<li>퍼스트맨</li>
+<li>미드소마</li>
+<li>미드소마 감독판</li>
+<li>독전: 익스텐디드 컷</li>
+<li>블랙 위도우</li>
+<li>소울</li>
+<li>미나리</li>
+<li>완벽한 타인</li>
+<li>남산의 부장들</li>
+<li>황해</li>
+<li>군함도</li>
+<li>말모이</li>
+<li>논스톱</li>
+<li>극비수사</li>
+<li>택시운전사</li>
+<li>독전</li>
+<li>이웃집에 신이 산다</li>
+<li>해피 데스데이</li>
+<li>살인자의 기억법</li>
+<li>신데렐라</li>
+<li>라이프</li>
+<li>알라딘</li>
+<li>1987</li>
+<li>신비한 동물들과 그린델왈드의 범죄</li>
+<li>아메리칸 허슬</li>
+<li>쥬라기 월드</li>
+<li>토르: 다크 월드</li>
+<li>패신저스</li>
+<li>아이언맨 2</li>
+<li>퍼스트 어벤져</li>
+<li>앤트맨과 와스프</li>
+<li>터미네이터 제니시스</li>
+<li>엘리시움</li>
+<li>럭키</li>
+<li>존 윅</li>
+<li>고질라</li>
+<li>군도:민란의 시대</li>
+<li>베테랑</li>
+<li>어벤져스: 에이지 오브 울트론</li>
+<li>부산행</li>
+<li>밀정</li>
+<li>코코</li>
+<li>범죄도시</li>
+<li>이미테이션 게임</li>
+<li>암수살인</li>
+<li>터널</li>
+<li>라바</li>
+<li>스타트렉 비욘드</li>
+<li>채피</li>
+<li>엑스 마키나</li>
+<li>스파이더맨: 뉴 유니버스</li>
+<li>족구왕</li>
+<li>공작</li>
+<li>설리: 허드슨강의 기적</li>
+<li>아메리칸 파이</li>
+<li>해적: 바다로 간 산적</li>
+<li>연애소설</li>
+<li>링</li>
+<li>화이 : 괴물을 삼킨 아이</li>
+<li>나는 네가 지난 여름에 한 일을 알고 있다</li>
+<li>몽타주</li>
+<li>내 마음의 풍금</li>
+<li>도쿄!</li>
+<li>접속</li>
+<li>인디아나 존스: 마궁의 사원</li>
+<li>셰임</li>
+<li>황후화</li>
+<li>고백</li>
+<li>넘버 3</li>
+<li>플라이트플랜</li>
+<li>러시 아워</li>
+<li>이탈리안 잡</li>
+<li>용의자 X의 헌신</li>
+<li>헝거게임: 캣칭 파이어</li>
+<li>신세계</li>
+<li>더 테러 라이브</li>
+<li>설국열차</li>
+<li>토이 스토리 2</li>
+<li>화씨 9/11</li>
+<li>왕의 남자</li>
+<li>친구</li>
+<li>300</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-3-191편">⭐⭐⭐ ★3 (191편)</h2><a class="sl-anchor-link" href="#-3-191편"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “⭐⭐⭐ ★3 (191편)”</span></a></div>
+<ul>
+<li>달마야 놀자</li>
+<li>빅매치</li>
+<li>원라인</li>
+<li>챔피언</li>
+<li>카메라를 멈추면 안 돼!</li>
+<li>샹치와 텐 링즈의 전설</li>
+<li>미쓰백</li>
+<li>토이 스토리 4</li>
+<li>82년생 김지영</li>
+<li>올드보이</li>
+<li>월요일이 사라졌다</li>
+<li>헝거게임: 더 파이널</li>
+<li>엑시트</li>
+<li>메이즈 러너</li>
+<li>레드 드래곤</li>
+<li>국가부도의 날</li>
+<li>루시</li>
+<li>내부자들</li>
+<li>박열</li>
+<li>킹스맨: 골든 서클</li>
+<li>인투 더 스톰</li>
+<li>아수라</li>
+<li>어메이징 스파이더맨</li>
+<li>옥자</li>
+<li>맨 인 더 다크</li>
+<li>타임 패러독스</li>
+<li>성실한 나라의 앨리스</li>
+<li>님아, 그 강을 건너지 마오</li>
+<li>인턴</li>
+<li>뷰티 인사이드</li>
+<li>암살</li>
+<li>명량</li>
+<li>기묘한 이야기</li>
+<li>워터보이즈</li>
+<li>더 홀</li>
+<li>주온 - 극장판</li>
+<li>돈의 맛</li>
+<li>그놈 목소리</li>
+<li>결혼은, 미친짓이다</li>
+<li>새벽의 저주</li>
+<li>스캔들 - 조선남녀상열지사</li>
+<li>엣지 오브 투모로우</li>
+<li>끝까지 간다</li>
+<li>이웃집 남자</li>
+<li>이벤트 호라이즌</li>
+<li>비밀</li>
+<li>오만과 편견</li>
+<li>에이리언 4</li>
+<li>다찌마와 리 - 악인이여 지옥행 급행열차를 타라!</li>
+<li>뫼비우스</li>
+<li>월드워Z</li>
+<li>헐크</li>
+<li>금발이 너무해</li>
+<li>디스터비아</li>
+<li>마누라 죽이기</li>
+<li>더 울프 오브 월 스트리트</li>
+<li>마진 콜: 24시간, 조작된 진실</li>
+<li>겨울왕국</li>
+<li>일렉션</li>
+<li>남극일기</li>
+<li>오직 사랑하는 이들만이 살아남는다</li>
+<li>아름다운 청년 전태일</li>
+<li>쥬라기 공원 2: 잃어버린 세계</li>
+<li>페어런트 트랩</li>
+<li>변호인</li>
+<li>할로우 맨</li>
+<li>국화꽃 향기</li>
+<li>테이큰 2</li>
+<li>호스텔</li>
+<li>귀신이 산다</li>
+<li>호우시절</li>
+<li>오페라의 유령</li>
+<li>하우스 오브 왁스</li>
+<li>퍼펙트 게임</li>
+<li>페르마의 밀실</li>
+<li>착신아리</li>
+<li>위 워 솔저스</li>
+<li>주유소 습격사건</li>
+<li>페이첵</li>
+<li>타워</li>
+<li>데스 노트</li>
+<li>1408</li>
+<li>새드 무비</li>
+<li>프린세스 다이어리</li>
+<li>러시 아워 2</li>
+<li>코어</li>
+<li>쏘우 2</li>
+<li>26년</li>
+<li>브리짓 존스의 일기 - 열정과 애정</li>
+<li>오직 그대만</li>
+<li>왓 위민 원트</li>
+<li>레지던트 이블 2</li>
+<li>나니아 연대기 - 캐스피언 왕자</li>
+<li>레지던트 이블 3: 인류의 멸망</li>
+<li>무사</li>
+<li>눈먼 자들의 도시</li>
+<li>이클립스</li>
+<li>용의자X</li>
+<li>브레이킹 던 part2</li>
+<li>러시 아워 3</li>
+<li>내셔널 트레져</li>
+<li>노잉</li>
+<li>오션스 13</li>
+<li>싸움의 기술</li>
+<li>우리들의 행복한 시간</li>
+<li>미스터 소크라테스</li>
+<li>홀리데이</li>
+<li>댄싱퀸</li>
+<li>방가? 방가!</li>
+<li>판타스틱 4</li>
+<li>브레이킹 던 part1</li>
+<li>쥬라기 공원 3</li>
+<li>색즉시공</li>
+<li>신라의 달밤</li>
+<li>다빈치 코드</li>
+<li>이웃사람</li>
+<li>수퍼맨 리턴즈</li>
+<li>헝거게임: 판엠의 불꽃</li>
+<li>해리포터와 불사조 기사단</li>
+<li>해리포터와 죽음의 성물 1</li>
+<li>해리포터와 불의 잔</li>
+<li>내 머리 속의 지우개</li>
+<li>오싹한 연애</li>
+<li>극락도 살인사건</li>
+<li>해리포터와 비밀의 방</li>
+<li>국가대표</li>
+<li>공공의 적</li>
+<li>박물관이 살아있다!</li>
+<li>해리포터와 죽음의 성물 2</li>
+<li>공공의 적 2</li>
+<li>그 여자 작사 그 남자 작곡</li>
+<li>아일랜드</li>
+<li>더 게임</li>
+<li>오펀: 천사의 비밀</li>
+<li>트로이</li>
+<li>뉴 문</li>
+<li>동갑내기 과외하기</li>
+<li>아이언맨</li>
+<li>터미네이터 3</li>
+<li>도둑들</li>
+<li>화려한 휴가</li>
+<li>악마는 프라다를 입는다</li>
+<li>라디오 스타</li>
+<li>어린 신부</li>
+<li>트랜스포머: 패자의 역습</li>
+<li>해운대</li>
+<li>해바라기</li>
+<li>미이라 2</li>
+<li>미녀는 괴로워</li>
+<li>실미도</li>
+<li>엽기적인 그녀</li>
+<li>태극기 휘날리며</li>
+<li>두번째 사랑</li>
+<li>해리포터와 마법사의 돌</li>
+<li>어벤져스</li>
+<li>어크로스 더 유니버스</li>
+<li>다이 하드 3</li>
+<li>콘스탄틴</li>
+<li>루퍼</li>
+<li>우리들의 일그러진 영웅</li>
+<li>나비 효과</li>
+<li>관상</li>
+<li>컨저링</li>
+<li>바벨</li>
+<li>터미널</li>
+<li>맨 프럼 어스</li>
+<li>오멘</li>
+<li>컴플라이언스</li>
+<li>빌리지</li>
+<li>미션 임파서블</li>
+<li>원스</li>
+<li>본 아이덴티티</li>
+<li>러브 액츄얼리</li>
+<li>아이, 로봇</li>
+<li>터미네이터 2</li>
+<li>살인의 추억</li>
+<li>트루먼 쇼</li>
+<li>향수 - 어느 살인자의 이야기</li>
+<li>캐리비안의 해적 - 세상의 끝에서</li>
+<li>아라한 장풍대작전</li>
+<li>연애의 목적</li>
+<li>제5원소</li>
+<li>좋은 놈, 나쁜 놈, 이상한 놈</li>
+<li>미션 임파서블: 고스트 프로토콜</li>
+<li>500일의 썸머</li>
+<li>타짜</li>
+<li>써니</li>
+<li>과속스캔들</li>
+<li>트와일라잇</li>
+<li>다크 나이트 라이즈</li>
+<li>레미제라블</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-25-9편">⭐⭐½ ★2.5 (9편)</h2><a class="sl-anchor-link" href="#-25-9편"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “⭐⭐½ ★2.5 (9편)”</span></a></div>
+<ul>
+<li>라이트 아웃</li>
+<li>극한직업</li>
+<li>강철비</li>
+<li>엑스맨: 아포칼립스</li>
+<li>헝거게임: 모킹제이</li>
+<li>아마겟돈</li>
+<li>허니</li>
+<li>은밀하게 위대하게</li>
+<li>딥 블루 씨</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-2-28편">⭐⭐ ★2 (28편)</h2><a class="sl-anchor-link" href="#-2-28편"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “⭐⭐ ★2 (28편)”</span></a></div>
+<ul>
+<li>오피스</li>
+<li>해무</li>
+<li>픽셀</li>
+<li>손님은 왕이다</li>
+<li>라이터를 켜라</li>
+<li>분노의 윤리학</li>
+<li>방황하는 칼날</li>
+<li>푸시</li>
+<li>태풍</li>
+<li>텍사스 전기톱 연쇄살인사건</li>
+<li>가문의 위기 - 가문의 영광 2</li>
+<li>가문의 영광</li>
+<li>스타쉽 트루퍼스</li>
+<li>조폭 마누라</li>
+<li>투사부일체</li>
+<li>연가시</li>
+<li>아이 엠 넘버 포</li>
+<li>2012</li>
+<li>데스 노트 - 라스트 네임</li>
+<li>트랜스포머 3</li>
+<li>숨바꼭질</li>
+<li>더 로드</li>
+<li>스파이더맨 3</li>
+<li>트랜스포머</li>
+<li>부러진 화살</li>
+<li>아이언맨 3</li>
+<li>파이트 클럽</li>
+<li>엑스맨: 최후의 전쟁</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-15-2편">⭐½ ★1.5 (2편)</h2><a class="sl-anchor-link" href="#-15-2편"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “⭐½ ★1.5 (2편)”</span></a></div>
+<ul>
+<li>박화영</li>
+<li>한반도</li>
+</ul>
+<div class="sl-heading-wrapper level-h2"><h2 id="-1-3편">⭐ ★1 (3편)</h2><a class="sl-anchor-link" href="#-1-3편"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">섹션 제목: “⭐ ★1 (3편)”</span></a></div>
+<ul>
+<li>파이널 데스티네이션 4</li>
+<li>퀵</li>
+<li>늑대소년</li>
+</ul> </div> <footer class="astro-dr56dw7m"> <div class="astro-sg3lsd66"><b class="astro-sg3lsd66">Tags:</b><ul class="astro-sg3lsd66"><li class="astro-sg3lsd66"><a href="/en/blog/tags/movies/" class="astro-sg3lsd66">movies</a></li></ul></div> </footer> </article> </div>    </div> <footer class="sl-flex astro-3yyafb3n"> <div class="meta sl-flex astro-3yyafb3n">   </div> <div class="pagination-links print:hidden astro-u2l5gyhi" dir="ltr">   </div>  </footer> <!-- Giscus 댓글 --> <div class="giscus-container astro-sz7xmlte"> <script src="https://giscus.app/client.js" data-repo="noisonnoiton/noisonnoiton.github.io" data-repo-id="R_kgDOGjaniQ" data-category="Announcements" data-category-id="DIC_kwDOGjanic4C4fBW" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="en" data-loading="lazy" crossorigin="anonymous" async>
+  </script> </div> <!-- 카카오 애드핏 --> <div class="kakao-ad-footer astro-sz7xmlte"> <!-- PC: 728x90 --> <div class="ad-pc astro-sz7xmlte"> <ins class="kakao_ad_area astro-sz7xmlte" style="display:none;" data-ad-unit="DAN-zPDP0gYVaGwOEH3v" data-ad-width="728" data-ad-height="90"></ins> </div> <!-- Mobile: 250x250 --> <div class="ad-mobile astro-sz7xmlte"> <ins class="kakao_ad_area astro-sz7xmlte" style="display:none;" data-ad-unit="DAN-zHXbzhtivpd6MTA0" data-ad-width="250" data-ad-height="250"></ins> </div> </div> <script src="//t1.daumcdn.net/kas/static/ba.min.js" async></script> </div> </div>  </main> </div> </div> </div> </div> </body></html>
