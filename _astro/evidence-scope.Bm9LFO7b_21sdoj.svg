@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="816" viewBox="0 0 520 816" role="img" aria-labelledby="title desc">
+  <title id="title">What each investigation source can and cannot show</title>
+  <desc id="desc">Account events show branch activity, commits show targeted secret names, Traffic shows aggregate clones, and cloud logs show credential usage. No single source establishes both secret exposure and the original entry point.</desc>
+  <rect width="520" height="816" rx="16" fill="#f8fafc"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#0f172a">
+    <text x="28" y="48" font-size="28" font-weight="700">What the evidence can show</text>
+    <text x="28" y="82" font-size="21" fill="#475569">Do not rely on one source alone</text>
+    <g fill="#ffffff" stroke="#cbd5e1">
+      <rect x="28" y="112" width="464" height="132" rx="10"/>
+      <rect x="28" y="264" width="464" height="132" rx="10"/>
+      <rect x="28" y="416" width="464" height="132" rx="10"/>
+      <rect x="28" y="568" width="464" height="132" rx="10"/>
+    </g>
+    <g font-size="25" font-weight="700">
+      <text x="48" y="149">Account events</text>
+      <text x="48" y="301">Malicious commits</text>
+      <text x="48" y="453">Traffic: clone statistics</text>
+      <text x="48" y="605">Cloud sign-in and activity logs</text>
+    </g>
+    <g font-size="23">
+      <text x="48" y="188" fill="#1e40af">Branch creation, pushes and deletion</text>
+      <text x="48" y="340" fill="#1e40af">Targeted secret names and code</text>
+      <text x="48" y="492" fill="#1e40af">Daily clone counts and unique cloners</text>
+      <text x="48" y="644" fill="#1e40af">Credential use: time, IP and operations</text>
+    </g>
+    <g font-size="22" fill="#475569">
+      <text x="48" y="223">Not a complete access history</text>
+      <text x="48" y="375">Execution and secret presence not proven</text>
+      <text x="48" y="527">No caller IPs or API content reads</text>
+      <text x="48" y="679">Original GitHub entry point is separate</text>
+    </g>
+    <path d="M28 732H492" stroke="#cbd5e1"/>
+    <text x="28" y="774" font-size="24" font-weight="700">No clones does not prove no exposure</text>
+  </g>
+</svg>
