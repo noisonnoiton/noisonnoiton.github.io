@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="816" viewBox="0 0 520 816" role="img" aria-labelledby="title desc">
+  <title id="title">조사 자료별로 확인할 수 있는 것과 없는 것</title>
+  <desc id="desc">계정 이벤트는 브랜치 활동, 커밋은 유출을 시도한 Secret 이름, Traffic은 clone 집계, 클라우드 기록은 자격증명 사용을 보여 준다. 어느 하나만으로 실제 유출 여부와 최초 침투 경로를 모두 확정할 수는 없다.</desc>
+  <rect width="520" height="816" rx="16" fill="#f8fafc"/>
+  <g font-family="Pretendard, Apple SD Gothic Neo, sans-serif" fill="#0f172a">
+    <text x="28" y="48" font-size="28" font-weight="700">어떤 기록으로 무엇을 확인할까</text>
+    <text x="28" y="82" font-size="21" fill="#475569">한 종류의 기록만으로 결론 내리지 않는다</text>
+    <g fill="#ffffff" stroke="#cbd5e1">
+      <rect x="28" y="112" width="464" height="132" rx="10"/>
+      <rect x="28" y="264" width="464" height="132" rx="10"/>
+      <rect x="28" y="416" width="464" height="132" rx="10"/>
+      <rect x="28" y="568" width="464" height="132" rx="10"/>
+    </g>
+    <g font-size="25" font-weight="700">
+      <text x="48" y="149">계정 이벤트</text>
+      <text x="48" y="301">악성 커밋</text>
+      <text x="48" y="453">Traffic: clone 통계</text>
+      <text x="48" y="605">클라우드 로그인·활동 기록</text>
+    </g>
+    <g font-size="23">
+      <text x="48" y="188" fill="#1e40af">브랜치 생성·push·삭제 시점</text>
+      <text x="48" y="340" fill="#1e40af">읽으려던 Secret 이름과 코드</text>
+      <text x="48" y="492" fill="#1e40af">날짜별 clone 횟수와 고유 수</text>
+      <text x="48" y="644" fill="#1e40af">자격증명 사용 시점·IP·작업</text>
+    </g>
+    <g font-size="22" fill="#475569">
+      <text x="48" y="223">전체 접근 기록은 아니다</text>
+      <text x="48" y="375">실행 성공이나 값의 존재와는 별개</text>
+      <text x="48" y="527">호출자 IP나 API 읽기는 안 보인다</text>
+      <text x="48" y="679">GitHub 최초 유출 경로는 별도 조사</text>
+    </g>
+    <path d="M28 732H492" stroke="#cbd5e1"/>
+    <text x="28" y="774" font-size="24" font-weight="700">clone 0건이 곧 유출 0건은 아니다</text>
+  </g>
+</svg>

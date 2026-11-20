@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="652" viewBox="0 0 520 652" role="img" aria-labelledby="title desc">
+  <title id="title">Separate limits along the same request path</title>
+  <desc id="desc">With a client limit of 10 seconds, gateway limit of 15 seconds, and backend response expected at 20 seconds, the client exits first. Increasing only the gateway limit does not change the client limit.</desc>
+  <rect width="520" height="652" rx="16" fill="#f8fafc"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#0f172a">
+    <text x="28" y="48" font-size="28" font-weight="700">One request, separate limits</text>
+    <text x="28" y="82" font-size="21" fill="#475569">Illustrative timings, not measured results</text>
+    <text x="28" y="138" font-size="25" font-weight="700">Client limit: 10 seconds</text>
+    <rect x="28" y="156" width="464" height="34" rx="6" fill="#e2e8f0"/>
+    <rect x="28" y="156" width="232" height="34" rx="6" fill="#1d4ed8"/>
+    <text x="28" y="244" font-size="25" font-weight="700">Gateway limit: 15 seconds</text>
+    <rect x="28" y="262" width="464" height="34" rx="6" fill="#e2e8f0"/>
+    <rect x="28" y="262" width="348" height="34" rx="6" fill="#64748b"/>
+    <text x="28" y="350" font-size="25" font-weight="700">Backend response due: 20 seconds</text>
+    <rect x="28" y="368" width="464" height="34" rx="6" fill="#e2e8f0"/>
+    <rect x="28" y="368" width="464" height="34" rx="6" fill="#64748b"/>
+    <path d="M260 156V210M260 262V316M260 368V426" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="5 5"/>
+    <g font-size="20" fill="#475569">
+      <text x="28" y="442">0s</text>
+      <text x="260" y="442" text-anchor="middle">10s</text>
+      <text x="492" y="442" text-anchor="end">20s</text>
+    </g>
+    <rect x="28" y="476" width="464" height="136" rx="10" fill="#dbeafe"/>
+    <text x="48" y="516" font-size="25" font-weight="700" fill="#1e40af">The client exits first in this example</text>
+    <text x="48" y="556" font-size="23" fill="#1e40af">A longer gateway limit cannot fix that</text>
+    <text x="48" y="590" font-size="23" fill="#1e40af">Also verify cancellation propagation</text>
+  </g>
+</svg>
