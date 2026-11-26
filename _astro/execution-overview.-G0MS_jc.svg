@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="300" viewBox="0 0 640 300" role="img" aria-labelledby="title">
+  <title id="title">같은 Kubernetes 안의 두 실행 방식</title>
+  <rect x="1" y="1" width="638" height="298" rx="18" fill="#f3f6fb" stroke="#aab9cf" stroke-width="2"/>
+  <g font-family="system-ui, sans-serif">
+    <text x="32" y="48" font-size="32" font-weight="700" fill="#14253d">Kubernetes</text>
+    <text x="32" y="83" font-size="24" fill="#334964">공통: Pod 배치와 Service 연결</text>
+    <rect x="32" y="106" width="276" height="162" rx="12" fill="#fff" stroke="#647994" stroke-width="2"/>
+    <rect x="332" y="106" width="276" height="162" rx="12" fill="#fff7ed" stroke="#b65e29" stroke-width="2"/>
+    <text x="54" y="153" font-size="27" font-weight="700" fill="#14253d">일반 컨테이너</text>
+    <text x="54" y="205" font-size="24" fill="#334964">컨테이너 런타임</text>
+    <text x="54" y="237" font-size="24" fill="#334964">앱 프로세스</text>
+    <text x="354" y="153" font-size="27" font-weight="700" fill="#78350f">SpinKube</text>
+    <text x="354" y="205" font-size="24" fill="#78350f">Spin shim과 Spin</text>
+    <text x="354" y="237" font-size="24" fill="#78350f">Wasm 컴포넌트</text>
+  </g>
+</svg>

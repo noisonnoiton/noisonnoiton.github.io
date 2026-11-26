@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="906" viewBox="0 0 520 906" role="img" aria-labelledby="title desc">
+  <title id="title">Gheist가 GitHub 실행 로그로 Secret을 빼내는 여섯 단계</title>
+  <desc id="desc">탈취 토큰으로 워크플로를 push하고 실행 가능한 job에서 접근 가능한 Secret을 읽는다. base32로 인코딩해 로그에 출력한 뒤 API로 로그를 다운로드하고 실행 기록을 삭제한다. 실행 기록이 없어도 커밋이나 클라우드 사용 흔적이 남을 수 있다.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#64748b" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="520" height="906" rx="16" fill="#f8fafc"/>
+  <g font-family="Pretendard, Apple SD Gothic Neo, sans-serif" fill="#0f172a">
+    <text x="28" y="48" font-size="28" font-weight="700">유출 통로가 된 실행 로그</text>
+    <text x="28" y="82" font-size="21" fill="#475569">Gheist: 외부 수집 서버 없이 진행</text>
+    <g fill="#ffffff" stroke="#cbd5e1">
+      <rect x="28" y="112" width="464" height="88" rx="10"/>
+      <rect x="28" y="226" width="464" height="88" rx="10"/>
+      <rect x="28" y="340" width="464" height="88" rx="10"/>
+      <rect x="28" y="568" width="464" height="88" rx="10"/>
+      <rect x="28" y="682" width="464" height="88" rx="10"/>
+    </g>
+    <rect x="28" y="454" width="464" height="88" rx="10" fill="#fee2e2"/>
+    <g font-size="24" font-weight="700">
+      <text x="48" y="148">1. 탈취한 토큰으로 push</text>
+      <text x="48" y="262">2. 악성 워크플로 실행</text>
+      <text x="48" y="376">3. 접근 가능한 Secret 읽기</text>
+      <text x="48" y="490" fill="#991b1b">4. base32로 로그에 출력</text>
+      <text x="48" y="604">5. API로 로그 다운로드</text>
+      <text x="48" y="718">6. 실행 기록 삭제</text>
+    </g>
+    <g font-size="22" fill="#475569">
+      <text x="48" y="181">새 브랜치와 워크플로 파일 생성</text>
+      <text x="48" y="295">실행·승인 조건을 통과한 job</text>
+      <text x="48" y="409">저장소와 environment의 접근 범위</text>
+      <text x="48" y="523" fill="#991b1b">값이 바뀌어 원문 마스킹을 우회</text>
+      <text x="48" y="637">로그 자체가 유출 데이터가 된다</text>
+      <text x="48" y="751">Actions 화면의 흔적을 지운다</text>
+    </g>
+    <g fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)">
+      <path d="M260 200V224"/><path d="M260 314V338"/>
+      <path d="M260 428V452"/><path d="M260 542V566"/>
+      <path d="M260 656V680"/>
+    </g>
+    <path d="M28 802H492" stroke="#cbd5e1"/>
+    <text x="28" y="838" font-size="24" font-weight="700">기록 삭제가 무사고의 증거는 아니다</text>
+    <text x="28" y="875" font-size="22" fill="#475569">남은 커밋과 클라우드 기록을 함께 본다</text>
+  </g>
+</svg>

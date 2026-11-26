@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="652" viewBox="0 0 520 652" role="img" aria-labelledby="title desc">
+  <title id="title">같은 요청 경로에 서로 다른 제한 시간이 존재하는 예시</title>
+  <desc id="desc">클라이언트 제한 10초, Gateway 제한 15초, backend 응답 완료 예정 20초인 예시에서는 클라이언트가 먼저 종료한다. Gateway만 길게 조정해도 클라이언트 제한이 바뀌지 않는다.</desc>
+  <rect width="520" height="652" rx="16" fill="#f8fafc"/>
+  <g font-family="Pretendard, Apple SD Gothic Neo, sans-serif" fill="#0f172a">
+    <text x="28" y="48" font-size="28" font-weight="700">같은 요청, 서로 다른 제한</text>
+    <text x="28" y="82" font-size="21" fill="#475569">아래 숫자는 동작을 설명하는 예시다</text>
+    <text x="28" y="138" font-size="25" font-weight="700">클라이언트 제한: 10초</text>
+    <rect x="28" y="156" width="464" height="34" rx="6" fill="#e2e8f0"/>
+    <rect x="28" y="156" width="232" height="34" rx="6" fill="#1d4ed8"/>
+    <text x="28" y="244" font-size="25" font-weight="700">Gateway 요청 제한: 15초</text>
+    <rect x="28" y="262" width="464" height="34" rx="6" fill="#e2e8f0"/>
+    <rect x="28" y="262" width="348" height="34" rx="6" fill="#64748b"/>
+    <text x="28" y="350" font-size="25" font-weight="700">backend 응답 완료 예정: 20초</text>
+    <rect x="28" y="368" width="464" height="34" rx="6" fill="#e2e8f0"/>
+    <rect x="28" y="368" width="464" height="34" rx="6" fill="#64748b"/>
+    <path d="M260 156V210M260 262V316M260 368V426" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="5 5"/>
+    <g font-size="20" fill="#475569">
+      <text x="28" y="442">0초</text>
+      <text x="260" y="442" text-anchor="middle">10초</text>
+      <text x="492" y="442" text-anchor="end">20초</text>
+    </g>
+    <rect x="28" y="476" width="464" height="136" rx="10" fill="#dbeafe"/>
+    <text x="48" y="516" font-size="25" font-weight="700" fill="#1e40af">이 예제에서는 클라이언트가 먼저 종료</text>
+    <text x="48" y="556" font-size="23" fill="#1e40af">Gateway만 늘려도 10초 제한은 남는다</text>
+    <text x="48" y="590" font-size="23" fill="#1e40af">취소가 전달되는지도 별도로 확인한다</text>
+  </g>
+</svg>

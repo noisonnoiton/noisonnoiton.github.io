@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="272" viewBox="0 0 640 272" role="img" aria-labelledby="title">
+  <title id="title">같은 클라이언트, 서로 다른 요청 대상</title>
+  <rect x="1" y="1" width="638" height="270" rx="18" fill="#f3f6fb" stroke="#aab9cf" stroke-width="2"/>
+  <g font-family="system-ui, sans-serif" text-anchor="middle" fill="#14253d">
+    <rect x="174" y="26" width="292" height="54" rx="10" fill="#fff" stroke="#647994" stroke-width="2"/>
+    <text x="320" y="61" font-size="27" font-weight="700">AWS CLI / SDK</text>
+    <path d="M320 80v38H168v34m152-34h152v34" fill="none" stroke="#435873" stroke-width="3"/>
+    <path d="m161 144 7 11 7-11m290 0 7 11 7-11" fill="none" stroke="#435873" stroke-width="3"/>
+    <rect x="32" y="158" width="272" height="89" rx="12" fill="#fff7ed" stroke="#b65e29" stroke-width="2"/>
+    <rect x="336" y="158" width="272" height="89" rx="12" fill="#fff" stroke="#647994" stroke-width="2"/>
+    <text x="168" y="195" font-size="26" font-weight="700">로컬 에뮬레이터</text>
+    <text x="168" y="225" font-size="20">로컬 키 · 테스트 큐</text>
+    <text x="472" y="195" font-size="26" font-weight="700">실제 AWS</text>
+    <text x="472" y="225" font-size="20">AWS 자격증명 · 클라우드 큐</text>
+  </g>
+</svg>
